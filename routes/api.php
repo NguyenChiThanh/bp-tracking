@@ -36,5 +36,6 @@ Route::apiResources([
     'product' => 'API\V1\ProductController',
     'category' => 'API\V1\CategoryController',
     'tag' => 'API\V1\TagController',
-    'stores' => 'API\V1\StoreController'
+    'stores' => 'API\V1\StoreController',
+    'channels' => 'API\V1\ChannelController'
 ]);

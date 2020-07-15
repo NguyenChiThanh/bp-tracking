@@ -9,18 +9,6 @@
 - Admin LTE 3 + Bootstrap 4 + Font Awesome 5
 - PHPUnit Test Case/Test Coverage
 
-## Features
-
-- Modal based Create+Edit, List with Pagination, Delete with Sweetalert
-- Login, Register, Forget+Reset Password as default auth
-- Profile, Update Profile, Change Password, Avatar
-- Store Management 
-- User Management
-- Settings: Categories, Tags
-- Frontend and Backend User ACL with Gate Policy (type: admin/user)
-- Simple Static Dashboard
-- Developer Options for OAuth Clients and Personal Access Token
-
 ## Installation
 
 - `composer install`
@@ -29,6 +17,7 @@
 - `php artisan migrate`
 - `php artisan db:seed`
 - `php artisan passport:install`
+- `php artisan storage:link`
 - `npm install`
 - `npm run dev`
 - `php artisan serve`

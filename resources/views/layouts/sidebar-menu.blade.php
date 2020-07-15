@@ -27,6 +27,15 @@
             </router-link>
         </li>
 
+        <li class="nav-item">
+            <router-link to="/channels" class="nav-link">
+                <i class="nav-icon fas fa-figma pink"></i>
+                <p>
+                    Channels
+                </p>
+            </router-link>
+        </li>
+
       @can('isAdmin')
         <li class="nav-item">
           <router-link to="/users" class="nav-link">

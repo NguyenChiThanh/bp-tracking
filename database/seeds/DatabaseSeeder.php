@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         //duplicate product for data
         $this->call(ProductsTableSeeder::class);
         $this->call(StoresTableSeeder::class);
+        $this->call(ChannelsTableSeeder::class);
     }
 }

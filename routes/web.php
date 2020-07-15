@@ -23,6 +23,9 @@ Route::get('home', function () {
     return redirect('/dashboard');
 });
 
+Route::post('/file/upload', 'FileController@upload')->name('fileUpload');
+
+
 Route::get('/{vue_capture?}', function () {
     return view('home');
 })->where('vue_capture', '[\/\w\.-]*')->middleware('auth');
