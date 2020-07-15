@@ -34,7 +34,7 @@
 
                       <td>{{channel.id}}</td>
                       <td>{{channel.name}}</td>
-                      <td><img v-bind:src="channel.image_url" width="20%" height="20%"></td>
+                      <td><img v-bind:src="channel.image_url" class="img-thumbnail img-fluid" width="20%" v-bind:alt="channel.name +' image'"></td>
                       <td>{{channel.status}}</td>
                       <!-- <td><img v-bind:src="'/' + channel.photo" width="100" alt="channel"></td> -->
                       <td>
