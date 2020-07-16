@@ -84,7 +84,7 @@
                             <label>Image</label>
                             <input type="file" name="file" @change="onFileChange" class="form-control">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" v-if="editmode">
                             <label>Status</label>
                             <select class="form-control" v-model="form.status" :class="{ 'is-invalid': form.errors.has('status') }">
                                 <option
