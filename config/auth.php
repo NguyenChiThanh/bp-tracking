@@ -36,8 +36,13 @@ return [
     */
 
     'guards' => [
+//        'web' => [
+//            'driver' => 'session',
+//            'provider' => 'users',
+//        ],
+
         'web' => [
-            'driver' => 'session',
+            'driver' => 'pmc_session',
             'provider' => 'users',
         ],
 

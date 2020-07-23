@@ -17,6 +17,9 @@ Route::get('/', function () {
 
 Auth::routes(['verify' => true]);
 
+Route::get('/pmc/login', 'Auth\PMCLoginController@showLoginForm')->name('get.pmc_login');
+Route::post('/pmc/login', 'Auth\PMCLoginController@login')->name('post.pmc_login');
+
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('home', function () {

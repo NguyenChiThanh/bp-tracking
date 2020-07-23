@@ -68,7 +68,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'type' => 'admin',
+            'type' => 'partner',
         ]);
 
         // Assigning Role by default user role

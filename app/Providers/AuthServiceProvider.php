@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
@@ -25,6 +26,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        Auth::extend('pmc_session', function ($app, $name, array $config) {
+            // Return an instance of Illuminate\Contracts\Auth\Guard...
+            return new PMCSessionGuard($name, Auth::createUserProvider($config['provider']), $app['session.store']);
+        });
 
         Passport::routes();
 

@@ -65,25 +65,21 @@
     </head>
     <body>
         <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-
             <div class="content">
                 <h1>
                     Pharmacity BP Tracking
                 </h1>
                 <img class="img-md" src="{{asset('images/login-banner.png')}}">
+                @if (Route::has('login'))
+                <div class="navbar bg-light">
+                    @auth
+                        <a class="nav-link" href="{{ url('/home') }}">Home</a>
+                    @else
+                        <a class="nav-link" href="{{ route('get.pmc_login') }}">{{ __('PMC Login') }}</a>
+                        <a class="nav-link" href="{{ route('login') }}">Partner Login</a>
+                    @endauth
+                </div>
+                @endif
             </div>
         </div>
     </body>
