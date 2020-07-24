@@ -29,7 +29,11 @@ class AuthServiceProvider extends ServiceProvider
 
         Auth::extend('pmc_session', function ($app, $name, array $config) {
             // Return an instance of Illuminate\Contracts\Auth\Guard...
-            return new PMCSessionGuard($name, Auth::createUserProvider($config['provider']), $app['session.store']);
+            $guard = new PMCSessionGuard($name, Auth::createUserProvider($config['provider']), $app['session.store']);
+            if (method_exists($guard, 'setCookieJar')) {
+                $guard->setCookieJar($this->app['cookie']);
+            }
+            return $guard;
         });
 
         Passport::routes();
