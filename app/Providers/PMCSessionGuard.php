@@ -5,58 +5,34 @@ namespace App\Providers;
 
 
 use Illuminate\Auth\SessionGuard;
+use Illuminate\Support\Facades\Log;
 
 class PMCSessionGuard extends SessionGuard
 {
 
     /**
-     * Attempt to authenticate a user using the given credentials.
-     *
-     * @param  array  $credentials
-     * @param  bool  $remember
-     * @return bool
-     */
-    public function attempt(array $credentials = [], $remember = false)
-    {
-        $this->fireAttemptEvent($credentials, $remember);
-
-        $this->lastAttempted = $user = $this->provider->retrieveByCredentials($credentials);
-
-        if($this->hasValidAccessToken($user)){
-            $this->login($user, $remember);
-
-            return true;
-        }
-
-        // If an implementation of UserInterface was returned, we'll ask the provider
-        // to validate the user against the given credentials, and if they are in
-        // fact valid we'll log the users into the application and return true.
-        if ($this->hasValidCredentials($user, $credentials)) {
-            $this->login($user, $remember);
-
-            return true;
-        }
-
-        // If the authentication attempt fails we will fire an event so that the user
-        // may be notified of any suspicious attempts to access their account from
-        // an unrecognized user. A developer may listen to this event as needed.
-        $this->fireFailedEvent($user, $credentials);
-
-        return false;
-    }
-
-    /**
      * Determine if the user has valid access token.
      *
      * @param  mixed  $user
+     * @param array $credentials
      * @return bool
      */
-    protected function hasValidAccessToken($user)
+    protected function hasValidCredentials($user, $credentials)
     {
-        return $user &&
-            in_array($user['type'], ['user', 'admin']) &&
-            isset($user['access_token']) &&
-            isset($user['access_token']['expires_at']) &&
-            $user['access_token']['expires_at'] > time();
+        // if user has access_token['expires_at'] and not expired - fireValidatedEvent and return true
+        // if user has access_token['expires_at'] and expired - return false
+        if($user && in_array($user['type'], ['user', 'admin']) && isset($user['access_token'])) {
+            if(json_decode($user['access_token'])->expires_at > time()) {
+                $this->fireValidatedEvent($user);
+                Log::info('Valid access token');
+                return true;
+            }
+            Log::info('Invalid access token');
+            return false;
+        }
+
+        Log::info('No access token, login by user/pass');
+        // if user has no access_token - call parent::hasValidCredentials
+        return parent::hasValidCredentials($user, $credentials);
     }
 }

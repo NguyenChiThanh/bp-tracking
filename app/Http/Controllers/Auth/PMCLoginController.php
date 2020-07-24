@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use \GuzzleHttp\Client as GuzzleClient;
 
 class PMCLoginController extends Controller
 {
@@ -51,6 +51,7 @@ class PMCLoginController extends Controller
         $canLogin = $this->guard()->attempt(
             $this->credentials($request), $request->filled('remember')
         );
+        Log::info('canLogin ' . $canLogin);
 
         if ($canLogin) {
             return true;
@@ -64,11 +65,10 @@ class PMCLoginController extends Controller
             $userData = [
                 'name' => $request->input($this->username()),
                 'email' => $request->input($this->username()),
-                'password' => $request->input('password'),
                 'access_token' => json_encode($accessToken)
             ];
-
-            $user = $this->create($userData);
+            $user = $this->updateOrCreatePMCUser($userData);
+            Log::info('user ' . $user);
 
             $this->guard()->login($user);
             return true;
@@ -85,7 +85,7 @@ class PMCLoginController extends Controller
      */
     protected function getPMCAccessToken($request)
     {
-        $client = new \GuzzleHttp\Client();
+        $client = new GuzzleClient();
         $url = 'https://api.pharmacity.io:8443/users/login';
         $options = [
             'headers' => [
@@ -104,20 +104,30 @@ class PMCLoginController extends Controller
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Create a new PMC user instance after get access token via PMC auth
      *
      * @param  array  $data
-     * @return \App\User
+     * @return \App\Models\User
      */
-    protected function create(array $data)
+    protected function updateOrCreatePMCUser(array $data)
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'type' => 'user',
-            'access_token'=> $data['access_token']
-        ]);
+        try {
+            $user = User::updateOrCreate(
+                [
+                    'email' => $data['email']
+                ],
+                [
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'password' => '',
+                    'type' => 'user',
+                    'access_token' => $data['access_token']
+                ]
+            );
+        }catch (\Exception $exception) {
+            Log::warning($exception->getMessage());
+            return null;
+        }
 
         return $user;
     }
