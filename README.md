@@ -14,7 +14,8 @@
 - `composer install`
 - `cp .env.example .env`
 - Update `.env` and set your database credentials
-- `php artisan migrate`
+- `php artisan migrate:fresh`
+- `php artisan sync:store`
 - `php artisan db:seed`
 - `php artisan passport:install`
 - `php artisan storage:link`
