@@ -112,13 +112,6 @@ class ChannelController extends BaseController
 
         $channel->update($request->all());
 
-        // update pivot table
-//        $tag_ids = [];
-//        foreach ($request->get('tags') as $tag) {
-//            $tag_ids[] = $tag['id'];
-//        }
-//        $channel->tags()->sync($tag_ids);
-
         return $this->sendResponse($channel, 'Channel Information has been updated');
     }
 

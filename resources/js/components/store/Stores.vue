@@ -9,13 +9,13 @@
               <div class="card-header">
                 <h3 class="card-title">Store List</h3>
 
-                <div class="card-tools">
+<!--                <div class="card-tools">-->
 
-                  <button type="button" class="btn btn-sm btn-primary" @click="newModal">
-                      <i class="fa fa-plus-square"></i>
-                      Add New
-                  </button>
-                </div>
+<!--                  <button type="button" class="btn btn-sm btn-primary" @click="newModal">-->
+<!--                      <i class="fa fa-plus-square"></i>-->
+<!--                      Add New-->
+<!--                  </button>-->
+<!--                </div>-->
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
@@ -24,9 +24,15 @@
                     <tr>
                       <th>ID</th>
                       <th>Name</th>
-                      <th>Description</th>
+                      <th>Desc</th>
                       <th>Status</th>
-                      <th>Action</th>
+                      <th>Level</th>
+                      <th>Address</th>
+                      <th>Ward</th>
+                      <th>District</th>
+                      <th>Province</th>
+                      <th>Images</th>
+<!--                      <th>Action</th>-->
                     </tr>
                   </thead>
                   <tbody>
@@ -34,19 +40,25 @@
 
                       <td>{{store.id}}</td>
                       <td>{{store.name}}</td>
-                      <td>{{store.description | truncate(30, '...')}}</td>
+                      <td>{{store.description}}</td>
                       <td>{{store.status}}</td>
+                      <td>{{store.level}}</td>
+                      <td>{{store.address}}</td>
+                      <td>{{store.ward}}</td>
+                      <td>{{store.district}}</td>
+                      <td>{{store.province}}</td>
+                      <td>{{store.images}}</td>
                       <!-- <td><img v-bind:src="'/' + store.photo" width="100" alt="store"></td> -->
-                      <td>
+<!--                      <td>-->
 
-                        <a href="#" @click="editModal(store)">
-                            <i class="fa fa-edit blue"></i>
-                        </a>
-                        /
-                        <a href="#" @click="deleteStore(store.id)">
-                            <i class="fa fa-trash red"></i>
-                        </a>
-                      </td>
+<!--                        <a href="#" @click="editModal(store)">-->
+<!--                            <i class="fa fa-edit blue"></i>-->
+<!--                        </a>-->
+<!--                        /-->
+<!--                        <a href="#" @click="deleteStore(store.id)">-->
+<!--                            <i class="fa fa-trash red"></i>-->
+<!--                        </a>-->
+<!--                      </td>-->
                     </tr>
                   </tbody>
                 </table>

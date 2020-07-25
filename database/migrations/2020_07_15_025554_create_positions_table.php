@@ -15,7 +15,16 @@ class CreatePositionsTable extends Migration
     {
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
-//            $table->string('channel');
+            $table->string('name');
+            $table->string('description');
+            $table->string('status');
+            $table->string('image_url');
+            $table->unsignedBigInteger('store_id');
+            $table->foreign('store_id')->references('id')->on('stores');
+            $table->string('channel');
+            $table->integer('buffer_days');
+            $table->string('unit');
+            $table->float('price');
             $table->timestamps();
         });
     }

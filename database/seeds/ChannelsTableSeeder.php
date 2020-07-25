@@ -15,27 +15,26 @@ class ChannelsTableSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Faker::create();
         DB::table('channels')->truncate();
         $channels = [
             [
                 'name' => 'Billboard',
-                'image_url' => $faker->image(),
+                'image_url' => '',
                 'status' => Channel::ACTIVE,
             ],
             [
                 'name' => 'Poster',
-                'image_url' => $faker->image(),
+                'image_url' => '',
                 'status' => Channel::ACTIVE,
             ],
             [
                 'name' => 'Lightbox',
-                'image_url' => $faker->image(),
+                'image_url' => '',
                 'status' => Channel::ACTIVE,
             ],
             [
                 'name' => 'Frontdoor',
-                'image_url' => $faker->image(),
+                'image_url' => '',
                 'status' => Channel::INACTIVE,
             ]
         ];

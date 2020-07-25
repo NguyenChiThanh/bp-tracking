@@ -14,10 +14,19 @@ class CreateStoresTable extends Migration
     public function up()
     {
         Schema::create('stores', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->unsignedBigInteger('id')->primary();
             $table->string('name');
-            $table->longText('description')->nullable();
+            $table->string('description');
             $table->string('status');
+            $table->char('level');
+            $table->string('province');
+            $table->string('province_id');
+            $table->string('district_id');
+            $table->string('district');
+            $table->string('ward_id');
+            $table->string('ward');
+            $table->string('address');
+            $table->json('images');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -13,8 +13,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->where('email', 'admin@gmail.com')->delete();
-
+        DB::table('users')->truncate();
         DB::table('users')->insert([
             'name' => 'Long Nguyen',
             'email' => 'nguyentienlong88@gmail.com',
