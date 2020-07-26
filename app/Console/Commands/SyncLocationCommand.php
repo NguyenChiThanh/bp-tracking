@@ -20,6 +20,7 @@ class SyncLocationCommand extends Command
      * @var Client
      */
     protected $guzzleClient;
+
     /**
      * The name and signature of the console command.
      *
