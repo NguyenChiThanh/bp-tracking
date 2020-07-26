@@ -7,10 +7,9 @@
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">CPU Traffic</span>
+                            <span class="info-box-text">Running Campaigns</span>
                             <span class="info-box-number">
-                            10
-                            <small>%</small>
+                            100
                             </span>
                         </div>
                         <!-- /.info-box-content -->
@@ -20,11 +19,11 @@
                 <!-- /.col -->
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+                        <span class="info-box-icon bg-orange elevation-1"><i class="fas fa-hand-holding"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Likes</span>
-                            <span class="info-box-number">41,410</span>
+                            <span class="info-box-text">Reserved Positions</span>
+                            <span class="info-box-number">1000</span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
@@ -87,7 +86,7 @@
                         <table class="table m-0">
                             <thead>
                                 <tr>
-                                    <th>Order ID</th>
+                                    <th>Campaign ID</th>
                                     <th>Item</th>
                                     <th>Status</th>
                                     <th>Popularity</th>
@@ -132,14 +131,6 @@
                                     <td><span class="badge badge-warning">Pending</span></td>
                                     <td>
                                         <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                                    <td>iPhone 6 Plus</td>
-                                    <td><span class="badge badge-danger">Delivered</span></td>
-                                    <td>
-                                        <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
                                     </td>
                                 </tr>
                             </tbody>
