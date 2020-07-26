@@ -5,9 +5,8 @@ namespace App\Console\Commands\Services;
 
 use App\Models\District;
 
-class DistrictService extends BaseLocationService implements LocationServiceInterface
+class SyncDistrictService extends BaseSyncService implements SyncInterface
 {
-
     const LOCATION_TYPE = 1;
 
     public function __construct($logger, $guzzleClient)
@@ -20,7 +19,7 @@ class DistrictService extends BaseLocationService implements LocationServiceInte
     public function buildGraphqlQuery()
     {
         return $this->options['json'] = [
-            'query'=> '
+            'query' => '
                     query GetDistricts ($type: Int)
                     {
                         area(
@@ -33,8 +32,8 @@ class DistrictService extends BaseLocationService implements LocationServiceInte
                             parentArea{id, db_id, name}
                         }
                     }',
-            'variables'=> [
-                'type'=> self::LOCATION_TYPE
+            'variables' => [
+                'type' => self::LOCATION_TYPE
             ]
         ];
     }
@@ -47,7 +46,7 @@ class DistrictService extends BaseLocationService implements LocationServiceInte
         foreach ($districts as $district) {
             District::updateOrCreate(
                 [
-                    'id' =>  $district['db_id']
+                    'id' => $district['db_id']
                 ],
                 [
                     'id' => $district['db_id'],

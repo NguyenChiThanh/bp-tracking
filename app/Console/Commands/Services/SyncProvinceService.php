@@ -3,12 +3,10 @@
 
 namespace App\Console\Commands\Services;
 
-
 use App\Models\Province;
 
-class ProvinceService extends BaseLocationService implements LocationServiceInterface
+class SyncProvinceService extends BaseSyncService implements SyncInterface
 {
-
     const LOCATION_TYPE = 0;
 
     public function __construct($logger, $guzzleClient)
@@ -21,7 +19,7 @@ class ProvinceService extends BaseLocationService implements LocationServiceInte
     public function buildGraphqlQuery()
     {
         return $this->options['json'] = [
-            'query'=> '
+            'query' => '
                     query GetProvinces ($type: Int)
                     {
                         area(
@@ -33,8 +31,8 @@ class ProvinceService extends BaseLocationService implements LocationServiceInte
                             name,
                         }
                     }',
-            'variables'=> [
-                'type'=> self::LOCATION_TYPE
+            'variables' => [
+                'type' => self::LOCATION_TYPE
             ]
         ];
     }
@@ -47,7 +45,7 @@ class ProvinceService extends BaseLocationService implements LocationServiceInte
         foreach ($provinces as $province) {
             Province::updateOrCreate(
                 [
-                    'id' =>  $province['db_id']
+                    'id' => $province['db_id']
                 ],
                 [
                     'id' => $province['db_id'],

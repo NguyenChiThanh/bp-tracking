@@ -3,8 +3,7 @@
 
 namespace App\Console\Commands\Services;
 
-
-interface LocationServiceInterface
+interface SyncInterface
 {
     /**
      * @return mixed

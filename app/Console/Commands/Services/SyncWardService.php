@@ -3,10 +3,10 @@
 
 namespace App\Console\Commands\Services;
 
-
 use App\Models\Ward;
+use Exception;
 
-class WardService extends BaseLocationService implements LocationServiceInterface
+class SyncWardService extends BaseSyncService implements SyncInterface
 {
     const LOCATION_TYPE = 2;
 
@@ -20,7 +20,7 @@ class WardService extends BaseLocationService implements LocationServiceInterfac
     public function buildGraphqlQuery()
     {
         return $this->options['json'] = [
-            'query'=> '
+            'query' => '
                     query GetWards ($type: Int)
                     {
                         area(
@@ -33,8 +33,8 @@ class WardService extends BaseLocationService implements LocationServiceInterfac
                             parentArea{id, db_id, name}
                         }
                     }',
-            'variables'=> [
-                'type'=> self::LOCATION_TYPE
+            'variables' => [
+                'type' => self::LOCATION_TYPE
             ]
         ];
     }
@@ -42,7 +42,8 @@ class WardService extends BaseLocationService implements LocationServiceInterfac
     public function syncData()
     {
         $response = $this->guzzleClient->post(
-            $this->graphqlEndpoint, $this->options
+            $this->graphqlEndpoint,
+            $this->options
         );
         $contents = json_decode($response->getBody()->getContents(), true);
         $wards = $contents['data']['area'];
@@ -58,7 +59,7 @@ class WardService extends BaseLocationService implements LocationServiceInterfac
                         'district_id' => $ward['parentArea']['db_id']
                     ]
                 );
-            }catch(\Exception $exception) {
+            } catch (Exception $exception) {
                 $this->logger->error($exception->getMessage());
                 $this->logger->error(json_encode($ward));
             }

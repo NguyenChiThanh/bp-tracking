@@ -5,7 +5,7 @@ namespace App\Console\Commands\Services;
 use GuzzleHttp\Client;
 use Illuminate\Log\Logger;
 
-class BaseLocationService
+class BaseSyncService
 {
     /**
      * @var Logger
@@ -20,7 +20,7 @@ class BaseLocationService
      */
     protected $graphqlEndpoint;
     /**
-     * @var \string[][]
+     * @var string[]
      */
     protected $options;
 
@@ -35,5 +35,4 @@ class BaseLocationService
             ],
         ];
     }
-
 }

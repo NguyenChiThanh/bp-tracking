@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Console\Commands\Services\DistrictService;
-use App\Console\Commands\Services\ProvinceService;
-use App\Console\Commands\Services\WardService;
+use App\Console\Commands\Services\SyncDistrictService;
+use App\Console\Commands\Services\SyncProvinceService;
+use App\Console\Commands\Services\SyncWardService;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Log\Logger;
@@ -53,11 +53,13 @@ class SyncLocationCommand extends Command
      */
     public function handle()
     {
-        $services = $this->createServices();
+        $syncLocationServices = $this->createServices();
 
-        foreach ($services as $service) {
+        foreach ($syncLocationServices as $service) {
             $service->syncData();
         }
+
+        return;
     }
 
     /**
@@ -66,9 +68,9 @@ class SyncLocationCommand extends Command
     private function createServices()
     {
         return [
-            new ProvinceService($this->logger, $this->guzzleClient),
-            new DistrictService($this->logger, $this->guzzleClient),
-            new WardService($this->logger, $this->guzzleClient),
+            new SyncProvinceService($this->logger, $this->guzzleClient),
+            new SyncDistrictService($this->logger, $this->guzzleClient),
+            new SyncWardService($this->logger, $this->guzzleClient),
         ];
     }
 }
