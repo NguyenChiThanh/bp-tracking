@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+cp .env.stg .env
 composer install
 composer du
 php artisan cache:clear
