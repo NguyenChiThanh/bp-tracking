@@ -67,8 +67,9 @@ class ChannelController extends BaseController
         try {
             $channel = $this->channel->create([
                 'name' => $request->get('name'),
-                'status' => Channel::ACTIVE,
-                'image_url' => $imageUrl
+//                'status' => Channel::ACTIVE,
+                'image_url' => $imageUrl,
+                'buffer_days' => $request->get('buffer_days')
             ]);
             return $this->sendResponse($channel, 'Channel Created Successfully');
         } catch (Exception $e) {

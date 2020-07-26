@@ -27,7 +27,7 @@
                                     <th>Description</th>
                                     <th>Status</th>
                                     <th>Image</th>
-                                    <th>Store Type</th>
+                                    <th>Store Level</th>
                                     <th>Store Name</th>
                                     <th>Channel</th>
                                     <th>Buffer days</th>

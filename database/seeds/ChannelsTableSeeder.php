@@ -20,22 +20,18 @@ class ChannelsTableSeeder extends Seeder
             [
                 'name' => 'Billboard',
                 'image_url' => '',
-                'status' => Channel::ACTIVE,
             ],
             [
                 'name' => 'Poster',
                 'image_url' => '',
-                'status' => Channel::ACTIVE,
             ],
             [
                 'name' => 'Lightbox',
                 'image_url' => '',
-                'status' => Channel::ACTIVE,
             ],
             [
                 'name' => 'Frontdoor',
                 'image_url' => '',
-                'status' => Channel::INACTIVE,
             ]
         ];
         DB::table('channels')->insert($channels);

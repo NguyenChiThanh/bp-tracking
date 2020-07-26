@@ -20,7 +20,7 @@ class CreateChannelsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('image_url')->nullable();
-            $table->string('status');
+            $table->integer('buffer_days')->default(2);
             $table->timestamps();
             $table->softDeletes();
         });

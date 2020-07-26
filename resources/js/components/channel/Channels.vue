@@ -25,7 +25,7 @@
                       <th>ID</th>
                       <th>Name</th>
                       <th>Image</th>
-                      <th>Status</th>
+                      <th>Buffer Days</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -35,7 +35,7 @@
                       <td>{{channel.id}}</td>
                       <td>{{channel.name}}</td>
                       <td><img v-bind:src="channel.image_url" class="img-thumbnail img-fluid" width="20%" v-bind:alt="channel.name +' image'"></td>
-                      <td>{{channel.status}}</td>
+                      <td>{{channel.buffer_days}}</td>
                       <!-- <td><img v-bind:src="'/' + channel.photo" width="100" alt="channel"></td> -->
                       <td>
 
@@ -84,16 +84,25 @@
                             <label>Image</label>
                             <input type="file" name="file" @change="onFileChange" class="form-control">
                         </div>
-                        <div class="form-group" v-if="editmode">
-                            <label>Status</label>
-                            <select class="form-control" v-model="form.status" :class="{ 'is-invalid': form.errors.has('status') }">
-                                <option
-                                    v-for="(status, index) in statuses" :key="index"
-                                    :value="index"
-                                    :selected="index == form.status">{{ status }}</option>
-                            </select>
-                            <has-error :form="form" field="status"></has-error>
+
+                        <div class="form-group">
+                            <label>Buffer days</label>
+                            <input v-model="form.buffer_days" type="text" name="buffer_days"
+                                   class="form-control" :class="{ 'is-invalid': form.errors.has('buffer_days') }">
+                            <has-error :form="form" field="buffer_days"></has-error>
                         </div>
+
+
+<!--                        <div class="form-group" v-if="editmode">-->
+<!--                            <label>Status</label>-->
+<!--                            <select class="form-control" v-model="form.status" :class="{ 'is-invalid': form.errors.has('status') }">-->
+<!--                                <option-->
+<!--                                    v-for="(status, index) in statuses" :key="index"-->
+<!--                                    :value="index"-->
+<!--                                    :selected="index == form.status">{{ status }}</option>-->
+<!--                            </select>-->
+<!--                            <has-error :form="form" field="status"></has-error>-->
+<!--                        </div>-->
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -128,7 +137,7 @@
                     id : '',
                     name: '',
                     image_url: '',
-                    status: '',
+                    buffer_days: 2,
                 }),
 
                 fileUploaded: [],

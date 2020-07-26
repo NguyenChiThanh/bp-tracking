@@ -5,10 +5,20 @@ namespace App\Console\Commands;
 use App\Models\Store;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Log\Logger;
 
 class SyncStoreCommand extends Command
 {
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
+     * @var Client
+     */
+    protected $guzzleClient;
+
     /**
      * The name and signature of the console command.
      *
@@ -24,13 +34,15 @@ class SyncStoreCommand extends Command
     protected $description = 'Sync stores from ERP';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
+     * SyncStoreCommand constructor.
+     * @param Logger $logger
+     * @param Client $guzzleClient
      */
-    public function __construct()
+    public function __construct(Logger $logger, Client $guzzleClient)
     {
         parent::__construct();
+        $this->logger = $logger;
+        $this->guzzleClient = $guzzleClient;
     }
 
     /**
@@ -40,8 +52,7 @@ class SyncStoreCommand extends Command
      */
     public function handle()
     {
-        $graphqlEndpoint = 'https://omsapi.pharmacity.vn/graphql';
-        $guzzleClient = new Client();
+        $graphqlEndpoint = env('GRAPHQL_ENDPOINT');
         $options = [
             'headers' => [
                 'content-type' => 'application/json'
@@ -86,28 +97,36 @@ class SyncStoreCommand extends Command
             ]
         ];
 
-        $response = $guzzleClient->post($graphqlEndpoint, $options);
+        $response = $this->guzzleClient->post($graphqlEndpoint, $options);
         $contents = json_decode($response->getBody()->getContents(), true);
         $stores = $contents['data']['store'];
         foreach ($stores as $store) {
-            Store::create([
-                'id' => $store['db_id'],
-                'name' => $store['name'],
-                'description' => $store['description'] ?? '',
-                'status' => $store['status'],
-                'province_id' => $store['province_id'],
-                'province' => $store['province'],
-                'district_id' => $store['district_id'],
-                'district' => $store['district'],
-                'ward_id' => $store['ward_id'],
-                'ward' => $store['ward'],
-                'address' => $store['address'],
-                'images' => json_encode($store['images']),
-                'level' => $store['level'] ?? '',
-            ]);
-            Log::warning('Synced store ' . json_encode($store));
-
+            try{
+                Store::updateOrCreate(
+                    [
+                        'id' =>  $store['db_id']
+                    ],
+                    [
+                        'id' => $store['db_id'],
+                        'name' => $store['name'],
+                        'description' => $store['description'] ?? '',
+                        'status' => $store['status'],
+                        'province_id' => $store['province_id'],
+                        'province' => $store['province'],
+                        'district_id' => $store['district_id'],
+                        'district' => $store['district'],
+                        'ward_id' => $store['ward_id'],
+                        'ward' => $store['ward'],
+                        'address' => $store['address'],
+                        'images' => json_encode($store['images']),
+                        'level' => $store['level'] ?? '',
+                    ]
+                );
+            } catch (\Exception $exception) {
+                $this->logger->error($exception->getMessage());
+                $this->logger->error(json_encode($store));
+            }
+            $this->logger->info('Synced store ' . json_encode($store));
         }
-        // TODO: save contents to db
     }
 }

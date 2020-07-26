@@ -25,7 +25,8 @@ class ChannelRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:5',
-            'image_url' => 'nullable|string'
+            'image_url' => 'nullable|string',
+            'buffer_days' => 'required|integer'
         ];
     }
 }

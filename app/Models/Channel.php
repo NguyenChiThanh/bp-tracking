@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Channel extends Model
 {
-    const ACTIVE = 'ACTIVE';
-    const INACTIVE = 'INACTIVE';
+//    const ACTIVE = 'ACTIVE';
+//    const INACTIVE = 'INACTIVE';
 
-    protected $fillable = ['name', 'image_url', 'status'];
+    protected $fillable = ['name', 'image_url', 'buffer_days'];
 }
