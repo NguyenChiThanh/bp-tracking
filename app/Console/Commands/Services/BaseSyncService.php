@@ -24,7 +24,12 @@ class BaseSyncService
      */
     protected $options;
 
-    public function __construct($logger, $guzzleClient)
+    /**
+     * BaseSyncService constructor.
+     * @param Logger $logger
+     * @param Client $guzzleClient
+     */
+    public function __construct(Logger $logger, Client $guzzleClient)
     {
         $this->logger = $logger;
         $this->guzzleClient = $guzzleClient;

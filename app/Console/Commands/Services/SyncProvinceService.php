@@ -4,18 +4,22 @@
 namespace App\Console\Commands\Services;
 
 use App\Models\Province;
+use GuzzleHttp\Client;
+use Illuminate\Log\Logger;
 
 class SyncProvinceService extends BaseSyncService implements SyncInterface
 {
     const LOCATION_TYPE = 0;
 
-    public function __construct($logger, $guzzleClient)
+    public function __construct(Logger $logger, Client $guzzleClient)
     {
         parent::__construct($logger, $guzzleClient);
         $this->buildGraphqlQuery();
     }
 
-
+    /**
+     * @return array|mixed
+     */
     public function buildGraphqlQuery()
     {
         return $this->options['json'] = [
@@ -37,6 +41,9 @@ class SyncProvinceService extends BaseSyncService implements SyncInterface
         ];
     }
 
+    /**
+     * @return mixed|void
+     */
     public function syncData()
     {
         $response = $this->guzzleClient->post($this->graphqlEndpoint, $this->options);

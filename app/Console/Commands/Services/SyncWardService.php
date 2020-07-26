@@ -5,18 +5,27 @@ namespace App\Console\Commands\Services;
 
 use App\Models\Ward;
 use Exception;
+use GuzzleHttp\Client;
+use Illuminate\Log\Logger;
 
 class SyncWardService extends BaseSyncService implements SyncInterface
 {
     const LOCATION_TYPE = 2;
 
-    public function __construct($logger, $guzzleClient)
+    /**
+     * SyncWardService constructor.
+     * @param Logger $logger
+     * @param Client $guzzleClient
+     */
+    public function __construct(Logger $logger, Client $guzzleClient)
     {
         parent::__construct($logger, $guzzleClient);
         $this->buildGraphqlQuery();
     }
 
-
+    /**
+     * @return array|mixed
+     */
     public function buildGraphqlQuery()
     {
         return $this->options['json'] = [
