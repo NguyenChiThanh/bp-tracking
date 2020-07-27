@@ -30,7 +30,7 @@ class PositionsTableSeeder extends Seeder
                     'store_id' => $store->id,
                     'channel' => 'Lightbox',
                     'buffer_days' => 2,
-                    'unit' => 'week',
+                    'unit' => 'day',
                     'price' => 100000,
                 ];
             $positions[] =

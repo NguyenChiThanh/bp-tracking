@@ -31,6 +31,14 @@ Route::get('tag/list', 'API\V1\TagController@list');
 Route::get('category/list', 'API\V1\CategoryController@list');
 Route::post('product/upload', 'API\V1\ProductController@upload');
 
+Route::get('stores/list', 'API\V1\StoreController@list');
+Route::get('channels/list', 'API\V1\ChannelController@list');
+
+Route::get('provinces/list', 'API\V1\ProvinceController@list');
+Route::get('districts/list', 'API\V1\DistrictController@list');
+Route::get('wards/list', 'API\V1\WardController@list');
+
+
 Route::apiResources([
     'user' => 'API\V1\UserController',
     'product' => 'API\V1\ProductController',
@@ -38,5 +46,8 @@ Route::apiResources([
     'tag' => 'API\V1\TagController',
     'stores' => 'API\V1\StoreController',
     'channels' => 'API\V1\ChannelController',
-    'positions' => 'API\V1\PositionController'
+    'positions' => 'API\V1\PositionController',
+    'provinces' => 'API\V1\ProvinceController',
+    'districts' => 'API\V1\DistrictController',
+    'wards' => 'API\V1\WardController',
 ]);

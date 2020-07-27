@@ -172,16 +172,6 @@
               axios.get("api/channels").then(({ data }) => (this.channels = data.data));
             // }
           },
-          loadCategories(){
-              axios.get("/api/category/list").then(({ data }) => (this.statuses = data.data));
-          },
-          // loadTags(){
-          //     axios.get("/api/tag/list").then(response => {
-          //         this.autocompleteItems = response.data.data.map(a => {
-          //             return { text: a.name, id: a.id };
-          //         });
-          //     }).catch(() => console.warn('Oh. Something went wrong'));
-          // },
           editModal(channel){
               this.editmode = true;
               this.form.reset();
@@ -283,8 +273,6 @@
             this.$Progress.start();
 
             this.loadChannels();
-            // this.loadCategories();
-            // this.loadTags();
 
             this.$Progress.finish();
         },

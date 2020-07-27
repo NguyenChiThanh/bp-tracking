@@ -37,6 +37,16 @@ class ChannelController extends BaseController
         return $this->sendResponse($channels,'Channel list');
     }
 
+    public function list()
+    {
+        $channels = $this->channel->all();
+        $data = [];
+        foreach ($channels as $channel) {
+            $data[] = ['id' => $channel->id, 'name' => $channel['name']];
+        }
+        return $this->sendResponse(['data' => $data], 'Channel list');
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -53,7 +63,7 @@ class ChannelController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ChannelRequest $request)
+    public function channel(ChannelRequest $request)
     {
         $imageUrl = $request->get('image_url');
         if ($imageUrl) {

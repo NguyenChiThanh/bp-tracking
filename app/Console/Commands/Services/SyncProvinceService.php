@@ -24,10 +24,11 @@ class SyncProvinceService extends BaseSyncService implements SyncInterface
     {
         return $this->options['json'] = [
             'query' => '
-                    query GetProvinces ($type: Int)
+                    query GetProvinces ($type: Int, $have_store: Boolean)
                     {
                         area(
-                            type: $type
+                            type: $type,
+                            have_store: $have_store
                         )
                         {
                             id,
@@ -36,7 +37,8 @@ class SyncProvinceService extends BaseSyncService implements SyncInterface
                         }
                     }',
             'variables' => [
-                'type' => self::LOCATION_TYPE
+                'type' => self::LOCATION_TYPE,
+                'have_store' => true
             ]
         ];
     }

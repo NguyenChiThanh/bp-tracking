@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Requests\Stores\StoreRequest;
 use App\Models\Store;
+use Illuminate\Http\Request;
 
 class StoreController extends BaseController
 {
@@ -32,6 +33,23 @@ class StoreController extends BaseController
         $stores = $this->store->latest()->paginate(10);
 
         return $this->sendResponse($stores,'Store list');
+    }
+
+    public function list(Request $request)
+    {
+        $wardId = $request->input('ward_id');
+        $stores = $this->store->all();
+        if($wardId) {
+            $stores = $this->store->where('ward_id', $wardId)->get();
+        }
+        $data = [];
+        foreach ($stores as $store) {
+            $data[] = [
+                'id' => $store->id,
+                'name' => $store->name . ', ' . $store->ward . ', ' . $store->district . ', ' . $store->province
+            ];
+        }
+        return $this->sendResponse(['data' => $data], 'Store list');
     }
 
     /**

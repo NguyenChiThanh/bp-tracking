@@ -8,9 +8,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Position List</h3>
-
                             <div class="card-tools">
-
                                 <button type="button" class="btn btn-sm btn-primary" @click="newModal">
                                     <i class="fa fa-plus-square"></i>
                                     Add New
@@ -74,7 +72,7 @@
 
             <!-- Modal -->
             <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNew" aria-hidden="true">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" v-show="!editmode">Create New Position</h5>
@@ -86,16 +84,68 @@
 
                         <form @submit.prevent="editmode ? updatePosition() : createPosition()">
                             <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Province/City</label>
+
+                                            <v-select v-model="form.province" label="name" :options="provinces.data" @input="onProvinceChange"></v-select>
+
+<!--                                            <select class="form-control" v-model="form.province"-->
+<!--                                                    :class="{ 'is-invalid': form.errors.has('province') }">-->
+<!--                                                <option-->
+<!--                                                    v-for="(province,index) in provinces.data" :key="index"-->
+<!--                                                    :value="province.name"-->
+<!--                                                    :selected="province.name == form.province">{{ province.name }}</option>-->
+<!--                                            </select>-->
+<!--                                            <has-error :form="form" field="province"></has-error>-->
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>District</label>
+                                            <v-select v-model="form.district" label="name" :options="districts.data" @input="onDistrictChange"></v-select>
+
+                                            <!--                                            <select class="form-control" v-model="form.district"-->
+<!--                                                    :class="{ 'is-invalid': form.errors.has('district') }">-->
+<!--                                                <option-->
+<!--                                                    v-for="(district,index) in districts.data" :key="index"-->
+<!--                                                    :value="district.name"-->
+<!--                                                    :selected="district.name == form.district">{{ district.name }}</option>-->
+<!--                                            </select>-->
+<!--                                            <has-error :form="form" field="district"></has-error>-->
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Ward</label>
+                                            <v-select v-model="form.ward" label="name" :options="wards.data" @input="onWardChange"></v-select>
+
+<!--                                            <select class="form-control" v-model="form.ward"-->
+<!--                                                    :class="{ 'is-invalid': form.errors.has('ward') }">-->
+<!--                                                <option-->
+<!--                                                    v-for="(ward,index) in wards.data" :key="index"-->
+<!--                                                    :value="ward.name"-->
+<!--                                                    :selected="ward.name == form.ward">{{ ward.name }}</option>-->
+<!--                                            </select>-->
+<!--                                            <has-error :form="form" field="district"></has-error>-->
+                                        </div>
+                                    </div>
+
+                                </div>
+
                                 <div class="form-group">
                                     <label>Store</label>
-                                    <input v-model="form.store_name" type="text" name="store_name"
-                                           class="form-control" :class="{ 'is-invalid': form.errors.has('store_name') }">
-                                    <has-error :form="form" field="store_name"></has-error>
+                                    <v-select v-model="form.store" label="name" :options="stores.data"></v-select>
+
+<!--                                    <select v-model="form.store_name" type="text" name="store_name"-->
+<!--                                           class="form-control" :class="{ 'is-invalid': form.errors.has('store_name') }">-->
+<!--                                    </select>-->
+<!--                                    <has-error :form="form" field="store_name"></has-error>-->
                                 </div>
                                 <div class="form-group">
                                     <label>Channel</label>
-                                    <input v-model="form.channel" type="text" name="channel"
-                                           class="form-control" :class="{ 'is-invalid': form.errors.has('channel') }">
+                                    <v-select v-model="form.channel" label="name" :options="channels.data"></v-select>
                                     <has-error :form="form" field="channel"></has-error>
                                 </div>
                                 <div class="form-group">
@@ -148,16 +198,24 @@
 
 <script>
     // import VueTagsInput from '@johmun/vue-tags-input';
+    import "vue-select/dist/vue-select.css";
     import FileUpload from 'v-file-upload';
+    import vSelect from "vue-select";
 
     export default {
         components: {
             FileUpload,
+            vSelect
         },
         data () {
             return {
                 editmode: false,
                 positions : {},
+                channels: [],
+                provinces: [],
+                districts: [],
+                wards: [],
+                stores: [],
                 statuses: {
                     'AVAILABLE': 'Available',
                     'RESERVED': 'Reserved',
@@ -177,6 +235,15 @@
             }
         },
         methods: {
+            onProvinceChange(province) {
+                axios.get("api/districts/list?province_id="+province.id).then(({ data }) => (this.districts = data.data));
+            },
+            onDistrictChange(district) {
+                axios.get("api/wards/list?district_id="+district.id).then(({ data }) => (this.wards = data.data));
+            },
+            onWardChange(ward) {
+                axios.get("api/stores/list?ward_id="+ward.id).then(({ data }) => (this.stores = data.data));
+            },
             onFileChange(e) {
                 const file = e.target.files[0];
                 console.log(file);
@@ -202,16 +269,40 @@
                 axios.get("api/positions").then(({ data }) => (this.positions = data.data));
                 // }
             },
-            loadCategories(){
-                axios.get("/api/category/list").then(({ data }) => (this.statuses = data.data));
+
+            loadChannels(){
+                // if(this.$gate.isAdmin()){
+                axios.get("api/channels/list").then(({ data }) => {
+                    this.channels = data.data
+                });
+                // }
             },
-            // loadTags(){
-            //     axios.get("/api/tag/list").then(response => {
-            //         this.autocompleteItems = response.data.data.map(a => {
-            //             return { text: a.name, id: a.id };
-            //         });
-            //     }).catch(() => console.warn('Oh. Something went wrong'));
-            // },
+
+            loadProvinces(){
+                // if(this.$gate.isAdmin()){
+                axios.get("api/provinces/list").then(({ data }) => (this.provinces = data.data));
+                // }
+            },
+            loadDistricts(){
+
+                // if(this.$gate.isAdmin()){
+                axios.get("api/districts/list").then(({ data }) => (this.districts = data.data));
+                // }
+            },
+            loadWards(){
+
+                // if(this.$gate.isAdmin()){
+                axios.get("api/wards/list").then(({ data }) => (this.wards = data.data));
+                // }
+            },
+
+            loadStores(){
+
+                // if(this.$gate.isAdmin()){
+                axios.get("api/stores/list").then(({ data }) => (this.stores = data.data));
+                // }
+            },
+
             editModal(position){
                 this.editmode = true;
                 this.form.reset();
@@ -313,8 +404,11 @@
             this.$Progress.start();
 
             this.loadPositions();
-            // this.loadCategories();
-            // this.loadTags();
+            this.loadProvinces();
+            this.loadDistricts();
+            this.loadWards();
+            this.loadStores();
+            this.loadChannels();
 
             this.$Progress.finish();
         },
