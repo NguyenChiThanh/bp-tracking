@@ -30,10 +30,10 @@ class PositionRequest extends FormRequest
             'description' => 'nullable|string',
             'status' => 'nullable|string',
             'image_url' => 'nullable|string',
-            'store.id' => 'required|integer',
-            'channel.name' => 'required|string',
+            'store' => 'required|integer',
+            'channel' => 'required|string',
             'buffer_days' => 'required|integer',
-            'unit.name' => 'required|string',
+            'unit' => 'required|string',
             'price' => 'required|regex:/^\d*(\.\d{2})?$/',
         ];
     }

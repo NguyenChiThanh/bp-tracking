@@ -43,7 +43,11 @@
 <!--                                    <td>{{position.status}}</td>-->
 <!--                                    <td><img v-bind:src="position.image_url" class="img-thumbnail img-fluid" width="20%" v-bind:alt="position.name +' image'"></td>-->
                                     <td>{{position.store.level}}</td>
-                                    <td><a v-bind:href="'store/'+position.store.id">{{position.store.name}}</a></td>
+                                    <td>
+                                      <a v-bind:href="'stores/'+position.store.id">
+                                        {{ position.store.name }}, {{ position.store.ward }}, {{ position.store.district }}, {{ position.store.province }}
+                                      </a>
+                                    </td>
                                     <td>{{position.channel}}</td>
                                     <td>{{position.buffer_days}}</td>
                                     <td>{{position.unit}}</td>
@@ -84,14 +88,14 @@
 
                         <form @submit.prevent="editmode ? updatePosition() : createPosition()">
                             <div class="modal-body">
-                                <div class="row">
+                                <div class="row" v-show="!editmode">
                                     <div class="col-md-12">
                                         <div class="text-lg-left text-info">
                                             <label>Filter by store by location:</label>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" v-show="!editmode">
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Province/City</label>
@@ -142,13 +146,15 @@
 
                                 <div class="form-group">
                                     <label>Store</label>
+
                                     <v-select v-model="form.store" label="name" :options="stores.data"
-                                              :class="{ 'is-invalid': form.errors.has('store.id')}"></v-select>
+                                            :reduce="store => store.id"
+                                              :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
 
 <!--                                    <select v-model="form.store_name" type="text" name="store_name"-->
 <!--                                           class="form-control" :class="{ 'is-invalid': form.errors.has('store_name') }">-->
 <!--                                    </select>-->
-                                    <has-error :form="form" field="store.id"></has-error>
+                                    <has-error :form="form" field="store"></has-error>
                                 </div>
 
                                 <div class="row">
@@ -156,9 +162,10 @@
                                         <div class="form-group">
                                             <label>Channel</label>
                                             <v-select v-model="form.channel" label="name" :options="channels.data"
-                                                  @input="onChannelChange"
-                                                  :class="{ 'is-invalid': form.errors.has('channel.name')}"></v-select>
-                                            <has-error :form="form" field="channel.name"></has-error>
+                                              :reduce="channel => channel.name"
+                                              @input="onChannelChange"
+                                                  :class="{ 'is-invalid': form.errors.has('channel')}"></v-select>
+                                            <has-error :form="form" field="channel"></has-error>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -189,8 +196,9 @@
                                 <div class="form-group">
                                     <label>Unit:</label>
                                     <v-select v-model="form.unit" label="name" :options="units.data"
-                                        :class="{ 'is-invalid': form.errors.has('unit.name') }"></v-select>
-                                    <has-error :form="form" field="unit.name"></has-error>
+                                        :reduce="unit => unit.id"
+                                        :class="{ 'is-invalid': form.errors.has('unit') }"></v-select>
+                                    <has-error :form="form" field="unit"></has-error>
                                 </div>
                                 <div class="form-group">
                                     <label>Price:</label>
@@ -278,8 +286,8 @@
             },
             onChannelChange(channel) {
                 this.channels.data.forEach(item => {
-                        if (item['id'] == channel.id) {
-                            this.form.buffer_days = channel.buffer_days;
+                        if (item['name'] == channel) {
+                            this.form.buffer_days = item['buffer_days'];
                             return;
                         }
                     }
@@ -391,6 +399,12 @@
             },
             updatePosition(){
                 this.$Progress.start();
+                if (typeof this.form.store === 'object') {
+                    this.form.store = this.form.store.id;
+                }
+
+                console.log(this.form.store);
+
                 this.form.put('api/positions/'+this.form.id)
                     .then((response) => {
                         // success

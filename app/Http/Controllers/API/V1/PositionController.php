@@ -59,10 +59,10 @@ class PositionController extends BaseController
                 'description'=> $request->get('description'),
                 'status' =>  $request->get('status'),
                 'image_url'=> $request->get('image_url'),
-                'store_id' => $request->get('store')['id'],
-                'channel'=> $request->get('channel')['name'],
+                'store_id' => $request->get('store'),
+                'channel'=> $request->get('channel'),
                 'buffer_days' =>  $request->get('buffer_days'),
-                'unit'=> $request->get('unit')['name'],
+                'unit'=> $request->get('unit'),
                 'price'=> $request->get('price'),
             ]);
 
@@ -99,8 +99,19 @@ class PositionController extends BaseController
     public function update(PositionRequest $request, $id)
     {
         $position = $this->position->findOrFail($id);
+        $data = [
+            'name' => $request->get('name'),
+            'description'=> $request->get('description'),
+            'status' =>  $request->get('status'),
+            'image_url'=> $request->get('image_url'),
+            'store_id' => $request->get('store'),
+            'channel'=> $request->get('channel'),
+            'buffer_days' =>  $request->get('buffer_days'),
+            'unit'=> $request->get('unit'),
+            'price'=> $request->get('price'),
+        ];
 
-        $position->update($request->all());
+        $position->update($data);
 
         return $this->sendResponse($position, 'Position Information has been updated');
     }
@@ -113,7 +124,7 @@ class PositionController extends BaseController
      */
     public function destroy($id)
     {
-        $this->authorize('isAdmin');
+        // $this->authorize('isAdmin');
         $position = $this->position->findOrFail($id);
         $position->delete();
 

@@ -46,7 +46,7 @@ class StoreController extends BaseController
         foreach ($stores as $store) {
             $data[] = [
                 'id' => $store->id,
-                'name' => $store->name . ', ' . $store->ward . ', ' . $store->district . ', ' . $store->province
+                'name' => $store->name,
             ];
         }
         return $this->sendResponse(['data' => $data], 'Store list');
