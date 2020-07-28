@@ -25,12 +25,16 @@ class PositionRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
-
         return [
             'name' => 'required|string|min:5',
+            'description' => 'nullable|string',
+            'status' => 'nullable|string',
             'image_url' => 'nullable|string',
-            'buffer_days' => 'required|integer'
+            'store.id' => 'required|integer',
+            'channel.name' => 'required|string',
+            'buffer_days' => 'required|integer',
+            'unit.name' => 'required|string',
+            'price' => 'required|regex:/^\d*(\.\d{2})?$/',
         ];
     }
 }

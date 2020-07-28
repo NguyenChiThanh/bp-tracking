@@ -49,7 +49,7 @@ class PositionController extends BaseController
 
     /**
      * @param PositionRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|mixed
      */
     public function store(PositionRequest $request)
     {
@@ -69,7 +69,12 @@ class PositionController extends BaseController
             return $this->sendResponse($position, 'Position Created Successfully');
         } catch (Exception $e) {
             Log::error($e);
-            return $this->sendError($e->getMessage(), [], 400);
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+
+            return response()->json($response, 200);
         }
     }
 
@@ -80,17 +85,6 @@ class PositionController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }

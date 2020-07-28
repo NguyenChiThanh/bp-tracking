@@ -16,7 +16,7 @@ class CreatePositionsTable extends Migration
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->string('status')->nullable();
             $table->string('image_url')->nullable();
             $table->unsignedBigInteger('store_id');
@@ -25,6 +25,7 @@ class CreatePositionsTable extends Migration
             $table->integer('buffer_days');
             $table->string('unit');
             $table->float('price');
+            $table->unique(['store_id', 'channel', 'name']);
             $table->timestamps();
         });
     }

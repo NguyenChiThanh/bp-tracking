@@ -23,8 +23,8 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Description</th>
-                                    <th>Status</th>
-                                    <th>Image</th>
+<!--                                    <th>Status</th>-->
+<!--                                    <th>Image</th>-->
                                     <th>Store Level</th>
                                     <th>Store Name</th>
                                     <th>Channel</th>
@@ -41,7 +41,7 @@
                                     <td>{{position.name}}</td>
                                     <td>{{position.description}}</td>
 <!--                                    <td>{{position.status}}</td>-->
-                                    <td><img v-bind:src="position.image_url" class="img-thumbnail img-fluid" width="20%" v-bind:alt="position.name +' image'"></td>
+<!--                                    <td><img v-bind:src="position.image_url" class="img-thumbnail img-fluid" width="20%" v-bind:alt="position.name +' image'"></td>-->
                                     <td>{{position.store.level}}</td>
                                     <td><a v-bind:href="'store/'+position.store.id">{{position.store.name}}</a></td>
                                     <td>{{position.channel}}</td>
@@ -85,38 +85,45 @@
                         <form @submit.prevent="editmode ? updatePosition() : createPosition()">
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>Province/City</label>
-
-                                            <v-select v-model="form.province" label="name" :options="provinces.data" @input="onProvinceChange"></v-select>
-
-<!--                                            <select class="form-control" v-model="form.province"-->
-<!--                                                    :class="{ 'is-invalid': form.errors.has('province') }">-->
-<!--                                                <option-->
-<!--                                                    v-for="(province,index) in provinces.data" :key="index"-->
-<!--                                                    :value="province.name"-->
-<!--                                                    :selected="province.name == form.province">{{ province.name }}</option>-->
-<!--                                            </select>-->
-<!--                                            <has-error :form="form" field="province"></has-error>-->
+                                    <div class="col-md-12">
+                                        <div class="text-lg-left text-info">
+                                            <label>Filter by store by location:</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>District</label>
-                                            <v-select v-model="form.district" label="name" :options="districts.data" @input="onDistrictChange"></v-select>
+                                </div>
+                                <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Province/City</label>
 
-                                            <!--                                            <select class="form-control" v-model="form.district"-->
-<!--                                                    :class="{ 'is-invalid': form.errors.has('district') }">-->
-<!--                                                <option-->
-<!--                                                    v-for="(district,index) in districts.data" :key="index"-->
-<!--                                                    :value="district.name"-->
-<!--                                                    :selected="district.name == form.district">{{ district.name }}</option>-->
-<!--                                            </select>-->
-<!--                                            <has-error :form="form" field="district"></has-error>-->
+                                                <v-select v-model="form.province" label="name" :options="provinces.data" @input="onProvinceChange"></v-select>
+
+    <!--                                            <select class="form-control" v-model="form.province"-->
+    <!--                                                    :class="{ 'is-invalid': form.errors.has('province') }">-->
+    <!--                                                <option-->
+    <!--                                                    v-for="(province,index) in provinces.data" :key="index"-->
+    <!--                                                    :value="province.name"-->
+    <!--                                                    :selected="province.name == form.province">{{ province.name }}</option>-->
+    <!--                                            </select>-->
+    <!--                                            <has-error :form="form" field="province"></has-error>-->
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>District</label>
+                                                <v-select v-model="form.district" label="name" :options="districts.data" @input="onDistrictChange"></v-select>
+
+                                                <!--                                            <select class="form-control" v-model="form.district"-->
+    <!--                                                    :class="{ 'is-invalid': form.errors.has('district') }">-->
+    <!--                                                <option-->
+    <!--                                                    v-for="(district,index) in districts.data" :key="index"-->
+    <!--                                                    :value="district.name"-->
+    <!--                                                    :selected="district.name == form.district">{{ district.name }}</option>-->
+    <!--                                            </select>-->
+    <!--                                            <has-error :form="form" field="district"></has-error>-->
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Ward</label>
                                             <v-select v-model="form.ward" label="name" :options="wards.data" @input="onWardChange"></v-select>
@@ -131,32 +138,34 @@
 <!--                                            <has-error :form="form" field="district"></has-error>-->
                                         </div>
                                     </div>
-
-                                </div>
+                                    </div>
 
                                 <div class="form-group">
                                     <label>Store</label>
-                                    <v-select v-model="form.store" label="name" :options="stores.data"></v-select>
+                                    <v-select v-model="form.store" label="name" :options="stores.data"
+                                              :class="{ 'is-invalid': form.errors.has('store.id')}"></v-select>
 
 <!--                                    <select v-model="form.store_name" type="text" name="store_name"-->
 <!--                                           class="form-control" :class="{ 'is-invalid': form.errors.has('store_name') }">-->
 <!--                                    </select>-->
-                                    <has-error :form="form" field="store"></has-error>
+                                    <has-error :form="form" field="store.id"></has-error>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Channel</label>
-                                            <v-select v-model="form.channel" label="name" :options="channels.data" @input="onChannelChange"></v-select>
-                                            <has-error :form="form" field="channel"></has-error>
+                                            <v-select v-model="form.channel" label="name" :options="channels.data"
+                                                  @input="onChannelChange"
+                                                  :class="{ 'is-invalid': form.errors.has('channel.name')}"></v-select>
+                                            <has-error :form="form" field="channel.name"></has-error>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Buffer Days:</label>
                                             <input v-model="form.buffer_days" type="text" name="buffer_days"
-                                                   class="form-control" :class="{ 'is-invalid': form.errors.has('buffer_days') }">
+                                                   class="form-control" :class="{ 'is-invalid': form.errors.has('buffer_days')}">
                                             <has-error :form="form" field="buffer_days"></has-error>
                                         </div>
                                     </div>
@@ -179,8 +188,9 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Unit:</label>
-                                    <v-select v-model="form.unit" label="name" :options="units.data"></v-select>
-                                    <has-error :form="form" field="unit"></has-error>
+                                    <v-select v-model="form.unit" label="name" :options="units.data"
+                                        :class="{ 'is-invalid': form.errors.has('unit.name') }"></v-select>
+                                    <has-error :form="form" field="unit.name"></has-error>
                                 </div>
                                 <div class="form-group">
                                     <label>Price:</label>
@@ -255,9 +265,12 @@
         },
         methods: {
             onProvinceChange(province) {
+                this.districts = [];
+                this.wards = [];
                 axios.get("api/districts/list?province_id="+province.id).then(({ data }) => (this.districts = data.data));
             },
             onDistrictChange(district) {
+                this.wards = [];
                 axios.get("api/wards/list?district_id="+district.id).then(({ data }) => (this.wards = data.data));
             },
             onWardChange(ward) {
@@ -349,6 +362,7 @@
                 console.log(this.form);
                 this.form.post('api/positions')
                     .then((data)=>{
+                        console.log(data.data);
                         if(data.data.success){
                             $('#addNew').modal('hide');
 
@@ -362,20 +376,17 @@
                         } else {
                             Toast.fire({
                                 icon: 'error',
-                                title: 'Some error occured! Please try again'
+                                title: data.data.message
                             });
 
-                            this.$Progress.failed();
+                            this.$Progress.fail();
                         }
-                    })
-                    .catch((error)=>{
-
-                        console.log(error.response.data.errors);
-
+                    }).catch( error =>{
                         Toast.fire({
                             icon: 'error',
-                            title: 'Some error occured! Please try again'
+                            title: error
                         });
+                        this.$Progress.fail();
                     })
             },
             updatePosition(){
