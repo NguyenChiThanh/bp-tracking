@@ -40,7 +40,7 @@
                                     <td>{{position.id}}</td>
                                     <td>{{position.name}}</td>
                                     <td>{{position.description}}</td>
-                                    <td>{{position.status}}</td>
+<!--                                    <td>{{position.status}}</td>-->
                                     <td><img v-bind:src="position.image_url" class="img-thumbnail img-fluid" width="20%" v-bind:alt="position.name +' image'"></td>
                                     <td>{{position.store.level}}</td>
                                     <td><a v-bind:href="'store/'+position.store.id">{{position.store.name}}</a></td>
@@ -141,12 +141,25 @@
 <!--                                    <select v-model="form.store_name" type="text" name="store_name"-->
 <!--                                           class="form-control" :class="{ 'is-invalid': form.errors.has('store_name') }">-->
 <!--                                    </select>-->
-<!--                                    <has-error :form="form" field="store_name"></has-error>-->
+                                    <has-error :form="form" field="store"></has-error>
                                 </div>
-                                <div class="form-group">
-                                    <label>Channel</label>
-                                    <v-select v-model="form.channel" label="name" :options="channels.data"></v-select>
-                                    <has-error :form="form" field="channel"></has-error>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Channel</label>
+                                            <v-select v-model="form.channel" label="name" :options="channels.data" @input="onChannelChange"></v-select>
+                                            <has-error :form="form" field="channel"></has-error>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Buffer Days:</label>
+                                            <input v-model="form.buffer_days" type="text" name="buffer_days"
+                                                   class="form-control" :class="{ 'is-invalid': form.errors.has('buffer_days') }">
+                                            <has-error :form="form" field="buffer_days"></has-error>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Name:</label>
@@ -154,10 +167,10 @@
                                            class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                     <has-error :form="form" field="name"></has-error>
                                 </div>
-                                <div class="form-group">
-                                    <label>Image</label>
-                                    <input type="file" name="file" @change="onFileChange" class="form-control">
-                                </div>
+<!--                                <div class="form-group">-->
+<!--                                    <label>Image</label>-->
+<!--                                    <input type="file" name="file" @change="onFileChange" class="form-control">-->
+<!--                                </div>-->
                                 <div class="form-group">
                                     <label>Description:</label>
                                     <input v-model="form.description" type="text" name="description"
@@ -165,15 +178,8 @@
                                     <has-error :form="form" field="description"></has-error>
                                 </div>
                                 <div class="form-group">
-                                    <label>Buffer Days:</label>
-                                    <input v-model="form.buffer_days" type="text" name="buffer_days"
-                                           class="form-control" :class="{ 'is-invalid': form.errors.has('buffer_days') }">
-                                    <has-error :form="form" field="buffer_days"></has-error>
-                                </div>
-                                <div class="form-group">
                                     <label>Unit:</label>
-                                    <input v-model="form.unit" type="text" name="unit"
-                                           class="form-control" :class="{ 'is-invalid': form.errors.has('unit') }">
+                                    <v-select v-model="form.unit" label="name" :options="units.data"></v-select>
                                     <has-error :form="form" field="unit"></has-error>
                                 </div>
                                 <div class="form-group">
@@ -216,21 +222,34 @@
                 districts: [],
                 wards: [],
                 stores: [],
-                statuses: {
-                    'AVAILABLE': 'Available',
-                    'RESERVED': 'Reserved',
-                    'RUNNING': 'Running',
+                // statuses: {
+                //     'AVAILABLE': 'Available',
+                //     'RESERVED': 'Reserved',
+                //     'RUNNING': 'Running',
+                // },
+                units: {
+                    data: [
+                        { id: 'day', name: 'Day'},
+                        { id: 'week', name: 'Week'},
+                        { id: 'month', name: 'Month'},
+                    ]
                 },
                 form: new Form({
                     id : '',
                     name: '',
+                    description: '',
+                    // status: '',
                     image_url: '',
-                    status: '',
+                    store: '',
+                    channel: '',
+                    buffer_days: '',
+                    unit: '',
+                    price: '',
                 }),
 
-                fileUploaded: [],
+                // fileUploaded: [],
                 headers: {},
-                fileUploadUrl: '/file/upload'
+                // fileUploadUrl: '/file/upload'
                 // autocompleteItems: [],
             }
         },
@@ -244,16 +263,26 @@
             onWardChange(ward) {
                 axios.get("api/stores/list?ward_id="+ward.id).then(({ data }) => (this.stores = data.data));
             },
-            onFileChange(e) {
-                const file = e.target.files[0];
-                console.log(file);
-                const formData = new FormData();
-                formData.append('file', file);
-                axios.post('/file/upload', formData).then(({data}) => {
-                    console.log(data)
-                    this.form.image_url = data.file_path;
-                });
+            onChannelChange(channel) {
+                this.channels.data.forEach(item => {
+                        if (item['id'] == channel.id) {
+                            this.form.buffer_days = channel.buffer_days;
+                            return;
+                        }
+                    }
+                )
+
             },
+            // onFileChange(e) {
+            //     const file = e.target.files[0];
+            //     console.log(file);
+            //     const formData = new FormData();
+            //     formData.append('file', file);
+            //     axios.post('/file/upload', formData).then(({data}) => {
+            //         console.log(data)
+            //         this.form.image_url = data.file_path;
+            //     });
+            // },
 
             getResults(page = 1) {
 

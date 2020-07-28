@@ -17,8 +17,8 @@ class CreatePositionsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->string('status');
-            $table->string('image_url');
+            $table->string('status')->nullable();
+            $table->string('image_url')->nullable();
             $table->unsignedBigInteger('store_id');
             $table->foreign('store_id')->references('id')->on('stores');
             $table->string('channel');

@@ -48,28 +48,24 @@ class PositionController extends BaseController
     }
 
     /**
-     * Position a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
+     * @param PositionRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(PositionRequest $request)
     {
-        $imageUrl = $request->get('image_url');
-        if ($imageUrl) {
-            try {
-                Storage::move($imageUrl, storage_path('public/'.$imageUrl));
-            } catch (Exception $exception) {
-                Log::error($exception);
-            }
-        }
-
-        try {
+        try{
             $position = $this->position->create([
                 'name' => $request->get('name'),
-                'status' => Position::ACTIVE,
-                'image_url' => $imageUrl
+                'description'=> $request->get('description'),
+                'status' =>  $request->get('status'),
+                'image_url'=> $request->get('image_url'),
+                'store_id' => $request->get('store')['id'],
+                'channel'=> $request->get('channel')['name'],
+                'buffer_days' =>  $request->get('buffer_days'),
+                'unit'=> $request->get('unit')['name'],
+                'price'=> $request->get('price'),
             ]);
+
             return $this->sendResponse($position, 'Position Created Successfully');
         } catch (Exception $e) {
             Log::error($e);

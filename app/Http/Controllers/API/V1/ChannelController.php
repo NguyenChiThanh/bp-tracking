@@ -42,7 +42,11 @@ class ChannelController extends BaseController
         $channels = $this->channel->all();
         $data = [];
         foreach ($channels as $channel) {
-            $data[] = ['id' => $channel->id, 'name' => $channel['name']];
+            $data[] = [
+                'id' => $channel->id,
+                'name' => $channel['name'],
+                'buffer_days' => $channel['buffer_days']
+            ];
         }
         return $this->sendResponse(['data' => $data], 'Channel list');
     }
