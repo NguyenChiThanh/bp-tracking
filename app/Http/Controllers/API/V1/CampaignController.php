@@ -46,6 +46,8 @@ class CampaignController extends BaseController
                 ];
             }
             $item->position_list = $posList;
+            $item->from_ts = date('m/d/Y', $item->from_ts);
+            $item->to_ts = date('m/d/Y', $item->to_ts);
         }
         return $this->sendResponse($campaigns,'Campaign list');
     }
