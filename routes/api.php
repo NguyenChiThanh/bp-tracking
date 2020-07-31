@@ -33,6 +33,7 @@ Route::post('product/upload', 'API\V1\ProductController@upload');
 
 Route::get('stores/list', 'API\V1\StoreController@list');
 Route::get('channels/list', 'API\V1\ChannelController@list');
+Route::get('positions/list', 'API\V1\PositionController@list');
 
 Route::get('provinces/list', 'API\V1\ProvinceController@list');
 Route::get('districts/list', 'API\V1\DistrictController@list');
@@ -47,6 +48,7 @@ Route::apiResources([
     'stores' => 'API\V1\StoreController',
     'channels' => 'API\V1\ChannelController',
     'positions' => 'API\V1\PositionController',
+    'campaigns' => 'API\V1\CampaignController',
     'provinces' => 'API\V1\ProvinceController',
     'districts' => 'API\V1\DistrictController',
     'wards' => 'API\V1\WardController',

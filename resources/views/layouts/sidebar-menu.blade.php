@@ -9,14 +9,14 @@
         </router-link>
       </li>
 
-{{--          <li class="nav-item">--}}
-{{--            <router-link to="/products" class="nav-link">--}}
-{{--              <i class="nav-icon fas fa-list orange"></i>--}}
-{{--              <p>--}}
-{{--                Products--}}
-{{--              </p>--}}
-{{--            </router-link>--}}
-{{--          </li>--}}
+          <li class="nav-item">
+            <router-link to="/campaigns" class="nav-link">
+              <i class="nav-icon fas fa-list orange"></i>
+              <p>
+                  Campaign
+              </p>
+            </router-link>
+          </li>
 
         <li class="nav-item">
             <router-link to="/stores" class="nav-link">

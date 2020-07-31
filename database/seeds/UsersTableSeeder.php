@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class UsersTableSeeder extends Seeder
@@ -13,6 +14,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        Schema::disableForeignKeyConstraints();
+
         DB::table('users')->truncate();
         DB::table('users')->insert([
             'name' => 'Long Nguyen',
@@ -20,5 +23,8 @@ class UsersTableSeeder extends Seeder
             'password' => bcrypt('A123456!'),
             'type' => 'admin',
         ]);
+
+        Schema::enableForeignKeyConstraints();
+
     }
 }

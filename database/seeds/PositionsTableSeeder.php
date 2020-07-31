@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Position;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PositionsTableSeeder extends Seeder
 {
@@ -15,6 +16,7 @@ class PositionsTableSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
+        Schema::disableForeignKeyConstraints();
         DB::table('positions')->truncate();
 
         $positions = [];
@@ -31,7 +33,7 @@ class PositionsTableSeeder extends Seeder
                     'channel' => 'Lightbox',
                     'buffer_days' => 2,
                     'unit' => 'day',
-                    'price' => 100000,
+                    'price' => 2000000,
                 ];
             $positions[] =
                 [
@@ -43,10 +45,11 @@ class PositionsTableSeeder extends Seeder
                     'channel' => 'Billboard',
                     'buffer_days' => 2,
                     'unit' => 'week',
-                    'price' => 100000,
+                    'price' => 5000000,
                 ];
         }
 
         DB::table('positions')->insert($positions);
+        Schema::enableForeignKeyConstraints();
     }
 }

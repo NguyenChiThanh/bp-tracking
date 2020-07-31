@@ -110,7 +110,7 @@
                             <vue-tags-input
                               v-model="form.tag"
                               :tags="form.tags"
-                              :autocomplete-items="filteredItems"
+
                               @tags-changed="newTags => form.tags = newTags"
                             />
                             <has-error :form="form" field="tags"></has-error>

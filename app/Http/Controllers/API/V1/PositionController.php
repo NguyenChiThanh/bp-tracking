@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Requests\Positions\PositionRequest;
 use App\Models\Position;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -35,6 +37,61 @@ class PositionController extends BaseController
         $positions = $this->position->with('store')->latest()->paginate(10);
 
         return $this->sendResponse($positions,'Position list');
+    }
+
+    public function list(Request $request)
+    {
+        // filter by
+        // store_ids
+        // Channels
+        // from_ts, to_ts
+        // store_ids=4,5,32,12&channels=Poster,Lightbox&from_ts=111&to_ts=2222
+
+        $storeIds = $request->get('store_ids');
+        $channels = $request->get('channels');
+        $fromTs = $request->get('from_ts');
+        $toTs = $request->get('to_ts');
+
+        $condition = true;
+
+        if ($storeIds) {
+            $array=array_map('intval', explode(',', $storeIds));
+            $array = implode(",", $array);
+            $condition .= " AND store_id in ($array)";
+        }
+
+        if ($channels) {
+            $array=explode(',', $channels);
+            $array = implode("','", $array);
+            $condition .= " AND channel in ('".$array."')";
+        }
+
+        $from = intval($request->get('from_ts'));
+        $to = intval($request->get('to_ts'));
+
+        if ($from && $to) {
+            $fromToCondition = " AND id not in (
+                        select position_id from bookings
+                        where
+                            (from_ts<= %d and  %d <= (to_ts + buffer_ts)) or
+                            (from_ts <= %d and %d <= (to_ts + buffer_ts))
+                    )";
+            $condition .= sprintf($fromToCondition, $from, $from, $to, $to);
+        }
+
+        $query = "select * from positions where " . $condition;
+        $positions = DB::select($query);
+        $data = [];
+        foreach ($positions as $position) {
+            $data[] = [
+                'id' => $position->id,
+                'name' => $position->name,
+                'price' => $position->price,
+                'buffer_days' => $position->buffer_days,
+            ];
+        }
+
+        return $this->sendResponse($data, 'Position list');
     }
 
     /**

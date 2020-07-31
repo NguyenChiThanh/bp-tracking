@@ -72,6 +72,10 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
         $stores = $contents['data']['store'];
         foreach ($stores as $store) {
             try {
+                $level = 'B';
+                if(in_array($store['province_id'], [1, 50])) {
+                    $level = 'A';
+                }
                 Store::updateOrCreate(
                     [
                         'id' => $store['db_id']
@@ -89,7 +93,7 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
                         'ward' => $store['ward'],
                         'address' => $store['address'],
                         'images' => json_encode($store['images'] ?? []),
-                        'level' => $store['level'] ?? '',
+                        'level' => $store['level'] ?? $level,
                     ]
                 );
             } catch (Exception $exception) {

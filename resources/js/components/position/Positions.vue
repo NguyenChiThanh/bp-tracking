@@ -248,8 +248,8 @@
                 units: {
                     data: [
                         { id: 'day', name: 'Day'},
-                        { id: 'week', name: 'Week'},
-                        { id: 'month', name: 'Month'},
+                        // { id: 'week', name: 'Week'},
+                        // { id: 'month', name: 'Month'},
                     ]
                 },
                 form: new Form({

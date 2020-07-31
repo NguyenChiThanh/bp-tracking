@@ -24,7 +24,7 @@ class CreatePositionsTable extends Migration
             $table->string('channel');
             $table->integer('buffer_days');
             $table->string('unit');
-            $table->float('price');
+            $table->double('price');
             $table->unique(['store_id', 'channel', 'name']);
             $table->timestamps();
         });

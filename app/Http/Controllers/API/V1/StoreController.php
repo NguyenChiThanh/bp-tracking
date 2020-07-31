@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Requests\Stores\StoreRequest;
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StoreController extends BaseController
 {
@@ -37,11 +38,33 @@ class StoreController extends BaseController
 
     public function list(Request $request)
     {
+        $provinceId = $request->input('province_id');
+        $districtId = $request->input('district_id');
         $wardId = $request->input('ward_id');
-        $stores = $this->store->all();
-        if($wardId) {
-            $stores = $this->store->where('ward_id', $wardId)->get();
+        $level = $request->input('store_level');
+
+        $condition = true;
+
+        if($provinceId) {
+            $condition .= sprintf(" AND province_id = %s", $provinceId);
         }
+
+        if($districtId) {
+            $condition .= sprintf(" AND district_id = %s", $districtId);
+        }
+
+        if($wardId) {
+            $condition .= sprintf(" AND ward_id = %s", $wardId);
+        }
+
+        if($level) {
+            $condition .= sprintf(" AND level ='%s'", $level);
+        }
+
+        $query = "select * from stores where " . $condition;
+
+        $stores = DB::select($query);
+
         $data = [];
         foreach ($stores as $store) {
             $data[] = [
@@ -49,7 +72,8 @@ class StoreController extends BaseController
                 'name' => $store->name,
             ];
         }
-        return $this->sendResponse(['data' => $data], 'Store list');
+
+        return $this->sendResponse($data, 'Store list');
     }
 
     /**
