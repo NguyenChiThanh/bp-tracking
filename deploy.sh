@@ -10,4 +10,5 @@ php artisan sync:store
 php artisan sync:brand
 php artisan db:seed
 
+npm install
 npm run dev
