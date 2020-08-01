@@ -99,57 +99,43 @@
 
                         <form @submit.prevent="editmode ? updateCampaign() : createCampaign()">
                             <div class="modal-body">
-                                <div class="row" v-show="!editmode">
-                                    <div class="col-md-12">
-                                        <div class="text-lg-left text-info">
-                                            <label>Filter by store by location:</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row" v-show="!editmode">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Province/City</label>
-                                                <v-select v-model="store_filter.province_id" label="name" :options="provinces.data" @input="onProvinceChange"></v-select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>District</label>
-                                                <v-select v-model="store_filter.district_id" label="name" :options="districts.data" @input="onDistrictChange"></v-select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Ward</label>
-                                                <v-select v-model="store_filter.ward_id" label="name" :options="wards.data"></v-select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Store Level</label>
-                                                <v-select v-model="store_filter.store_level" label="name" :options="[{id:'A', name: 'A'},{id:'B', name: 'B'}]"></v-select>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <a class="btn btn-primary" href="#" @click="searchStores">Search Store</a>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                 <div class="form-group">
                                     <label>Store</label>
 
-                                    <v-select multiple v-model="position_filter.store_ids" label="name" :options="stores.data"
+                                    <!-- <v-select multiple v-model="position_filter.store_ids" label="name" :options="stores.data"
                                             :reduce="store => store.id"
                                               :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
 
-                                    <has-error :form="form" field="store"></has-error>
+                                    <has-error :form="form" field="store"></has-error> -->
+
+                                    <vue-good-table
+                                                  :columns="this.store_table.cols"
+                                                  :rows="this.store_table.rows"
+                                                  :pagination-options="{
+                                                    enabled: true,
+                                                    mode: 'records',
+                                                    perPage: 5,
+                                                    position: 'top',
+                                                    perPageDropdown: [3, 7, 9],
+                                                    dropdownAllowAll: false,
+                                                    setCurrentPage: 2,
+                                                    nextLabel: 'next',
+                                                    prevLabel: 'prev',
+                                                    rowsPerPageLabel: 'Store per page',
+                                                    ofLabel: 'of',
+                                                    pageLabel: 'page', // for 'pages' mode
+                                                    allLabel: 'All',
+                                                  }"
+                                                  :select-options="{
+                                                    enabled: true,
+                                                    selectionInfoClass: 'custom-class',
+                                                    selectionText: 'positions selected',
+                                                    clearSelectionText: 'clear',
+                                                    selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+                                                  }"
+                                                  @on-selected-rows-change="onStoreSelected"
+                                            />
+
                                 </div>
 
                                 <div class="row">
@@ -185,14 +171,40 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label>Positions</label>
-                                            <v-select multiple v-model="form.positions" label="name" :options="positions.data">
-                                            </v-select>
+                                            <vue-good-table
+                                                :columns="this.position_table.cols"
+                                                :rows="this.position_table.rows"
+                                                :pagination-options="{
+                                                enabled: true,
+                                                mode: 'records',
+                                                perPage: 5,
+                                                position: 'top',
+                                                perPageDropdown: [3, 7, 9],
+                                                dropdownAllowAll: false,
+                                                setCurrentPage: 2,
+                                                nextLabel: 'next',
+                                                prevLabel: 'prev',
+                                                rowsPerPageLabel: 'Positions per page',
+                                                ofLabel: 'of',
+                                                pageLabel: 'page', // for 'pages' mode
+                                                allLabel: 'All',
+                                                }"
+                                                :select-options="{
+                                                enabled: true,
+                                                selectionInfoClass: 'custom-class',
+                                                selectionText: 'positions selected',
+                                                clearSelectionText: 'clear',
+                                                selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+                                                disableSelectInfo: true, // disable the select info panel on top
+                                                }"
+                                                @on-selected-rows-change="onPositionSelected"
+
+                                            />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label><b>Price: {{ 'position_price'}}</b></label>
+                                    <label><b>Price: {{ this.position_price}}</b></label>
                                 </div>
                                 <div class="form-group">
                                     <label>Campaign Name:</label>
@@ -247,10 +259,15 @@
     import FileUpload from 'v-file-upload';
     import vSelect from "vue-select";
 
+    // import the styles
+    import 'vue-good-table/dist/vue-good-table.css'
+    import { VueGoodTable } from 'vue-good-table';
+
     export default {
         components: {
             FileUpload,
-            vSelect
+            vSelect,
+            VueGoodTable
         },
         data () {
             return {
@@ -259,9 +276,82 @@
                 channels: {},
                 provinces: {},
                 districts: {},
-                positions: {},
+                position_price: 0,
+                position_table: {
+                    cols: [
+                        {
+                            label: 'ID',
+                            field: 'id',
+                            type: 'number',
+                        },
+                        {
+                            label: 'Name',
+                            field: 'name',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
+                        {
+                            label: 'Store Name',
+                            field: 'store_name',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
+                        {
+                            label: 'Channel',
+                            field: 'channel',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
+                        {
+                            label: 'Price',
+                            field: 'price',
+                            type: 'number',
+                        },
+                        {
+                            label: 'Buffer days',
+                            field: 'buffer_days',
+                            type: 'number',
+                        },
+                    ],
+                    rows: [],
+                },
+
+                store_table: {
+                    cols: [
+                        {
+                            label: 'ID',
+                            field: 'id',
+                            type: 'number',
+                        },
+                        {
+                            label: 'Name',
+                            field: 'name',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
+                        {
+                            label: 'Level',
+                            field: 'level',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
+                        {
+                            label: 'Location',
+                            field: 'location',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        }
+                    ],
+                    rows: [],
+                },
+
                 wards: {},
-                stores: {},
                 // statuses: {
                 //     'AVAILABLE': 'Available',
                 //     'RESERVED': 'Reserved',
@@ -325,7 +415,7 @@
         },
         methods: {
             searchStores() {
-                this.stores = [];
+                this.store_table.rows = [];
                 console.log(this.store_filter);
                 let params = [];
                 Object.entries(this.store_filter).forEach((item) => {
@@ -337,11 +427,33 @@
                 console.log(params.join('&'));
                 axios.get("api/stores/list?"+params.join('&')).then((data)=> {
                     console.log(data.data);
-                    this.stores = data.data;
+                    this.store_table.rows = data.data.data;
                 });
             },
+
+            onPositionSelected(params) {
+                console.log(params.selectedRows);
+
+                this.position_price = 0;
+                let daysDiff = (Date.parse(this.position_filter.to_ts) - Date.parse(this.position_filter.from_ts)) / (24*60*60*1000);
+                console.log(daysDiff);
+
+                Object.values(params.selectedRows).forEach((item) => {
+                    console.log(item.price);
+                    this.position_price += item.price * daysDiff;
+                });
+            },
+
+            onStoreSelected(params) {
+                // params.selectedRows - all rows that are selected (this page)
+                this.position_filter.store_ids = [];
+                Object.values(params.selectedRows).forEach((item) => {
+                    this.position_filter.store_ids.push(item.id);
+                });
+            },
+
             searchPositions(){
-                this.positions = [];
+                this.position_table.rows = [];
                 console.log(this.position_filter);
                 let params = [];
                 Object.entries(this.position_filter).forEach((item) => {
@@ -356,25 +468,31 @@
                         }
                     }
                 );
-                console.log(params.join('&'));
 
                 axios.get("api/positions/list?"+params.join('&')).then((data)=> {
                     console.log(data.data);
-                    this.positions = data.data;
+                    this.position_table.rows = data.data.data;
                 });
             },
             onProvinceChange(province) {
+
+                let ids = [];
+                Object.values(province).forEach((item) => {
+                    ids.push(item.id);
+                })
+
                 this.districts = {};
                 this.wards = {};
                 axios.get("api/districts/list?province_id="+province.id).then(({ data }) => (this.districts = data.data));
             },
             onDistrictChange(district) {
+                console.log(district);
                 this.wards = {};
                 axios.get("api/wards/list?district_id="+district.id).then(({ data }) => (this.wards = data.data));
             },
-            onWardChange(ward) {
-                axios.get("api/stores/list?ward_id="+ward.id).then(({ data }) => (this.stores = data.data));
-            },
+            // onWardChange(ward) {
+            //     axios.get("api/stores/list?ward_id="+ward.id).then(({ data }) => (this.stores = data.data));
+            // },
             onChannelChange(channels) {
                 console.log(channels);
                 // axios.get("api/positions/list?channels="+channels).then(({ data }) => {
@@ -434,16 +552,11 @@
             },
 
             loadStores(){
-
                 // if(this.$gate.isAdmin()){
-                axios.get("api/stores/list").then(({ data }) => (this.stores = data.data));
-                // }
-            },
-
-            loadPositions(){
-
-                // if(this.$gate.isAdmin()){
-                axios.get("api/positions/list").then(({ data }) => (this.positions = data.data));
+                 axios.get("api/stores/list").then((data)=> {
+                    console.log(data.data);
+                    this.store_table.rows = data.data.data;
+                });
                 // }
             },
 
@@ -557,7 +670,6 @@
             this.loadWards();
             this.loadStores();
             this.loadChannels();
-            this.loadPositions();
 
             this.$Progress.finish();
         },

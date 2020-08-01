@@ -25,7 +25,7 @@ class PositionsTableSeeder extends Seeder
         foreach ($stores as $store) {
             $positions[] =
                 [
-                    'name' => 'Lightbox ' . $faker->randomNumber(5),
+                    'name' => 'Lightbox_' . $faker->randomNumber(2),
                     'description' => $faker->text,
                     'status' => Position::AVAILABLE,
                     'image_url'=> '',
@@ -37,14 +37,14 @@ class PositionsTableSeeder extends Seeder
                 ];
             $positions[] =
                 [
-                    'name' => 'Billboard ' . $faker->randomNumber(5),
+                    'name' => 'Billboard_' . $faker->randomNumber(2),
                     'description' => $faker->text,
                     'status' => Position::AVAILABLE,
                     'image_url'=> '',
                     'store_id' => $store->id,
                     'channel' => 'Billboard',
                     'buffer_days' => 2,
-                    'unit' => 'week',
+                    'unit' => 'day',
                     'price' => 5000000,
                 ];
         }

@@ -70,7 +70,7 @@ class PositionController extends BaseController
         $to = intval($request->get('to_ts'));
 
         if ($from && $to) {
-            $fromToCondition = " AND id not in (
+            $fromToCondition = " AND positions.id not in (
                         select position_id from bookings
                         where
                             (from_ts<= %d and  %d <= (to_ts + buffer_ts)) or
@@ -79,15 +79,26 @@ class PositionController extends BaseController
             $condition .= sprintf($fromToCondition, $from, $from, $to, $to);
         }
 
-        $query = "select * from positions where " . $condition;
+        $query = "
+            SELECT
+                positions.id AS id,
+                positions.name AS name,
+                positions.channel as channel,
+                positions.price, positions.buffer_days,
+                stores.name AS store_name
+            FROM positions, stores
+            WHERE positions.store_id = stores.id AND 1" . $condition . " ORDER BY id ";
+
         $positions = DB::select($query);
         $data = [];
         foreach ($positions as $position) {
             $data[] = [
                 'id' => $position->id,
                 'name' => $position->name,
+                'channel' => $position->channel,
                 'price' => $position->price,
                 'buffer_days' => $position->buffer_days,
+                'store_name' => $position->store_name,
             ];
         }
 
