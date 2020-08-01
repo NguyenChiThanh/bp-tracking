@@ -101,13 +101,6 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label>Store</label>
-
-                                    <!-- <v-select multiple v-model="position_filter.store_ids" label="name" :options="stores.data"
-                                            :reduce="store => store.id"
-                                              :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
-
-                                    <has-error :form="form" field="store"></has-error> -->
-
                                     <vue-good-table
                                                   :columns="this.store_table.cols"
                                                   :rows="this.store_table.rows"
@@ -129,7 +122,7 @@
                                                   :select-options="{
                                                     enabled: true,
                                                     selectionInfoClass: 'custom-class',
-                                                    selectionText: 'positions selected',
+                                                    selectionText: 'store(s) selected',
                                                     clearSelectionText: 'clear',
                                                     selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
                                                   }"
@@ -204,7 +197,41 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label><b>Price: {{ this.position_price}}</b></label>
+                                    <label class="text-alert"><b>Price: {{ form.position_price}}</b> for {{form.position_list.length}} position(s) x {{form.days_diff}} day(s)</label>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Discount type:</label>
+                                            <v-select v-model="form.discount_type" :options="['flat', 'percentage']"></v-select>
+                                        </div>
+                                         <div class="col-md-4">
+                                            <label>Discount value: (for eg: 0.2)</label>
+                                            <input v-model="form.discount_value" type="text" class="form-control" @input="computeDiscount">
+                                         </div>
+                                         
+                                         <div class="col-md-4" v-show="form.discount_type === 'percentage'">
+                                            <label>Discount max:</label>
+                                            <input v-model="form.discount_max" type="text" class="form-control" @input="computeDiscount">
+                                         </div>
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-control">Total discount:</label>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input v-model="form.total_discount" class="form-control">
+                                        </div>
+                                         <div class="col-md-3">
+                                            <label class="form-control text-success">Total price:</label>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input v-model="form.total_price" class="form-control text-success">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Campaign Name:</label>
@@ -224,21 +251,6 @@
                                            class="form-control" :class="{ 'is-invalid': form.errors.has('license_code') }">
                                     <has-error :form="form" field="license_code"></has-error>
                                 </div>
-
-                                <div class="form-group">
-                                    <label>Description:</label>
-                                    <input v-model="form.description" type="text" name="description"
-                                           class="form-control" :class="{ 'is-invalid': form.errors.has('description') }">
-                                    <has-error :form="form" field="description"></has-error>
-                                </div>
-                                <div class="form-group">
-                                    <label>Unit:</label>
-                                    <v-select v-model="form.unit" label="name" :options="units.data"
-                                        :reduce="unit => unit.id"
-                                        :class="{ 'is-invalid': form.errors.has('unit') }"></v-select>
-                                    <has-error :form="form" field="unit"></has-error>
-                                </div>
-
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -276,7 +288,6 @@
                 channels: {},
                 provinces: {},
                 districts: {},
-                position_price: 0,
                 position_table: {
                     cols: [
                         {
@@ -396,15 +407,17 @@
                     status: '',
                     brand_id: '',
                     booking_id: '',
-                    positions: [],
-                    channels: [],
+                    // channels: [],
                     from_ts: '',
                     to_ts: '',
-                    discount_type: '',
-                    discount_value: '',
-                    discount_max:'',
-                    total_discount:'',
-                    total_price:''
+                    days_diff: 0,
+                    discount_type: 'flat',
+                    discount_value: 0,
+                    discount_max:0,
+                    position_list: [],
+                    position_price: 0,
+                    total_discount:0,
+                    total_price:0
                 }),
 
                 // fileUploaded: [],
@@ -414,6 +427,23 @@
             }
         },
         methods: {
+            computeTotalPrice(){
+                this.form.total_price = this.form.position_price - this.form.total_discount;
+            },
+            computeDiscount(){
+                console.log(this.form.discount_type);
+                if(this.form.discount_type == 'flat') {
+                    this.form.total_discount = this.form.discount_value;
+                } else {
+                    console.log(this.form.discount_type);
+                    if(this.form.discount_value * this.form.position_price > this.form.discount_max) {
+                        this.form.total_discount = this.form.discount_max;
+                    } else {
+                        this.form.total_discount = this.form.discount_value * this.form.position_price;
+                    }
+                }
+                this.computeTotalPrice();
+            },
             searchStores() {
                 this.store_table.rows = [];
                 console.log(this.store_filter);
@@ -434,14 +464,14 @@
             onPositionSelected(params) {
                 console.log(params.selectedRows);
 
-                this.position_price = 0;
-                let daysDiff = (Date.parse(this.position_filter.to_ts) - Date.parse(this.position_filter.from_ts)) / (24*60*60*1000);
-                console.log(daysDiff);
-
+                this.form.position_price = 0;
+                this.form.position_list = []
                 Object.values(params.selectedRows).forEach((item) => {
                     console.log(item.price);
-                    this.position_price += item.price * daysDiff;
+                    this.form.position_list.push(item.id);
+                    this.form.position_price += item.price * this.form.days_diff;
                 });
+                this.computeDiscount();
             },
 
             onStoreSelected(params) {
@@ -452,8 +482,19 @@
                 });
             },
 
+            calculateDaysDiff(){
+                return Math.ceil(
+                        (
+                            Date.parse(this.position_filter.to_ts) - Date.parse(this.position_filter.from_ts)
+                        ) /
+                        (24*60*60*1000)
+                    ) + 1;
+            },
+
             searchPositions(){
+                this.form.days_diff = this.calculateDaysDiff();
                 this.position_table.rows = [];
+                this.form.position_list = [];
                 console.log(this.position_filter);
                 let params = [];
                 Object.entries(this.position_filter).forEach((item) => {
