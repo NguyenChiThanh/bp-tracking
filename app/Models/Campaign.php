@@ -12,7 +12,6 @@ class Campaign extends Model
         'license_code',
 //        'status',
         'brand_id',
-//        'booking_id',
         'from_ts',
         'to_ts',
         'discount_type',
@@ -20,6 +19,8 @@ class Campaign extends Model
         'discount_max',
         'total_discount',
         'total_price',
+        'created_by',
+        'position_list'
     ];
 
 

@@ -251,6 +251,13 @@
                                            class="form-control" :class="{ 'is-invalid': form.errors.has('license_code') }">
                                     <has-error :form="form" field="license_code"></has-error>
                                 </div>
+                                  <div class="form-group">
+                                    <label>Brand:</label>
+                                    <v-select v-model="form.brand_id" label="name" :options="brands.data"
+                                        :reduce="brand => brand.id"
+                                        :class="{ 'is-invalid': form.errors.has('brand_id')} "></v-select>
+                                    <has-error :form="form" field="brand_id"></has-error>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -288,6 +295,7 @@
                 channels: {},
                 provinces: {},
                 districts: {},
+                brands: {},
                 position_table: {
                     cols: [
                         {
@@ -468,7 +476,7 @@
                 this.form.position_list = []
                 Object.values(params.selectedRows).forEach((item) => {
                     console.log(item.price);
-                    this.form.position_list.push(item.id);
+                    this.form.position_list.push({id: item.id, buffer_days: item.buffer_days});
                     this.form.position_price += item.price * this.form.days_diff;
                 });
                 this.computeDiscount();
@@ -495,14 +503,19 @@
                 this.form.days_diff = this.calculateDaysDiff();
                 this.position_table.rows = [];
                 this.form.position_list = [];
+
                 console.log(this.position_filter);
+
                 let params = [];
                 Object.entries(this.position_filter).forEach((item) => {
                         console.log(item);
                         console.log(Date.parse(item[1]));
                         if(item[1] && typeof item[1] !== 'undefined') {
                             if (item[0] == "from_ts" || item[0] == "to_ts") {
-                                params.push(item[0] + '=' + parseInt(Date.parse(item[1])/1000));
+                                let ts = parseInt(Date.parse(item[1])/1000);
+                                params.push(item[0] + '=' + ts);
+                                // set this.form.from_ts and this.form.to_ts
+                                this.form[item[0]] = ts;
                             } else {
                                 params.push(item[0] + '=' + item[1]);
                             }
@@ -592,11 +605,20 @@
                 // }
             },
 
-            loadStores(){
+            loadStores() {
                 // if(this.$gate.isAdmin()){
                  axios.get("api/stores/list").then((data)=> {
                     console.log(data.data);
                     this.store_table.rows = data.data.data;
+                });
+                // }
+            },
+
+            loadBrands() {
+                // if(this.$gate.isAdmin()){
+                axios.get("api/brands/list").then((data)=> {
+                    console.log(data.data);
+                    this.brands = data.data;
                 });
                 // }
             },
@@ -711,6 +733,7 @@
             this.loadWards();
             this.loadStores();
             this.loadChannels();
+            this.loadBrands();
 
             this.$Progress.finish();
         },

@@ -21,7 +21,7 @@ class BookingsTableSeeder extends Seeder
 
         $bookings = [];
 
-        $campaigns = Db::table('campaigns')->get();
+        $campaigns = DB::table('campaigns')->get();
 
         foreach ($campaigns as $campaign) {
             foreach (json_decode($campaign->position_list, true) as $pos_id) {

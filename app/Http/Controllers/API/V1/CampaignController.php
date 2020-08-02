@@ -5,25 +5,32 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Requests\Campaigns\CampaignRequest;
 use App\Models\Campaign;
 use App\Models\Position;
+use App\Models\Booking;
+
+
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CampaignController extends BaseController
 {
-    /**
-     * @var Campaign
-     */
     protected $campaign = null;
+
+
+    protected $booking = null;
+
+    protected $position = null;
 
     /***
      * CampaiignController constructor.
      * @param Campaign $campaign
      */
-    public function __construct(Campaign $campaign)
+    public function __construct(Campaign $campaign, Booking $booking, Position $position)
     {
         $this->middleware('auth:api');
         $this->campaign = $campaign;
+        $this->booking = $booking;
+        $this->position = $position;
     }
 
     /**
@@ -33,13 +40,12 @@ class CampaignController extends BaseController
      */
     public function index()
     {
-//        $campaigns = $this->campaign->with('store')->latest()->paginate(10);
         $campaigns = $this->campaign->with('brand')->latest()->paginate(10);
         foreach ($campaigns->items() as $item) {
             $posIdList = json_decode($item->position_list, true);
             $posList = [];
             foreach ($posIdList as $posId) {
-                $postion = Position::find($posId);
+                $postion =  $this->position->find($posId);
                 $posList[] = [
                     'id' => $postion->id,
                     'name'=>$postion->name . ', ' . $postion->store->name
@@ -49,7 +55,7 @@ class CampaignController extends BaseController
             $item->from_ts = date('m/d/Y', $item->from_ts);
             $item->to_ts = date('m/d/Y', $item->to_ts);
         }
-        return $this->sendResponse($campaigns,'Campaign list');
+        return $this->sendResponse($campaigns, 'Campaign list');
     }
 
     /**
@@ -69,17 +75,36 @@ class CampaignController extends BaseController
     public function store(CampaignRequest $request)
     {
         try{
-            $campaign = $this->campaign->create([
+            $positionList = $request->get('position_list');
+
+
+            $campaignArr = [
                 'name' => $request->get('name'),
-                'description'=> $request->get('description'),
-                'status' =>  $request->get('status'),
-                'image_url'=> $request->get('image_url'),
-                'store_id' => $request->get('store'),
-                'channel'=> $request->get('channel'),
-                'buffer_days' =>  $request->get('buffer_days'),
-                'unit'=> $request->get('unit'),
-                'price'=> $request->get('price'),
-            ]);
+                'contract_code' =>  $request->get('contract_code'),
+                'license_code' => $request->get('license_code'),
+                'brand_id' => $request->get('brand_id') ,
+                'position_list' => json_encode(array_column($positionList, 'id')),
+                'from_ts' => $request->get('from_ts'),
+                'to_ts' => $request->get('to_ts'),
+                'discount_type' => $request->get('discount_type'),
+                'discount_value' => $request->get('discount_value'),
+                'discount_max' => $request->get('discount_max'),
+                'total_discount' => $request->get('total_discount'),
+                'total_price' => $request->get('total_price'),
+                'created_by' => auth()->user()->id,
+            ];
+            $campaign = $this->campaign->create($campaignArr);
+
+            foreach($positionList as $pos) {
+                $booking = [
+                    'campaign_id' => $campaign->id,
+                    'position_id' => $pos['id'],
+                    'buffer_ts' => $pos['buffer_days'] * 24 * 3600,
+                    'from_ts' => $request->get('from_ts'),
+                    'to_ts' => $request->get('to_ts'),
+                ];
+                $newBooking = $this->booking->create($booking);
+            }
 
             return $this->sendResponse($campaign, 'Campaign Created Successfully');
         } catch (Exception $e) {

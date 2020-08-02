@@ -23,8 +23,6 @@ class CreateCampaignsTable extends Migration
             $table->unsignedBigInteger('brand_id');
             $table->foreign('brand_id')->references('id')->on('brands');
 
-            $table->unsignedBigInteger('booking_id')->nullable();
-
             $table->unsignedBigInteger('from_ts');
             $table->unsignedBigInteger('to_ts');
 

@@ -149,7 +149,7 @@
 
                                     <v-select v-model="form.store" label="name" :options="stores.data"
                                             :reduce="store => store.id"
-                                              :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
+                                            :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
 
 <!--                                    <select v-model="form.store_name" type="text" name="store_name"-->
 <!--                                           class="form-control" :class="{ 'is-invalid': form.errors.has('store_name') }">-->

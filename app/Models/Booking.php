@@ -12,5 +12,6 @@ class Booking extends Model
         'position_id',
         'from_ts',
         'to_ts',
+        'buffer_ts'
     ];
 }

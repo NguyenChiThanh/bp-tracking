@@ -20,8 +20,8 @@ class CampaignsTableSeeder extends Seeder
         DB::table('campaigns')->truncate();
 
         $positions = DB::table('positions')->where('unit', 'day')->limit(5)->get();
-        $brand = Db::table('brands')->first();
-        $user = Db::table('users')->first();
+        $brand = DB::table('brands')->first();
+        $user = DB::table('users')->first();
 
         $position_list = [];
         $price = 0;
