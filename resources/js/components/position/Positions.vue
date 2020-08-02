@@ -235,11 +235,11 @@
             return {
                 editmode: false,
                 positions : {},
-                channels: [],
-                provinces: [],
-                districts: [],
-                wards: [],
-                stores: [],
+                channels: {},
+                provinces: {},
+                districts: {},
+                wards: {},
+                stores: {},
                 // statuses: {
                 //     'AVAILABLE': 'Available',
                 //     'RESERVED': 'Reserved',
@@ -273,15 +273,16 @@
         },
         methods: {
             onProvinceChange(province) {
-                this.districts = [];
-                this.wards = [];
+                this.districts = {};
+                this.wards = {};
                 axios.get("api/districts/list?province_id="+province.id).then(({ data }) => (this.districts = data.data));
             },
             onDistrictChange(district) {
-                this.wards = [];
+                this.wards = {};
                 axios.get("api/wards/list?district_id="+district.id).then(({ data }) => (this.wards = data.data));
             },
             onWardChange(ward) {
+                this.stores = {};
                 axios.get("api/stores/list?ward_id="+ward.id).then(({ data }) => (this.stores = data.data));
             },
             onChannelChange(channel) {

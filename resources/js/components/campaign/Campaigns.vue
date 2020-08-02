@@ -467,7 +467,7 @@
                 this.computeTotalPrice();
             },
             searchStores() {
-                this.store_table.rows = [];
+                this.store_table.rows = {};
                 console.log(this.store_filter);
                 let params = [];
                 Object.entries(this.store_filter).forEach((item) => {
@@ -479,7 +479,7 @@
                 console.log(params.join('&'));
                 axios.get("api/stores/list?"+params.join('&')).then((data)=> {
                     console.log(data.data);
-                    this.store_table.rows = data.data.data;
+                    this.store_table.rows = data.data;
                 });
             },
 
@@ -621,10 +621,9 @@
 
             loadStores() {
                 // if(this.$gate.isAdmin()){
-                 axios.get("api/stores/list").then((data)=> {
-                    console.log(data.data);
-                    this.store_table.rows = data.data.data;
-                });
+                 axios.get("api/stores/list").then(({ data }) => {
+                     this.store_table.rows = data.data.data
+                 });
                 // }
             },
 

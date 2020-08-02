@@ -77,7 +77,7 @@ class StoreController extends BaseController
             ];
         }
 
-        return $this->sendResponse($data, 'Store list');
+        return $this->sendResponse(['data' => $data], 'Store list');
     }
 
     /**
