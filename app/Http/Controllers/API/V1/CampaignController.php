@@ -77,7 +77,6 @@ class CampaignController extends BaseController
         try{
             $positionList = $request->get('position_list');
 
-
             $campaignArr = [
                 'name' => $request->get('name'),
                 'contract_code' =>  $request->get('contract_code'),

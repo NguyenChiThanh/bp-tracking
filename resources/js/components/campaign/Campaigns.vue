@@ -360,12 +360,26 @@
                             }
                         },
                         {
-                            label: 'Location',
-                            field: 'location',
+                            label: 'Ward',
+                            field: 'ward',
                             filterOptions: {
                                 enabled: true, // enable filter for this column
                             }
-                        }
+                        },
+                        {
+                            label: 'District',
+                            field: 'district',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
+                         {
+                            label: 'Province',
+                            field: 'province',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
                     ],
                     rows: [],
                 },

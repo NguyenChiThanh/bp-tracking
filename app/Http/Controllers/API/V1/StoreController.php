@@ -71,7 +71,9 @@ class StoreController extends BaseController
                 'id' => $store->id,
                 'name' => $store->name,
                 'level' => $store->level,
-                'location' => sprintf("%s, %s, %s", $store->ward, $store->district, $store->province)
+                'ward' => $store->ward,
+                'district' => $store->district,
+                'province' => $store->province,
             ];
         }
 
