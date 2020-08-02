@@ -148,7 +148,6 @@
                                     <label>Store</label>
 
                                     <v-select v-model="form.store" label="name" :options="stores.data"
-                                            :reduce="store => store.id"
                                             :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
 
 <!--                                    <select v-model="form.store_name" type="text" name="store_name"-->
@@ -400,9 +399,9 @@
             },
             updatePosition(){
                 this.$Progress.start();
-                if (typeof this.form.store === 'object') {
-                    this.form.store = this.form.store.id;
-                }
+                // if (typeof this.form.store === 'object') {
+                //     this.form.store = this.form.store.id;
+                // }
 
                 console.log(this.form.store);
 

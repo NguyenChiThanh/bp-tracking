@@ -30,7 +30,7 @@ class PositionRequest extends FormRequest
             'description' => 'nullable|string',
             'status' => 'nullable|string',
             'image_url' => 'nullable|string',
-            'store' => 'required|integer',
+            'store.id' => 'required|integer',
             'channel' => 'required|string',
             'buffer_days' => 'required|integer',
             'unit' => 'required|string',
