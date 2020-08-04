@@ -7,7 +7,7 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">campaign List</h3>
+                            <h3 class="card-title">Campaign List</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-sm btn-primary" @click="newModal">
                                     <i class="fa fa-plus-square"></i>
@@ -41,28 +41,23 @@
                                 </thead>
                                 <tbody>
                                 <tr v-for="campaign in campaigns.data" :key="campaign.id">
-                                    <th>{{campaign.id}}</th>
-                                    <th>{{campaign.name}}</th>
-                                    <th>{{campaign.contract_code}}</th>
-                                    <!--                                    <th>Status</th>-->
-                                    <th>{{campaign.license_code}}</th>
-                                    <th>{{campaign.brand.name}}</th>
-                                    <th>
-                                        <ul>
-                                            <li v-for="item in campaign.position_list" :key="item.id">
-                                                {{ item.name }}
-                                            </li>
-                                        </ul>
-                                    </th>
+                                    <td>{{campaign.id}}</td>
+                                    <td>{{campaign.name}}</td>
+                                    <td>{{campaign.contract_code}}</td>
+                                    <td>{{campaign.license_code}}</td>
+                                    <td>{{campaign.brand.name}}</td>
+                                    <td>
+                                        {{ campaign.position_list.length }}
+                                    </td>
 
-                                    <th>{{campaign.from_ts}}</th>
-                                    <th>{{campaign.to_ts}}</th>
+                                    <td>{{campaign.from_ts}}</td>
+                                    <td>{{campaign.to_ts}}</td>
 
-                                    <th>{{campaign.discount_type}}</th>
-                                    <th>{{campaign.discount_value}}</th>
-                                    <th>{{campaign.discount_max}}</th>
-                                    <th>{{campaign.total_discount}}</th>
-                                    <th>{{campaign.total_price}}</th>
+                                    <td>{{campaign.discount_type}}</td>
+                                    <td>{{campaign.discount_value}}</td>
+                                    <td>{{campaign.discount_max}}</td>
+                                    <td>{{campaign.total_discount}}</td>
+                                    <td>{{campaign.total_price}}</td>
                                     <td>
                                         <a href="#" @click="editModal(campaign)">
                                             <i class="fa fa-edit blue"></i>
