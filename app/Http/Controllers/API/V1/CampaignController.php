@@ -82,6 +82,8 @@ class CampaignController extends BaseController
                 'contract_code' =>  $request->get('contract_code'),
                 'license_code' => $request->get('license_code'),
                 'brand_id' => $request->get('brand_id') ,
+                'days_diff' => $request->get('days_diff'),
+                'position_price' => $request->get('position_price'),
                 'position_list' => json_encode(array_column($positionList, 'id')),
                 'from_ts' => $request->get('from_ts'),
                 'to_ts' => $request->get('to_ts'),

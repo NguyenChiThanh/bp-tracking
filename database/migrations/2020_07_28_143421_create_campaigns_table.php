@@ -26,17 +26,19 @@ class CreateCampaignsTable extends Migration
             $table->unsignedBigInteger('from_ts');
             $table->unsignedBigInteger('to_ts');
 
-            $table->unsignedBigInteger('created_by');
-            $table->foreign('created_by')->references('id')->on('users');
+            $table->json('position_list')->nullable();
+            $table->integer('days_diff');
+            $table->double('position_price');
 
             $table->string('discount_type')->nullable();
             $table->double('discount_value')->nullable();
             $table->double('discount_max')->nullable();
-
             $table->double('total_discount')->nullable();
-            $table->double('total_price')->nullable();
 
-            $table->json('position_list')->nullable();
+            $table->double('total_price');
+
+            $table->unsignedBigInteger('created_by');
+            $table->foreign('created_by')->references('id')->on('users');
 
             $table->timestamps();
         });

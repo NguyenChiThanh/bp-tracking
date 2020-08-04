@@ -209,7 +209,7 @@
                                             <label>Discount value: (for eg: 0.2)</label>
                                             <input v-model="form.discount_value" type="text" class="form-control" @input="computeDiscount">
                                          </div>
-                                         
+
                                          <div class="col-md-4" v-show="form.discount_type === 'percentage'">
                                             <label>Discount max:</label>
                                             <input v-model="form.discount_max" type="text" class="form-control" @input="computeDiscount">
@@ -426,18 +426,15 @@
                     name: '',
                     contract_code: '',
                     license_code: '',
-                    status: '',
                     brand_id: '',
-                    booking_id: '',
-                    // channels: [],
+                    position_list: [],
+                    days_diff: 0,
+                    position_price: 0,
                     from_ts: '',
                     to_ts: '',
-                    days_diff: 0,
                     discount_type: 'flat',
                     discount_value: 0,
                     discount_max:0,
-                    position_list: [],
-                    position_price: 0,
                     total_discount:0,
                     total_price:0
                 }),
@@ -454,7 +451,7 @@
             },
             computeDiscount(){
                 console.log(this.form.discount_type);
-                if(this.form.discount_type == 'flat') {
+                if(this.form.discount_type === 'flat') {
                     this.form.total_discount = this.form.discount_value;
                 } else {
                     console.log(this.form.discount_type);
@@ -641,6 +638,11 @@
                 this.form.reset();
                 $('#addNew').modal('show');
                 this.form.fill(campaign);
+                this.position_filter.from_ts = campaign.from_ts;
+                this.position_filter.to_ts = campaign.to_ts;
+
+                // todo fill selected stores
+                // todo fill selected position (position list)
             },
             newModal(){
                 this.editmode = false;

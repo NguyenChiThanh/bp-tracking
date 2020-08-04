@@ -10,8 +10,10 @@ class Campaign extends Model
         'name',
         'contract_code',
         'license_code',
-//        'status',
         'brand_id',
+        'position_list',
+        'days_diff',
+        'position_price',
         'from_ts',
         'to_ts',
         'discount_type',
@@ -20,7 +22,6 @@ class Campaign extends Model
         'total_discount',
         'total_price',
         'created_by',
-        'position_list'
     ];
 
 
