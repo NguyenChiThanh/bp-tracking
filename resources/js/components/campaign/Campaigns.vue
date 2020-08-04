@@ -197,7 +197,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="text-alert"><b>Price: {{ form.position_price}}</b> for {{form.position_list.length}} position(s) x {{form.days_diff}} day(s)</label>
+                                    <div class="row">
+                                        <label class="text-alert"><b>Price: {{ form.position_price}}</b> for {{form.position_list.length}} position(s) x {{form.days_diff}} day(s)</label>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
@@ -633,6 +635,21 @@
                 // }
             },
 
+            loadSelectedPosition() {
+                let pos_ids = Object.values(this.form.position_list).map((pos) => {
+                    return pos.id
+                });
+                axios.get("api/positions/list?position_ids="+pos_ids).then((data)=>{
+                    console.log(data.data)
+                    this.position_table.rows = data.data.data;
+                    this.form.position_list.selectedRows = data.data.data;
+                    Object.values(this.form.position_list.selectedRows).forEach((row) => {
+                        row.vgtSelected = true;
+                    })
+                    // this.$refs['my-table'].selectedRows = data.data.data;
+                });
+            },
+
             editModal(campaign){
                 this.editmode = true;
                 this.form.reset();
@@ -641,8 +658,10 @@
                 this.position_filter.from_ts = campaign.from_ts;
                 this.position_filter.to_ts = campaign.to_ts;
 
-                // todo fill selected stores
                 // todo fill selected position (position list)
+                console.log(campaign.position_list);
+                this.loadSelectedPosition();
+                console.log(this.form);
             },
             newModal(){
                 this.editmode = false;
@@ -684,11 +703,16 @@
             },
             updateCampaign(){
                 this.$Progress.start();
-                if (typeof this.form.store === 'object') {
-                    this.form.store = this.form.store.id;
+
+                if (!Number.isInteger(this.form.from_ts)) {
+                    this.form.from_ts = parseInt(Date.parse(this.form.from_ts)/1000);
                 }
 
-                console.log(this.form.store);
+                if (!Number.isInteger(this.form.to_ts)) {
+                    this.form.to_ts = parseInt(Date.parse(this.form.to_ts)/1000);
+                }
+
+                console.log(this.form);
 
                 this.form.put('api/campaigns/'+this.form.id)
                     .then((response) => {

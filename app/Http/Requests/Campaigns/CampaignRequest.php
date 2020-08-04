@@ -33,7 +33,7 @@ class CampaignRequest extends FormRequest
             'to_ts' => 'required|integer',
             'discount_type' => 'required|string',
             'discount_value' => ['required','regex:/^\d+\.\d+|\d+$/'],
-            'discount_max' => 'required|regex:/^\d*(\.\d{2})?$/',
+//            'discount_max' => 'required|regex:/^\d*(\.\d{2})?$/',
             'total_discount' => 'required|regex:/^\d*(\.\d{2})?$/',
             'total_price' => 'required|regex:/^\d*(\.\d{2})?$/',
             'days_diff' => 'required|integer',

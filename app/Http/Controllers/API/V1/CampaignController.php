@@ -140,16 +140,25 @@ class CampaignController extends BaseController
     public function update(CampaignRequest $request, $id)
     {
         $campaign = $this->campaign->findOrFail($id);
+
+        $positionList = $request->get('position_list');
+
         $data = [
             'name' => $request->get('name'),
-            'description'=> $request->get('description'),
-            'status' =>  $request->get('status'),
-            'image_url'=> $request->get('image_url'),
-            'store_id' => $request->get('store'),
-            'channel'=> $request->get('channel'),
-            'buffer_days' =>  $request->get('buffer_days'),
-            'unit'=> $request->get('unit'),
-            'price'=> $request->get('price'),
+            'contract_code' =>  $request->get('contract_code'),
+            'license_code' => $request->get('license_code'),
+            'brand_id' => $request->get('brand_id') ,
+            'days_diff' => $request->get('days_diff'),
+            'position_price' => $request->get('position_price'),
+            'position_list' => json_encode(array_column($positionList, 'id')),
+            'from_ts' => $request->get('from_ts'),
+            'to_ts' => $request->get('to_ts'),
+            'discount_type' => $request->get('discount_type'),
+            'discount_value' => $request->get('discount_value'),
+            'discount_max' => $request->get('discount_max'),
+            'total_discount' => $request->get('total_discount'),
+            'total_price' => $request->get('total_price'),
+            'created_by' => auth()->user()->id,
         ];
 
         $campaign->update($data);
@@ -166,6 +175,10 @@ class CampaignController extends BaseController
     public function destroy($id)
     {
         // $this->authorize('isAdmin');
+        $bookings = $this->booking->where('campaign_id', $id)->get();
+        foreach ($bookings as $b) {
+            $b->delete();
+        }
         $campaign = $this->campaign->findOrFail($id);
         $campaign->delete();
 

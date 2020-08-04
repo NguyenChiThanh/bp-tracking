@@ -51,8 +51,15 @@ class PositionController extends BaseController
         $channels = $request->get('channels');
         $fromTs = $request->get('from_ts');
         $toTs = $request->get('to_ts');
+        $posIds = $request->get('position_ids');
 
         $condition = true;
+
+        if ($posIds) {
+            $array=array_map('intval', explode(',', $posIds));
+            $array = implode(",", $array);
+            $condition .= " AND positions.id in ($array)";
+        }
 
         if ($storeIds) {
             $array=array_map('intval', explode(',', $storeIds));
