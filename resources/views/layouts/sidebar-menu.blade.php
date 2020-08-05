@@ -9,7 +9,26 @@
         </router-link>
       </li>
 
-          <li class="nav-item">
+        <li class="nav-item">
+            <router-link to="/company" class="nav-link">
+                <i class="nav-icon fas fa-hospital-alt yellow"></i>
+                <p>
+                    Company
+                </p>
+            </router-link>
+        </li>
+
+        <li class="nav-item">
+            <router-link to="/brands" class="nav-link">
+                <i class="nav-icon fas fa-heart purple"></i>
+                <p>
+                    Brands
+                </p>
+            </router-link>
+        </li>
+
+
+        <li class="nav-item">
             <router-link to="/campaigns" class="nav-link">
               <i class="nav-icon fas fa-list orange"></i>
               <p>

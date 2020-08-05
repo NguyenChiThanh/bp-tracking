@@ -39,6 +39,7 @@ Route::get('provinces/list', 'API\V1\ProvinceController@list');
 Route::get('districts/list', 'API\V1\DistrictController@list');
 Route::get('wards/list', 'API\V1\WardController@list');
 Route::get('brands/list', 'API\V1\BrandController@list');
+Route::get('company/list', 'API\V1\CompanyController@list');
 
 
 Route::apiResources([
@@ -53,4 +54,5 @@ Route::apiResources([
     'provinces' => 'API\V1\ProvinceController',
     'districts' => 'API\V1\DistrictController',
     'wards' => 'API\V1\WardController',
+    'company' => 'API\V1\CompanyController',
 ]);

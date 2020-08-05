@@ -67,7 +67,7 @@ class ChannelController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function channel(ChannelRequest $request)
+    public function store(ChannelRequest $request)
     {
         $imageUrl = $request->get('image_url');
         if ($imageUrl) {
