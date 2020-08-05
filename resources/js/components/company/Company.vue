@@ -129,7 +129,7 @@
             loadCompany() {
 
                 // if(this.$gate.isAdmin()){
-                axios.get("api/company/list").then(({data}) => (this.company = data));
+                axios.get("api/company/list").then(({data}) => (this.company = data.data));
                 // }
             },
             editModal(company) {
@@ -192,7 +192,7 @@
                         this.$Progress.finish();
                         //  Fire.$emit('AfterCreate');
 
-                        this.loadCompanys();
+                        this.loadCompany();
                     })
                     .catch(() => {
                         this.$Progress.fail();

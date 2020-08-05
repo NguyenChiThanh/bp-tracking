@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Brand extends Model
 {
-    protected $fillable = ['id', 'name', 'products'];
+    protected $fillable = ['id', 'name', 'products', 'company_id'];
+
+    public function company()
+    {
+        return $this->belongsTo('App\Models\Company');
+    }
 }

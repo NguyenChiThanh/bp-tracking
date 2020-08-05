@@ -27,9 +27,9 @@ class CompanyController extends BaseController
      */
     public function list()
     {
-        $company = $this->company->all();
+        $companies = $this->company->with('brands')->latest()->paginate(10);
 
-        return $this->sendResponse($company, 'Company list');
+        return $this->sendResponse($companies, 'Company list');
     }
 
     /**
@@ -91,7 +91,18 @@ class CompanyController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $company = $this->company->findOrFail($id);
+
+        $company->update($request->all());
+
+        // update pivot table
+//        $tag_ids = [];
+//        foreach ($request->get('tags') as $tag) {
+//            $tag_ids[] = $tag['id'];
+//        }
+//        $company->tags()->sync($tag_ids);
+
+        return $this->sendResponse($company, 'Company Information has been updated');
     }
 
     /**

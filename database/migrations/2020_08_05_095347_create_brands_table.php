@@ -17,6 +17,8 @@ class CreateBrandsTable extends Migration
             $table->unsignedBigInteger('id')->primary();
             $table->string('name');
             $table->json('products');
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('company');
             $table->timestamps();
         });
     }
