@@ -18,10 +18,15 @@ class BrandController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function list()
+    public function list(Request $request)
     {
         $brands = $this->brand->all();
-        
+
+        $brandIds = $request->get('brand_ids');
+        if ($brandIds) {
+            $brands = $this->brand->whereIn('id', explode(',', $brandIds))->get();
+        }
+
         return $this->sendResponse($brands,'Brand list');
     }
 

@@ -73,6 +73,43 @@
                                            class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                     <has-error :form="form" field="name"></has-error>
                                 </div>
+                                <div class="form-group">
+                                    <div v-show="editmode && form.brands.length > 0">
+                                        <label>Selected brands:</label>
+                                        <ul class="list-group-item" v-for="brand in form.brands" :key="brand.name">
+                                            <li>{{brand.name}}</li>
+                                        </ul>
+                                    </div>
+                                    <label>Brands:</label>
+                                    <vue-good-table
+                                        ref="brand_table"
+                                        :columns="this.brand_table.cols"
+                                        :rows="this.brand_table.rows"
+                                        :pagination-options="{
+                                                    enabled: true,
+                                                    mode: 'records',
+                                                    perPage: 10,
+                                                    position: 'top',
+                                                    perPageDropdown: [10, 20, 50],
+                                                    dropdownAllowAll: false,
+                                                    setCurrentPage: 1,
+                                                    nextLabel: 'next',
+                                                    prevLabel: 'prev',
+                                                    rowsPerPageLabel: 'Brand per page',
+                                                    ofLabel: 'of',
+                                                    pageLabel: 'page', // for 'pages' mode
+                                                    allLabel: 'All',
+                                                  }"
+                                        :select-options="{
+                                                    enabled: true,
+                                                    selectionInfoClass: 'custom-class',
+                                                    selectionText: 'store(s) selected',
+                                                    clearSelectionText: 'clear',
+                                                    selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+                                                  }"
+                                        @on-selected-rows-change="onBrandSelected"
+                                    />
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -90,23 +127,48 @@
 <script>
     // import VueTagsInput from '@johmun/vue-tags-input';
     import FileUpload from 'v-file-upload';
+    import vSelect from "vue-select";
+    import {VueGoodTable} from "vue-good-table";
 
     export default {
         components: {
             FileUpload,
+            VueGoodTable,
         },
         data() {
             return {
                 editmode: false,
                 company: {},
+                brand_table: {
+                    cols:[
+                        {
+                            label: 'ID',
+                            field: 'id',
+                            type: 'number',
+                        },
+                        {
+                            label: 'Name',
+                            field: 'name',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        }
+                    ],
+                    rows: []
+                },
                 form: new Form({
                     id: '',
                     name: '',
-
+                    brands: [],
                 })
             }
         },
         methods: {
+            onBrandSelected(params) {
+                // params.selectedRows - all rows that are selected (this page)
+                this.form.brands = params.selectedRows;
+            },
+
             onFileChange(e) {
                 const file = e.target.files[0];
                 console.log(file);
@@ -126,6 +188,16 @@
 
                 this.$Progress.finish();
             },
+
+            loadBrands() {
+                // if(this.$gate.isAdmin()){
+                axios.get("api/brands/list").then((data)=> {
+                    console.log(data.data);
+                    this.brand_table.rows = data.data.data;
+                });
+                // }
+            },
+
             loadCompany() {
 
                 // if(this.$gate.isAdmin()){
@@ -137,10 +209,35 @@
                 this.form.reset();
                 $('#addNew').modal('show');
                 this.form.fill(company);
+                this.form.brands = company.brands;
+
+                // Object.values(company.brands).forEach((item) => {
+                //     item.vgtSelected = true;
+                // })
+
+                this.loadBrands();
+
+                // let brand_ids = Object.values(company.brands).map((b) => {
+                //     return b.id
+                // })
+                //
+                // if (brand_ids.length>0) {
+                //     axios.get("api/brands/list?brand_ids=" + brand_ids).then((data) => {
+                //         this.brand_table.rows = data.data.data;
+                //         Object.svalues(this.brand_table.rows).forEach((row) => {
+                //             row.vgtSelected = true;
+                //         })
+                //     });
+                // } else {
+                //     axios.get("api/brands/list").then((data) => {
+                //         this.brand_table.rows = data.data.data;
+                //     });
+                // }
             },
             newModal() {
                 this.editmode = false;
                 this.form.reset();
+                this.loadBrands();
                 $('#addNew').modal('show');
             },
             createCompany() {
@@ -234,6 +331,7 @@
             this.$Progress.start();
 
             this.loadCompany();
+            this.loadBrands();
 
             this.$Progress.finish();
         },

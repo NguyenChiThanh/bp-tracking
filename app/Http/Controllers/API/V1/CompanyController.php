@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\API\V1\BaseController;
+use App\Models\Brand;
 use App\Models\Company;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,9 +16,15 @@ class CompanyController extends BaseController
      */
     protected $company;
 
-    public function __construct(Company $company)
+    /**
+     * @var Brand
+     */
+    protected $brand;
+
+    public function __construct(Company $company, Brand $brand)
     {
         $this->company = $company;
+        $this->brand = $brand;
     }
 
     /**
@@ -52,7 +59,16 @@ class CompanyController extends BaseController
     {
         try {
             $name = $request->get('name');
+
             $company = $this->company->create(['name' => $name]);
+
+            $brands = $request->get('brands');
+
+            foreach ($brands as $b) {
+                $brand = $this->brand->findOrFail($b['id']);
+                $brand->update(['company_id' => $company->id]);
+            }
+
             return $this->sendResponse($company, 'Company Created Successfully');
         } catch (Exception $e) {
             Log::error($e);
@@ -93,14 +109,20 @@ class CompanyController extends BaseController
     {
         $company = $this->company->findOrFail($id);
 
-        $company->update($request->all());
+        // unleash old brands
+        foreach ($company->brands as $b) {
+            $b->update(['company_id' => null]);
+        }
 
-        // update pivot table
-//        $tag_ids = [];
-//        foreach ($request->get('tags') as $tag) {
-//            $tag_ids[] = $tag['id'];
-//        }
-//        $company->tags()->sync($tag_ids);
+        // set new company_id for brand
+        $brands = $request->get('brands');
+        foreach ($brands as $b) {
+            $brand = $this->brand->findOrFail($b['id']);
+            $brand->update(['company_id' => $company->id]);
+        }
+
+        $name = $request->get('name');
+        $company->update(['name' => $name]);
 
         return $this->sendResponse($company, 'Company Information has been updated');
     }
@@ -113,8 +135,14 @@ class CompanyController extends BaseController
      */
     public function destroy($id)
     {
-//        $this->authorize('isAdmin');
+        // $this->authorize('isAdmin');
         $company = $this->company->findOrFail($id);
+
+        // set brand.company_id = null
+        $brands = $this->brand->where('company_id', $company->id)->get();
+        foreach ($brands as $brand) {
+            $brand->update(['company_id' => null]);
+        }
         $company->delete();
 
         return $this->sendResponse($company, 'Company has been Deleted');

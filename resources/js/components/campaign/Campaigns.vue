@@ -104,9 +104,9 @@
                                                     mode: 'records',
                                                     perPage: 5,
                                                     position: 'top',
-                                                    perPageDropdown: [3, 7, 9],
+                                                    perPageDropdown: [5, 10, 20, 50],
                                                     dropdownAllowAll: false,
-                                                    setCurrentPage: 2,
+                                                    setCurrentPage: 1,
                                                     nextLabel: 'next',
                                                     prevLabel: 'prev',
                                                     rowsPerPageLabel: 'Store per page',
@@ -132,7 +132,7 @@
                                             <label>Channel</label>
                                             <v-select multiple v-model="position_filter.channels" label="name" :options="channels.data"
                                               :reduce="channel => channel.name"
-                                                  :class="{ 'is-invalid': form.errors.has('channel')}"></v-select>
+                                              :class="{ 'is-invalid': form.errors.has('channel')}"></v-select>
                                             <has-error :form="form" field="channel"></has-error>
                                         </div>
                                     </div>
@@ -167,9 +167,9 @@
                                                 mode: 'records',
                                                 perPage: 5,
                                                 position: 'top',
-                                                perPageDropdown: [3, 7, 9],
+                                                perPageDropdown: [5, 10, 20, 50],
                                                 dropdownAllowAll: false,
-                                                setCurrentPage: 2,
+                                                setCurrentPage: 1,
                                                 nextLabel: 'next',
                                                 prevLabel: 'prev',
                                                 rowsPerPageLabel: 'Positions per page',
@@ -248,7 +248,7 @@
                                            class="form-control" :class="{ 'is-invalid': form.errors.has('license_code') }">
                                     <has-error :form="form" field="license_code"></has-error>
                                 </div>
-                                  <div class="form-group">
+                                <div class="form-group">
                                     <label>Brand:</label>
                                     <v-select v-model="form.brand_id" label="name" :options="brands.data"
                                         :reduce="brand => brand.id"
