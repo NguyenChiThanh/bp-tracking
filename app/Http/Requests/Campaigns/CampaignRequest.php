@@ -27,7 +27,7 @@ class CampaignRequest extends FormRequest
             'name' => 'required|string|min:5',
             'contract_code' => 'nullable|string',
             'license_code' => 'nullable|string',
-            'brand_id' => 'required|integer',
+            'brand.id' => 'required|integer',
             'position_list' => 'required|array',
             'from_ts' => 'required|integer',
             'to_ts' => 'required|integer',

@@ -23,6 +23,11 @@ class BrandController extends BaseController
         // get brands
         $brands = $this->brand->all();
 
+        $companyId = $request->get("company_id");
+        if ($companyId) {
+            $brands = $this->brand->where('company_id', $companyId)->get();
+        }
+
         $brandIds = $request->get('brand_ids');
         if ($brandIds) {
             $brands = $this->brand->whereIn('id', explode(',', $brandIds))->get();

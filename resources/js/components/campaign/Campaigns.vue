@@ -249,9 +249,14 @@
                                     <has-error :form="form" field="license_code"></has-error>
                                 </div>
                                 <div class="form-group">
+                                    <label>Company:</label>
+                                    <v-select v-model="form.company" label="name"
+                                              :options="company.data"
+                                              @input="onCompanyChange"></v-select>
+                                </div>
+                                <div class="form-group">
                                     <label>Brand:</label>
-                                    <v-select v-model="form.brand_id" label="name" :options="brands.data"
-                                        :reduce="brand => brand.id"
+                                    <v-select v-model="form.brand" label="name" :options="brands.data"
                                         :class="{ 'is-invalid': form.errors.has('brand_id')} "></v-select>
                                     <has-error :form="form" field="brand_id"></has-error>
                                 </div>
@@ -292,6 +297,7 @@
                 channels: {},
                 provinces: {},
                 districts: {},
+                company: {},
                 brands: {},
                 position_table: {
                     cols: [
@@ -423,7 +429,8 @@
                     name: '',
                     contract_code: '',
                     license_code: '',
-                    brand_id: '',
+                    company: {},
+                    brand: {},
                     position_list: [],
                     days_diff: 0,
                     position_price: 0,
@@ -547,30 +554,13 @@
                 this.wards = {};
                 axios.get("api/districts/list?province_id="+province.id).then(({ data }) => (this.districts = data.data));
             },
-            onDistrictChange(district) {
-                console.log(district);
-                this.wards = {};
-                axios.get("api/wards/list?district_id="+district.id).then(({ data }) => (this.wards = data.data));
+
+            onCompanyChange(company) {
+                this.brands = {};
+                axios.get("api/brands/list?company_id="+company.id).then((response) => {
+                    this.brands = response.data
+                })
             },
-            // onWardChange(ward) {
-            //     axios.get("api/stores/list?ward_id="+ward.id).then(({ data }) => (this.stores = data.data));
-            // },
-            onChannelChange(channels) {
-                console.log(channels);
-                // axios.get("api/positions/list?channels="+channels).then(({ data }) => {
-                //     this.positions = data.data
-                // });
-            },
-            // onFileChange(e) {
-            //     const file = e.target.files[0];
-            //     console.log(file);
-            //     const formData = new FormData();
-            //     formData.append('file', file);
-            //     axios.post('/file/upload', formData).then(({data}) => {
-            //         console.log(data)
-            //         this.form.image_url = data.file_path;
-            //     });
-            // },
 
             getResults(page = 1) {
 
@@ -621,6 +611,14 @@
                 // }
             },
 
+            loadCompany() {
+                // if(this.$gate.isAdmin()){
+                axios.get("api/company/list").then((response)=> {
+                    this.company = response.data.data;
+                });
+                // }
+            },
+
             loadBrands() {
                 // if(this.$gate.isAdmin()){
                 axios.get("api/brands/list").then((data)=> {
@@ -649,7 +647,13 @@
                 this.editmode = true;
                 this.form.reset();
                 $('#addNew').modal('show');
+
                 this.form.fill(campaign);
+                console.log("brand " + JSON.stringify(this.form));
+
+                // this.form.company['id'] = campaign.brand.company_id;
+                // this.form.brand.id = campaign.brand.id;
+
                 this.position_filter.from_ts = campaign.from_ts;
                 this.position_filter.to_ts = campaign.to_ts;
 
@@ -767,6 +771,7 @@
             this.loadWards();
             this.loadStores();
             this.loadChannels();
+            this.loadCompany();
             this.loadBrands();
 
             this.$Progress.finish();

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Requests\Campaigns\CampaignRequest;
+use App\Models\Brand;
 use App\Models\Campaign;
+use App\Models\Company;
 use App\Models\Position;
 use App\Models\Booking;
 
@@ -54,6 +56,9 @@ class CampaignController extends BaseController
             $item->position_list = $posList;
             $item->from_ts = date('m/d/Y', $item->from_ts);
             $item->to_ts = date('m/d/Y', $item->to_ts);
+
+            $company = Company::find($item->brand->company_id);
+            $item->company = $company;
         }
         return $this->sendResponse($campaigns, 'Campaign list');
     }
@@ -81,7 +86,7 @@ class CampaignController extends BaseController
                 'name' => $request->get('name'),
                 'contract_code' =>  $request->get('contract_code'),
                 'license_code' => $request->get('license_code'),
-                'brand_id' => $request->get('brand_id') ,
+                'brand_id' => $request->get('brand')['id'] ,
                 'days_diff' => $request->get('days_diff'),
                 'position_price' => $request->get('position_price'),
                 'position_list' => json_encode(array_column($positionList, 'id')),
@@ -147,7 +152,7 @@ class CampaignController extends BaseController
             'name' => $request->get('name'),
             'contract_code' =>  $request->get('contract_code'),
             'license_code' => $request->get('license_code'),
-            'brand_id' => $request->get('brand_id') ,
+            'brand_id' => $request->get('brand')['id'] ,
             'days_diff' => $request->get('days_diff'),
             'position_price' => $request->get('position_price'),
             'position_list' => json_encode(array_column($positionList, 'id')),
