@@ -20,6 +20,7 @@ class BrandController extends BaseController
      */
     public function list(Request $request)
     {
+        // get brands
         $brands = $this->brand->all();
 
         $brandIds = $request->get('brand_ids');

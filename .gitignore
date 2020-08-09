@@ -13,3 +13,5 @@ yarn-error.log
 
 reports/
 .idea
+public/js/app.js
+

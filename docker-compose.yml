@@ -1,0 +1,34 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bptracking
+    container_name: bptracking_app
+    volumes:
+      - ./:/app:z
+    working_dir: /app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - bptracking
+
+  db:
+    image: mysql:5.7
+    container_name: mysql_db
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_USER: bpuser
+    ports:
+      - 3306:3306
+    networks:
+      - bptracking
+
+networks:
+  bptracking:
+    driver: bridge

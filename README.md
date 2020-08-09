@@ -23,6 +23,15 @@
 - `npm run dev`
 - `php artisan serve`
 
+
+## Start local dev
+```
+sh ./local.sh
+
+npm run watch
+
+php artisan serve --host 0.0.0.0
+```
 ## Unit Test
 
 #### run PHPUnit
