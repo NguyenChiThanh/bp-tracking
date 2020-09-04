@@ -82,7 +82,7 @@ class ImportPositionCommand extends Command
                         'unit' => 'day',
                         'width' => $width,
                         'height' => $height,
-                        'price' => empty($price) ? 0 : $price,
+                        'price' => empty($price) ? 0.0 : $price,
                     ]);
                 Log::info("Position " . $position->name . " imported");
             } catch (ModelNotFoundException $e) {
