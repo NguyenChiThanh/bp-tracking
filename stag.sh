@@ -9,6 +9,7 @@ php artisan sync:location
 php artisan sync:store
 php artisan sync:brand
 php artisan db:seed
+php artisan impo:posi positions_stag.xlsx
 
 npm install
 npm run dev
