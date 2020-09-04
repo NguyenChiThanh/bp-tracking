@@ -73,16 +73,16 @@ class ImportPositionCommand extends Command
                     ],
                     [
                         'name' => $positionName,
-                        'description' => $description ?? '',
+                        'description' => empty($description) ? '' : $description,
                         'status' => Position::AVAILABLE,
                         'image_url' => $image,
                         'store_id' => $store->id,
                         'channel' => $channel,
-                        'buffer_days' => $bufferDays ?? 2,
+                        'buffer_days' => empty($bufferDays) ? 2 : $bufferDays,
                         'unit' => 'day',
                         'width' => $width,
                         'height' => $height,
-                        'price' => $price ?? 0.0,
+                        'price' => empty($price) ? 0.0 : $price,
                     ]);
                 Log::info("Position " . $position->name . " imported");
             } catch (ModelNotFoundException $e) {
