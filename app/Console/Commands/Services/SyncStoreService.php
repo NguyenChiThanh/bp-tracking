@@ -41,6 +41,7 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
                         {
                             id,
                             db_id,
+                            code,
                             name,
                             description,
                             status,
@@ -83,6 +84,7 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
                     [
                         'id' => $store['db_id'],
                         'name' => $store['name'],
+                        'code' => $store['code'],
                         'description' => $store['description'] ?? '',
                         'status' => $store['status'],
                         'province_id' => $store['province_id'],

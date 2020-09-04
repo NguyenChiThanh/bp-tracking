@@ -13,4 +13,3 @@ php artisan passport:install
 
 npm install
 npm run dev
-

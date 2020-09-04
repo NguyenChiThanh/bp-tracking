@@ -16,6 +16,7 @@ class CreateStoresTable extends Migration
         Schema::create('stores', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->string('name');
+            $table->string('code');
             $table->string('description');
             $table->string('status');
             $table->char('level');

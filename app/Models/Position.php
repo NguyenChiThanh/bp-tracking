@@ -14,6 +14,8 @@ class Position extends Model
         'name',
         'description',
         'status',
+        'width',
+        'height',
         'image_url',
         'store_id',
         'channel',

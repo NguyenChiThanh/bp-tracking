@@ -70,6 +70,7 @@ class StoreController extends BaseController
             $data[] = [
                 'id' => $store->id,
                 'name' => $store->name,
+                'code' => $store->code,
                 'level' => $store->level,
                 'ward' => $store->ward,
                 'district' => $store->district,

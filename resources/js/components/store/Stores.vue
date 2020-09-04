@@ -24,6 +24,7 @@
                     <tr>
                       <th>ID</th>
                       <th>Name</th>
+                      <th>Code</th>
                       <th>Desc</th>
                       <th>Status</th>
                       <th>Level</th>
@@ -40,6 +41,7 @@
 
                       <td>{{store.id}}</td>
                       <td>{{store.name}}</td>
+                      <td>{{store.code}}</td>
                       <td>{{store.description}}</td>
                       <td>{{store.status}}</td>
                       <td>{{store.level}}</td>
@@ -283,13 +285,6 @@
             truncate: function (text, length, suffix) {
                 return text.substring(0, length) + suffix;
             },
-        },
-        // computed: {
-        //   filteredItems() {
-        //     return this.autocompleteItems.filter(i => {
-        //       return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-        //     });
-        //   },
-        // },
+        }
     }
 </script>

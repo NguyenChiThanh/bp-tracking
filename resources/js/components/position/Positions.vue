@@ -9,6 +9,10 @@
                         <div class="card-header">
                             <h3 class="card-title">Position List</h3>
                             <div class="card-tools">
+                                <button type="button" class="btn btn-sm btn-dark" @click="importModal">
+                                    <i class="fa fa-file-import"></i>
+                                    Import
+                                </button>
                                 <button type="button" class="btn btn-sm btn-primary" @click="newModal">
                                     <i class="fa fa-plus-square"></i>
                                     Add New
@@ -358,6 +362,9 @@
                 this.form.reset();
                 $('#addNew').modal('show');
                 this.form.fill(position);
+            },
+            importModal(){
+                alert('not implemented yet');
             },
             newModal(){
                 this.editmode = false;

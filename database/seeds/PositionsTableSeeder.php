@@ -20,14 +20,13 @@ class PositionsTableSeeder extends Seeder
         DB::table('positions')->truncate();
 
         $positions = [];
-        $stores = DB::table('stores')->get();
+        $stores = DB::table('stores')->take(10)->get();
 
         foreach ($stores as $store) {
             $positions[] =
                 [
                     'name' => 'Lightbox_' . $faker->randomNumber(2),
                     'description' => $faker->text,
-                    'status' => Position::AVAILABLE,
                     'image_url'=> '',
                     'store_id' => $store->id,
                     'channel' => 'Lightbox',
@@ -39,7 +38,6 @@ class PositionsTableSeeder extends Seeder
                 [
                     'name' => 'Billboard_' . $faker->randomNumber(2),
                     'description' => $faker->text,
-                    'status' => Position::AVAILABLE,
                     'image_url'=> '',
                     'store_id' => $store->id,
                     'channel' => 'Billboard',

@@ -25,6 +25,7 @@ class StoresTableSeeder extends Seeder
         for ($i=0; $i < 5; $i++) {
             $stores[] = [
                 'name' => strtoupper('Store ' . $faker->randomLetter . $faker->randomNumber(5)),
+                'code' => strtoupper($faker->randomLetter . $faker->randomNumber(5)),
                 'description' => $faker->sentence,
                 'level' => Store::LEVEL_A,
                 'location' => 'Hồ Chí Minh',
@@ -35,6 +36,7 @@ class StoresTableSeeder extends Seeder
             $stores[] = [
                     'name' => strtoupper('Store ' . $faker->randomLetter . $faker->randomNumber(5)),
                     'description' => $faker->sentence,
+                    'code' => strtoupper($faker->randomLetter . $faker->randomNumber(5)),
                     'level' => Store::LEVEL_A,
                     'location' => 'Hồ Chí Minh',
                     'status' => Store::IN_OPERATING
@@ -44,6 +46,7 @@ class StoresTableSeeder extends Seeder
             $stores[] = [
                 'name' => strtoupper('Store ' . $faker->randomLetter . $faker->randomNumber(5)),
                 'description' => $faker->sentence,
+                'code' => strtoupper($faker->randomLetter . $faker->randomNumber(5)),
                 'level' => Store::LEVEL_B,
                 'location' => 'Vũng Tàu',
                 'status' => Store::IN_OPERATING
@@ -52,6 +55,7 @@ class StoresTableSeeder extends Seeder
         for ($i=0; $i < 8; $i++) {
             $stores[] = [
                 'name' => strtoupper('Store ' . $faker->randomLetter . $faker->randomNumber(5)),
+                'code' => strtoupper($faker->randomLetter . $faker->randomNumber(5)),
                 'description' => $faker->sentence,
                 'level' => Store::LEVEL_C,
                 'location' => 'Hồ Chí Minh',
@@ -61,6 +65,7 @@ class StoresTableSeeder extends Seeder
         for ($i=0; $i < 5; $i++) {
             $stores[] = [
                 'name' => strtoupper('Store ' . $faker->randomLetter . $faker->randomNumber(5)),
+                'code' => strtoupper($faker->randomLetter . $faker->randomNumber(5)),
                 'description' => $faker->sentence,
                 'level' => Store::LEVEL_D,
                 'location' => 'Hồ Chí Minh',
@@ -71,6 +76,7 @@ class StoresTableSeeder extends Seeder
         for ($i=0; $i < 5; $i++) {
             $stores[] = [
                 'name' => strtoupper('Store ' . $faker->randomLetter . $faker->randomNumber(5)),
+                'code' => strtoupper($faker->randomLetter . $faker->randomNumber(5)),
                 'description' => $faker->sentence,
                 'level' => Store::LEVEL_D,
                 'location' => 'Hồ Chí Minh',
