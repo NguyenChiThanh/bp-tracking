@@ -36,6 +36,21 @@ class ChannelsTableSeeder extends Seeder
                 'name' => 'Frontdoor',
                 'image_url' => '',
                 'buffer_days' => 2
+            ],
+            [
+                'name' => 'TopBoard',
+                'image_url' => '',
+                'buffer_days' => 2
+            ],
+            [
+                'name' => 'WallBoard',
+                'image_url' => '',
+                'buffer_days' => 2
+            ],
+            [
+                'name' => 'CounterPoster',
+                'image_url' => '',
+                'buffer_days' => 2
             ]
         ];
         DB::table('channels')->insert($channels);

@@ -13,8 +13,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UsersTableSeeder::class);
         $this->call(ChannelsTableSeeder::class);
-        $this->call(CampaignsTableSeeder::class);
-        $this->call(BookingsTableSeeder::class);
-        $this->call(CompanyTableSeeder::class);
+        if (env('APP_ENV') != 'production') {
+            $this->call(CampaignsTableSeeder::class);
+            $this->call(BookingsTableSeeder::class);
+            $this->call(CompanyTableSeeder::class);
+        }
     }
 }
