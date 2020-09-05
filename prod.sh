@@ -30,7 +30,7 @@ deploy()
 }
 
 ACTION=$1
-if [[ "$ACTION" == 'init' ]]; then
+if [[ "$ACTION" == "init" ]]; then
     echo "initializing prod ..."
     init
 else
