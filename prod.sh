@@ -25,18 +25,11 @@ deploy()
     composer du
     php artisan cache:clear
 
-    php artisan sync:location
-    php artisan sync:store
-    php artisan sync:brand
-
-    php artisan import:pos positions_prod.xlsx
-
     npm install
     npm run prod
 }
 
 ACTION=$1
-
 if [[ "$ACTION" == 'init' ]]; then
     echo "initializing prod ..."
     init
