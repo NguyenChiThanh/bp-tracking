@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-function init {
+function init() {
     cp .env.prod .env
     composer install
     composer du
@@ -17,7 +17,7 @@ function init {
     npm run prod
 }
 
-function deploy {
+function deploy() {
     cp .env.prod .env
     composer install
     composer du
