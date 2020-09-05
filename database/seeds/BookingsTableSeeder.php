@@ -2,8 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-use App\Models\Booking;
 use Illuminate\Support\Facades\Schema;
 
 class BookingsTableSeeder extends Seeder
@@ -15,7 +13,6 @@ class BookingsTableSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Faker::create();
         Schema::disableForeignKeyConstraints();
         DB::table('bookings')->truncate();
 
