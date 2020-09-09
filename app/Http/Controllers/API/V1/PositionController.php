@@ -177,7 +177,7 @@ class PositionController extends BaseController
         $data = [
             'name' => $request->get('name'),
             'description'=> $request->get('description'),
-            'status' =>  $request->get('status'),
+            'status' =>  $request->get('status') ?? Position::AVAILABLE,
             'image_url'=> $request->get('image_url'),
             'store_id' => $request->get('store')['id'],
             'channel'=> $request->get('channel'),
