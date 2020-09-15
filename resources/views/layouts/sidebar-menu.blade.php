@@ -1,5 +1,18 @@
 <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+        @can('isPartnerUser')
+        <li class="nav-item">
+            <router-link to="/campaigns" class="nav-link">
+                <i class="nav-icon fas fa-list orange"></i>
+                <p>
+                    Campaign
+                </p>
+            </router-link>
+        </li>
+        @endcan
+
+        @can('isPMCUser')
       <li class="nav-item">
         <router-link to="/dashboard" class="nav-link">
           <i class="nav-icon fas fa-tachometer-alt blue"></i>
@@ -63,8 +76,9 @@
                 </p>
             </router-link>
         </li>
+        @endcan
 
-      @can('isAdmin')
+      @can('isMod')
         <li class="nav-item">
           <router-link to="/users" class="nav-link">
             <i class="fa fa-users nav-icon blue"></i>
@@ -115,7 +129,6 @@
       </li>
 
       @endcan
-
 
 
       <li class="nav-item">

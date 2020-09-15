@@ -4,13 +4,13 @@
         <div class="row">
 
           <div class="col-12">
-        
-            <div class="card" v-if="$gate.isAdmin()">
+
+            <div class="card" v-if="$gate.isMod()">
               <div class="card-header">
                 <h3 class="card-title">User List</h3>
 
                 <div class="card-tools">
-                  
+
                   <button type="button" class="btn btn-sm btn-primary" @click="newModal">
                       <i class="fa fa-plus-square"></i>
                       Add New
@@ -26,6 +26,9 @@
                       <th>Type</th>
                       <th>Name</th>
                       <th>Email</th>
+                      <th>Company</th>
+                      <th>Brand</th>
+                      <th>Status</th>
                       <th>Email Verified?</th>
                       <th>Created</th>
                       <th>Action</th>
@@ -35,9 +38,12 @@
                      <tr v-for="user in users.data" :key="user.id">
 
                       <td>{{user.id}}</td>
-                      <td class="text-capitalize">{{user.type}}</td>
-                      <td class="text-capitalize">{{user.name}}</td>
+                      <td>{{user.type}}</td>
+                      <td>{{user.name}}</td>
                       <td>{{user.email}}</td>
+                      <td>{{user.company}}</td>
+                      <td>{{user.brands}}</td>
+                      <td>{{user.status}}</td>
                       <td :inner-html.prop="user.email_verified_at | yesno"></td>
                       <td>{{user.created_at}}</td>
 
@@ -65,7 +71,7 @@
         </div>
 
 
-        <div v-if="!$gate.isAdmin()">
+        <div v-if="!$gate.isMod()">
             <not-found></not-found>
         </div>
 
@@ -74,8 +80,8 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" v-show="!editmode">Create New User</h5>
-                    <h5 class="modal-title" v-show="editmode">Update User's Info</h5>
+                    <h5 class="modal-title" v-show="!editmode">Create New Partner User</h5>
+                    <h5 class="modal-title" v-show="editmode">Update Partner User's Info</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -93,26 +99,55 @@
                         </div>
                         <div class="form-group">
                             <label>Email</label>
-                            <input v-model="form.email" type="text" name="email"
+                            <input v-model="form.email" type="email" name="email"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
                             <has-error :form="form" field="email"></has-error>
                         </div>
-                    
+
+                        <div class="form-group">
+                            <label>Cellphone</label>
+                            <input v-model="form.phone" type="text" name="phone"
+                                   class="form-control" :class="{ 'is-invalid': form.errors.has('phone') }">
+                            <has-error :form="form" field="phone"></has-error>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Company:</label>
+                            <v-select v-model="form.company" label="name"
+                                      :options="company.data"
+                                      @input="onCompanyChange"></v-select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Brands:</label>
+                            <v-select multiple v-model="form.brands" label="name" :options="brands.data"
+                                      :class="{ 'is-invalid': form.errors.has('brand')} "></v-select>
+                            <has-error :form="form" field="brand"></has-error>
+                        </div>
+
+
                         <div class="form-group">
                             <label>Password</label>
                             <input v-model="form.password" type="password" name="password"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('password') }" autocomplete="false">
                             <has-error :form="form" field="password"></has-error>
                         </div>
-                    
+
                         <div class="form-group">
-                            <label>User Role</label>
-                            <select name="type" v-model="form.type" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('type') }">
-                                <option value="">Select User Role</option>
-                                <option value="admin">Admin</option>
-                                <option value="user">Standard User</option>
+                            <label>Confirm Password</label>
+                            <input v-model="form.password_confirmation" type="password" name="password"
+                                   class="form-control" :class="{ 'is-invalid': form.errors.has('password_confirmation') }" autocomplete="false">
+                            <has-error :form="form" field="password_confirmation"></has-error>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="type" v-model="form.status" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('status') }">
+                                <option value="active" selected>Active</option>
+                                <option value="inactive">Inactive</option>
                             </select>
-                            <has-error :form="form" field="type"></has-error>
+                            <has-error :form="form" field="status"></has-error>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -129,27 +164,64 @@
 </template>
 
 <script>
+    import FileUpload from "v-file-upload";
+    import vSelect from "vue-select";
+    import {VueGoodTable} from "vue-good-table";
+
     export default {
+        components: {
+            vSelect,
+        },
         data () {
             return {
                 editmode: false,
                 users : {},
+                company: {},
+                brands: {},
                 form: new Form({
                     id : '',
                     type : '',
                     name: '',
+                    status : '',
                     email: '',
                     password: '',
+                    password_confirmation: '',
                     email_verified_at: '',
+                    company: '',
+                    brands: '',
                 })
             }
         },
         methods: {
 
+            loadCompany() {
+                // if(this.$gate.isAdmin()){
+                axios.get("api/company/list").then((response)=> {
+                    this.company = response.data.data;
+                });
+                // }
+            },
+
+            loadBrands() {
+                // if(this.$gate.isAdmin()){
+                axios.get("api/brands/list").then((data)=> {
+                    console.log(data.data);
+                    this.brands = data.data;
+                });
+                // }
+            },
+
+            onCompanyChange(company) {
+                this.brands = {};
+                axios.get("api/brands/list?company_id="+company.id).then((response) => {
+                    this.brands = response.data
+                })
+            },
+
             getResults(page = 1) {
 
                   this.$Progress.start();
-                  
+
                   axios.get('api/user?page=' + page).then(({ data }) => (this.users = data.data));
 
                   this.$Progress.finish();
@@ -215,17 +287,18 @@
           loadUsers(){
             this.$Progress.start();
 
-            if(this.$gate.isAdmin()){
-              axios.get("api/user").then(({ data }) => (this.users = data.data));
+            if(this.$gate.isMod()){
+                axios.get("api/user").then(({ data }) => (this.users = data.data));
             }
 
             this.$Progress.finish();
           },
-          
-          createUser(){
 
-              this.form.post('api/user')
-              .then((response)=>{
+          createUser(){
+              console.log(this.form);
+              // todo hard code for partner user
+              this.form.type = 'partner_user';
+              this.form.post('api/user').then((response)=> {
                   $('#addNew').modal('hide');
 
                   Toast.fire({
@@ -247,13 +320,11 @@
           }
 
         },
-        mounted() {
-            console.log('User Component mounted.')
-        },
         created() {
-
             this.$Progress.start();
             this.loadUsers();
+            this.loadCompany();
+            this.loadBrands();
             this.$Progress.finish();
         }
     }

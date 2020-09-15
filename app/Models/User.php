@@ -12,13 +12,26 @@ class User extends Authenticatable // implements MustVerifyEmail
 {
     use Notifiable, HasApiTokens;
 
+    const PMC_USER = "pmc_user";
+    const PARTNER_USER = "partner_user";
+
+    const ACTIVE = 'active';
+    const INACTIVE = 'inactive';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'type', 'access_token'
+        'name',
+        'email',
+        'cellphone',
+        'company',
+        'type',
+        'status',
+        'password',
+        'access_token'
     ];
 
     /**
@@ -39,6 +52,14 @@ class User extends Authenticatable // implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'is_admin',
+        'is_mod',
+        'is_pmc_user',
+        'is_partner_user',
+        'brands'
+    ];
+
     /**
      * Get the profile photo URL attribute.
      *
@@ -52,6 +73,16 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    public function brands()
+    {
+        return $this->belongsToMany(Brand::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**
@@ -69,8 +100,53 @@ class User extends Authenticatable // implements MustVerifyEmail
         return $this->roles()->where('name', 'Admin')->exists();
     }
 
-    public function isUser()
+    public function getIsAdminAttribute()
     {
-        return $this->roles()->where('name', 'User')->exists();
+        return $this->isAdmin();
     }
+
+    public function isMod()
+    {
+        return $this->isAdmin() || $this->roles()->where('name', 'Mod')->exists();
+    }
+
+    public function getIsModAttribute()
+    {
+        return $this->isMod();
+    }
+
+    public function isPMCUser()
+    {
+        return $this->isAdmin() || $this->isMod() || $this->roles()->where('name', 'PMC User')->exists();
+    }
+
+    public function getIsPMCUserAttribute()
+    {
+        return $this->isPMCUser();
+    }
+
+    public function isPartnerUser()
+    {
+        return $this->roles()->where('name', 'Partner User')->exists();
+    }
+
+    public function getIsPartnerUserAttribute()
+    {
+        return $this->isPartnerUser();
+    }
+
+    public function getBrandsAttribute() {
+        $brands = $this->brands()->get();
+
+        $rs = [];
+        foreach ($brands as  $brand) {
+            $rs += [
+                'id' => $brand->id,
+                'name' => $brand->name
+            ];
+        }
+
+        return $rs;
+    }
+
 }

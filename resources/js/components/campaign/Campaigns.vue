@@ -9,7 +9,7 @@
                         <div class="card-header">
                             <h3 class="card-title">Campaign List</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-sm btn-primary" @click="newModal">
+                                <button type="button" class="btn btn-sm btn-primary" @click="newModal" v-if="$gate.isMod()">
                                     <i class="fa fa-plus-square"></i>
                                     Add New
                                 </button>
@@ -58,7 +58,7 @@
                                     <td>{{campaign.discount_max}}</td>
                                     <td>{{campaign.total_discount}}</td>
                                     <td>{{campaign.total_price}}</td>
-                                    <td>
+                                    <td v-if="$gate.isMod()">
                                         <a href="#" @click="editModal(campaign)">
                                             <i class="fa fa-edit blue"></i>
                                         </a>
@@ -81,7 +81,7 @@
             </div>
 
             <!-- Modal -->
-            <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNew" aria-hidden="true">
+            <div v-if="$gate.isMod()" class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNew" aria-hidden="true">
                 <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">

@@ -5,17 +5,20 @@ export default class Gate{
     }
 
     isAdmin(){
-        return this.user.type === 'admin';
+        return this.user.is_admin;
     }
 
-    isUser(){
-        return this.user.type === 'user';
+    isMod(){
+        return this.user.is_mod;
     }
-    
-    isAdminOrUser(){
-        if(this.user.type === 'user' || this.user.type === 'admin'){
-            return true;
-        }
+
+    isPMCUser(){
+        return this.user.is_pmc_user();
     }
+
+    isPartnerUser(){
+        return this.user.is_partner_user();
+    }
+
 }
 

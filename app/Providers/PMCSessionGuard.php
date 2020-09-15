@@ -4,6 +4,7 @@
 namespace App\Providers;
 
 
+use App\Models\User;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Support\Facades\Log;
 
@@ -21,7 +22,7 @@ class PMCSessionGuard extends SessionGuard
     {
         // if user has access_token['expires_at'] and not expired - fireValidatedEvent and return true
         // if user has access_token['expires_at'] and expired - return false
-        if($user && in_array($user['type'], ['user', 'admin']) && isset($user['access_token'])) {
+        if($user && $user->type == User::PMC_USER && isset($user['access_token'])) {
             if(json_decode($user['access_token'])->expires_at > time()) {
                 $this->fireValidatedEvent($user);
                 Log::info('Valid access token');
@@ -34,5 +35,18 @@ class PMCSessionGuard extends SessionGuard
         Log::info('No access token, login by user/pass');
         // if user has no access_token - call parent::hasValidCredentials
         return parent::hasValidCredentials($user, $credentials);
+    }
+
+    /**
+     * Get the currently authenticated user.
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    public function user()
+    {
+        // in case we need to customize the user model response to client
+
+        // if not call to parent
+        return parent::user();
     }
 }

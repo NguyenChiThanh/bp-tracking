@@ -43,7 +43,7 @@ return [
 
         'web' => [
             'driver' => 'pmc_session',
-            'provider' => 'users',
+            'provider' => 'custom_user',
         ],
 
         'api' => [
@@ -73,6 +73,11 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+
+        'custom_user' => [
+            'driver' => 'custom_user',
             'model' => App\Models\User::class,
         ],
 

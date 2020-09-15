@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Requests\Users\UserRequest;
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends BaseController
@@ -25,10 +27,9 @@ class UserController extends BaseController
      */
     public function index()
     {
-        if (!\Gate::allows('isAdmin')) {
+        if (!Gate::allows('isMod')) {
             return $this->unauthorizedResponse();
         }
-        // $this->authorize('isAdmin');
 
         $users = User::latest()->paginate(10);
 
@@ -50,9 +51,22 @@ class UserController extends BaseController
         $user = User::create([
             'name' => $request['name'],
             'email' => $request['email'],
+            'phone' => $request['phone'],
+            'company' => $request['company']['id'],
+//            'brands' => $request['brands'],
+            'status' => $request['status'],
             'password' => Hash::make($request['password']),
             'type' => $request['type'],
         ]);
+
+        $brandIds = [];
+        foreach($request['brands'] as $brand) {
+            array_push($brandIds, $brand['id']);
+        }
+        $user->brands()->attach($brandIds);
+
+        $partnerUSerRole = Role::where('name', 'Partner User')->first();
+        $user->roles()->attach([$partnerUSerRole->id]);
 
         return $this->sendResponse($user, 'User Created Successfully');
     }
@@ -88,7 +102,7 @@ class UserController extends BaseController
     public function destroy($id)
     {
 
-        $this->authorize('isAdmin');
+        $this->authorize('isMod');
 
         $user = User::findOrFail($id);
         // delete the user

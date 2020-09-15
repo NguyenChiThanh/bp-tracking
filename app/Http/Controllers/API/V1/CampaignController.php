@@ -11,6 +11,7 @@ use App\Models\Booking;
 
 
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,7 +43,22 @@ class CampaignController extends BaseController
      */
     public function index()
     {
-        $campaigns = $this->campaign->with('brand')->latest()->paginate(10);
+        // todo use user_id in param instead /campaign?user_id=xxx
+        $user = Auth::user();
+        $brands = $user->brands()->get();
+        $brandIds = [];
+
+        foreach ($brands as  $brand) {
+            array_push($brandIds, $brand->id);
+        }
+
+        // todo check pagination
+        if(count($brandIds) > 0) {
+            $campaigns = $this->campaign->whereIn('brand_id', $brandIds)->with('brand')->latest()->paginate(20);
+        } else {
+            $campaigns = $this->campaign->with('brand')->latest()->paginate(20);
+        }
+
         foreach ($campaigns->items() as $item) {
             $posIdList = json_decode($item->position_list, true);
             $posList = [];
@@ -60,6 +76,7 @@ class CampaignController extends BaseController
             $company = Company::find($item->brand->company_id);
             $item->company = $company;
         }
+
         return $this->sendResponse($campaigns, 'Campaign list');
     }
 

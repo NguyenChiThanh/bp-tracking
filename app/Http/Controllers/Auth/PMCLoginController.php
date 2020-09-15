@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -120,10 +121,13 @@ class PMCLoginController extends Controller
                     'name' => $data['name'],
                     'email' => $data['email'],
                     'password' => '',
-                    'type' => 'user',
+                    'type' => User::PMC_USER,
                     'access_token' => $data['access_token']
                 ]
             );
+            // set pmc user role by default
+            $pmcUserRole = Role::firstWhere('name', 'PMC User');
+            $user->assignRole($pmcUserRole);
         }catch (\Exception $exception) {
             Log::warning($exception->getMessage());
             return null;

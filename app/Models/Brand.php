@@ -12,4 +12,9 @@ class Brand extends Model
     {
         return $this->belongsTo('App\Models\Company');
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

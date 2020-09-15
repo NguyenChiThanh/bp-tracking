@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Auth\CustomUserProvider;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -25,11 +26,16 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
+        Auth::provider('custom_user', function ($app, array $config) {
+            return new CustomUserProvider($this->app['hash'], $config['model']);
+        });
 
         Auth::extend('pmc_session', function ($app, $name, array $config) {
-            // Return an instance of Illuminate\Contracts\Auth\Guard...
-            $guard = new PMCSessionGuard($name, Auth::createUserProvider($config['provider']), $app['session.store']);
+            $guard = new PMCSessionGuard(
+                $name,
+                Auth::createUserProvider($config['provider']),
+                $app['session.store']
+            );
             if (method_exists($guard, 'setCookieJar')) {
                 $guard->setCookieJar($this->app['cookie']);
             }
@@ -42,21 +48,19 @@ class AuthServiceProvider extends ServiceProvider
          * Defining the user Roles
          */
         Gate::define('isAdmin', function ($user) {
-            // if ($user->isAdmin()) {
-            //     return true;
-            // }
-
-            // for simplicity
-            return $user->type === 'admin';
+            return $user->isAdmin();
         });
 
-        Gate::define('isUser', function ($user) {
-            // if ($user->isUser()) {
-            //     return true;
-            // }
+        Gate::define('isMod', function ($user) {
+            return $user->isMod();
+        });
 
-            // for simplicity
-            return $user->type === 'user';
+        Gate::define('isPMCUser', function ($user) {
+            return $user->isPMCUser();
+        });
+
+        Gate::define('isPartnerUser', function ($user) {
+            return $user->isPartnerUser();
         });
     }
 }
