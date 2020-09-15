@@ -38,6 +38,10 @@ class CompanyTableSeeder extends Seeder
             ]
         ];
 
+        DB::table('users')->where('name', 'Partner User')->first()->update(
+            ['company_id' => 1]
+        );
+
         Schema::enableForeignKeyConstraints();
         DB::table('company')->insert($company);
     }

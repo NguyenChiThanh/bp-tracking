@@ -17,7 +17,6 @@ class UsersTableSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
 
-        $company = DB::table('company')->where('name', 'Novartis')->first();
         DB::table('users')->truncate();
         DB::table('users')->insert([
             [
@@ -47,7 +46,7 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'Partner User',
                 'email' => 'partneruser@pmc.com',
-                'company_id' => $company->id,
+                // 'company_id' => $company->id,
                 'password' => bcrypt('A123456!'),
                 'type' => User::PARTNER_USER,
                 'status' => User::ACTIVE,
