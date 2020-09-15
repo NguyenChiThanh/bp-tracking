@@ -122,6 +122,7 @@ class PMCLoginController extends Controller
                     'email' => $data['email'],
                     'password' => '',
                     'type' => User::PMC_USER,
+                    'status' => User::ACTIVE,
                     'access_token' => $data['access_token']
                 ]
             );
