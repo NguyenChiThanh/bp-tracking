@@ -7,7 +7,7 @@
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>{{ config('app.name', 'Laravel') }}</title>
+  <title>{{ env('APP_NAME') }}</title>
 
 
   <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
@@ -16,7 +16,7 @@
 <div class="wrapper" id="app">
 
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
+  <nav class="main-header navbar navbar-expand {{ env('APP_BG_COLOR') }} navbar-light border-bottom">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -45,7 +45,7 @@
     <router-link to="/dashboard" class="brand-link">
       <img src="{{ asset('/images/logopmc.png') }}" alt="The Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text small">{{ config('app.name', 'Laravel') }}</span>
+      <span class="brand-text small">{{ env('APP_NAME') }}</span>
     </router-link>
 
     <!-- Sidebar -->
