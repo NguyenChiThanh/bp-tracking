@@ -54,7 +54,6 @@ class UserRequest extends FormRequest
     public function updateRules(): array
     {
         return [
-            'type' => 'sometimes|in:admin,user',
             'name' => 'sometimes|string|max:191',
             'email' => 'sometimes|string|email|max:191|unique:users,email,' . $this->get('id')
         ];

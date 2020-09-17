@@ -51,7 +51,7 @@ class UserController extends BaseController
         $user = User::create([
             'name' => $request['name'],
             'email' => $request['email'],
-            'phone' => $request['phone'],
+            'cellphone' => $request['cellphone'],
             'company' => $request['company']['id'],
 //            'brands' => $request['brands'],
             'status' => $request['status'],
@@ -89,6 +89,15 @@ class UserController extends BaseController
         }
 
         $user->update($request->all());
+
+        $brandIds = [];
+        foreach($request['brands'] as $brand) {
+            array_push($brandIds, $brand['id']);
+        }
+        $user->brands()->sync($brandIds);
+
+//        $partnerUSerRole = Role::where('name', 'Partner User')->first();
+//        $user->roles()->sync([$partnerUSerRole->id]);
 
         return $this->sendResponse($user, 'User Information has been updated');
     }

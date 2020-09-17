@@ -5,8 +5,11 @@ namespace App\Providers;
 
 
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class PMCSessionGuard extends SessionGuard
 {
@@ -34,6 +37,11 @@ class PMCSessionGuard extends SessionGuard
 
         Log::info('No access token, login by user/pass');
         // if user has no access_token - call parent::hasValidCredentials
+        // check if user is active or not
+        if ($user && $user['status'] != User::ACTIVE) {
+            Log::warning('Account is not in active status');
+            return false;
+        }
         return parent::hasValidCredentials($user, $credentials);
     }
 

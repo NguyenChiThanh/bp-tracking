@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('company_id')->nullable();
             $table->foreign('company_id')->references('id')->on('company');
             $table->string('email')->unique();
+            $table->string('cellphone')->nullable();
             $table->text('access_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

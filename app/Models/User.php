@@ -140,10 +140,10 @@ class User extends Authenticatable // implements MustVerifyEmail
 
         $rs = [];
         foreach ($brands as  $brand) {
-            $rs += [
+            array_push($rs, [
                 'id' => $brand->id,
                 'name' => $brand->name
-            ];
+            ]);
         }
 
         return $rs;

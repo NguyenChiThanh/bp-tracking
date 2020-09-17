@@ -26,6 +26,7 @@
                       <th>Type</th>
                       <th>Name</th>
                       <th>Email</th>
+                      <th>Cell Phone</th>
                       <th>Company</th>
                       <th>Brand</th>
                       <th>Status</th>
@@ -41,8 +42,14 @@
                       <td>{{user.type}}</td>
                       <td>{{user.name}}</td>
                       <td>{{user.email}}</td>
+                      <td>{{user.cellphone}}</td>
                       <td>{{user.company}}</td>
-                      <td>{{user.brands}}</td>
+
+                      <td>
+                          <ul class="list-group-item" v-for="brand in user.brands" :key="brand.name">
+                              <li>{{brand.name}}</li>
+                          </ul>
+                      </td>
                       <td>{{user.status}}</td>
                       <td :inner-html.prop="user.email_verified_at | yesno"></td>
                       <td>{{user.created_at}}</td>
@@ -106,9 +113,9 @@
 
                         <div class="form-group">
                             <label>Cellphone</label>
-                            <input v-model="form.phone" type="text" name="phone"
-                                   class="form-control" :class="{ 'is-invalid': form.errors.has('phone') }">
-                            <has-error :form="form" field="phone"></has-error>
+                            <input v-model="form.cellphone" type="text" name="cellphone"
+                                   class="form-control" :class="{ 'is-invalid': form.errors.has('cellphone') }">
+                            <has-error :form="form" field="cellphone"></has-error>
                         </div>
 
                         <div class="form-group">
@@ -121,8 +128,8 @@
                         <div class="form-group">
                             <label>Brands:</label>
                             <v-select multiple v-model="form.brands" label="name" :options="brands.data"
-                                      :class="{ 'is-invalid': form.errors.has('brand')} "></v-select>
-                            <has-error :form="form" field="brand"></has-error>
+                                      :class="{ 'is-invalid': form.errors.has('brands')} "></v-select>
+                            <has-error :form="form" field="brands"></has-error>
                         </div>
 
 
@@ -184,6 +191,7 @@
                     name: '',
                     status : '',
                     email: '',
+                    cellphone: '',
                     password: '',
                     password_confirmation: '',
                     email_verified_at: '',
