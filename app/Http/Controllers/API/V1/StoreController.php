@@ -218,7 +218,7 @@ class StoreController extends BaseController
                 }
                 $storeInfo['positions'][] = $posArr;
             }
-            $rs += $storeInfo;
+            $rs[] = $storeInfo;
         }
 
         return response()->json($rs, 200);
