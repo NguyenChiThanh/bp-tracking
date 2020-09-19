@@ -28,6 +28,8 @@ class CreateStoresTable extends Migration
             $table->string('ward');
             $table->string('address');
             $table->json('images');
+            $table->decimal('latitude');
+            $table->decimal('longitude');
             $table->timestamps();
             $table->softDeletes();
         });

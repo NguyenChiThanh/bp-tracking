@@ -29,7 +29,9 @@ class Store extends Model
         'ward_id',
         'ward',
         'address',
-        'images'
+        'images',
+        'longitude',
+        'latitude'
     ];
 
     public function positions()

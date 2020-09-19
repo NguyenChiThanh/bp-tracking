@@ -52,7 +52,9 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
                             ward_id,
                             ward,
                             address,
-                            images
+                            images,
+                            latitude,
+                            longitude
                         }
                     }',
             'variables' => [
@@ -96,6 +98,8 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
                         'address' => $store['address'],
                         'images' => json_encode($store['images'] ?? []),
                         'level' => $store['level'] ?? $level,
+                        'longitude' => $store['longitude'],
+                        'latitude' => $store['latitude']
                     ]
                 );
             } catch (Exception $exception) {

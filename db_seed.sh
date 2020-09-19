@@ -4,4 +4,3 @@ php artisan sync:location
 php artisan sync:store
 php artisan sync:brand
 php artisan db:seed
-php artisan import:position positions_stag.xlsx
