@@ -31,14 +31,14 @@
             </router-link>
         </li>
 
-        <li class="nav-item">
-            <router-link to="/brands" class="nav-link">
-                <i class="nav-icon fas fa-heart purple"></i>
-                <p>
-                    Brands
-                </p>
-            </router-link>
-        </li>
+<!--        <li class="nav-item">-->
+<!--            <router-link to="/brands" class="nav-link">-->
+<!--                <i class="nav-icon fas fa-heart purple"></i>-->
+<!--                <p>-->
+<!--                    Brands-->
+<!--                </p>-->
+<!--            </router-link>-->
+<!--        </li>-->
 
 
         <li class="nav-item">

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Requests\Positions\PositionRequest;
 use App\Models\Position;
-use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -37,6 +37,15 @@ class PositionController extends BaseController
         $positions = $this->position->with('store')->latest()->paginate(10);
 
         return $this->sendResponse($positions,'Position list');
+    }
+
+    public function import(Request $request)
+    {
+        $filePath = $request->get('filePath');
+        Artisan::call('import:position', compact('filePath'));
+
+        return response()->json(['message' => 'success'], 200);
+
     }
 
     public function list(Request $request)

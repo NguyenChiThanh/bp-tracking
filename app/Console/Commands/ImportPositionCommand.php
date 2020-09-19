@@ -43,7 +43,7 @@ class ImportPositionCommand extends Command
     public function handle()
     {
         $filePath = $this->argument('filePath');
-        $spreadsheet = IOFactory::load(storage_path($filePath));
+        $spreadsheet = IOFactory::load(base_path().'/storage/app/'.$filePath);
         $worksheet = $spreadsheet->getActiveSheet();
         // Get the highest row and column numbers referenced in the worksheet
         // $highestRow = $worksheet->getHighestRow(); // e.g. 10

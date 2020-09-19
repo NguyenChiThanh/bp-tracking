@@ -78,6 +78,29 @@
                 </div>
             </div>
 
+            <!-- import modal -->
+            <div class="modal fade" id="importPositions" tabindex="-1" role="dialog" aria-labelledby="importPositions" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Select a file to import positions</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Import position</label>
+                                <input type="file" name="file" @change="onFileChange" class="form-control">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-sm btn-primary" @click="importPositions" id="importPositionsBtn">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Modal -->
             <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNew" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
@@ -186,10 +209,6 @@
                                            class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                     <has-error :form="form" field="name"></has-error>
                                 </div>
-<!--                                <div class="form-group">-->
-<!--                                    <label>Image</label>-->
-<!--                                    <input type="file" name="file" @change="onFileChange" class="form-control">-->
-<!--                                </div>-->
                                 <div class="form-group">
                                     <label>Description:</label>
                                     <input v-model="form.description" type="text" name="description"
@@ -270,6 +289,7 @@
 
                 // fileUploaded: [],
                 headers: {},
+                positionFileUrl: '',
                 // fileUploadUrl: '/file/upload'
                 // autocompleteItems: [],
             }
@@ -298,16 +318,16 @@
                 )
 
             },
-            // onFileChange(e) {
-            //     const file = e.target.files[0];
-            //     console.log(file);
-            //     const formData = new FormData();
-            //     formData.append('file', file);
-            //     axios.post('/file/upload', formData).then(({data}) => {
-            //         console.log(data)
-            //         this.form.image_url = data.file_path;
-            //     });
-            // },
+            onFileChange(e) {
+                const file = e.target.files[0];
+                console.log(file);
+                const formData = new FormData();
+                formData.append('file', file);
+                axios.post('/file/upload?type=positions', formData).then(({data}) => {
+                    console.log(data)
+                    this.positionFileUrl = data.file_path;
+                });
+            },
 
             getResults(page = 1) {
 
@@ -364,7 +384,46 @@
                 this.form.fill(position);
             },
             importModal(){
-                alert('not implemented yet');
+                $('#importPositions').modal('show');
+            },
+
+            importPositions() {
+                if(this.positionFileUrl) {
+                    var _this = this;
+                    _this.$Progress.start();
+                    $('#importPositionsBtn').prop('disabled', true);
+                    axios.post('api/positions/import', {
+                        filePath: this.positionFileUrl,
+                         })
+                        .then(function (response) {
+                            $('#importPositionsBtn').prop('disabled', false);
+
+                            if(response.status == 200) {
+                                $('#importPositions').modal('hide');
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: response.message
+                                });
+                                _this.$Progress.finish();
+                                _this.loadPositions();
+                            } else {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: response.message
+                                });
+
+                                _this.$Progress.fail();
+                            }
+                        })
+                        .catch(function (error) {
+                            Toast.fire({
+                                icon: 'error',
+                                title: error
+                            });
+                            $('#importPositionsBtn').prop('disabled', false);
+                            _this.$Progress.fail();
+                        });
+                }
             },
             newModal(){
                 this.editmode = false;

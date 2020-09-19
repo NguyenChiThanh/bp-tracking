@@ -34,6 +34,8 @@ Route::post('product/upload', 'API\V1\ProductController@upload');
 Route::get('stores/list', 'API\V1\StoreController@list');
 Route::get('channels/list', 'API\V1\ChannelController@list');
 Route::get('positions/list', 'API\V1\PositionController@list');
+Route::post('positions/import', 'API\V1\PositionController@import');
+
 
 Route::get('provinces/list', 'API\V1\ProvinceController@list');
 Route::get('districts/list', 'API\V1\DistrictController@list');
