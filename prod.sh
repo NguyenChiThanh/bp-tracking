@@ -12,7 +12,6 @@ init()
     php artisan sync:brand
 
     php artisan db:seed
-    php artisan import:pos positions_prod.xlsx
 
     npm install
     npm run prod
