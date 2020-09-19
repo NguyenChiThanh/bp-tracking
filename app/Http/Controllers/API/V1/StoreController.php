@@ -221,6 +221,6 @@ class StoreController extends BaseController
             $rs[] = $storeInfo;
         }
 
-        return response()->json($rs, 200);
+        return response()->json(['data' => $rs], 200);
     }
 }
