@@ -32,6 +32,8 @@ Route::get('category/list', 'API\V1\CategoryController@list');
 Route::post('product/upload', 'API\V1\ProductController@upload');
 
 Route::get('stores/list', 'API\V1\StoreController@list');
+Route::get('stores/search', 'API\V1\StoreController@search');
+
 Route::get('channels/list', 'API\V1\ChannelController@list');
 Route::get('positions/list', 'API\V1\PositionController@list');
 Route::post('positions/import', 'API\V1\PositionController@import');

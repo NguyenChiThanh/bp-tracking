@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Requests\Stores\StoreRequest;
+use App\Models\Booking;
+use App\Models\Position;
 use App\Models\Store;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
 class StoreController extends BaseController
@@ -20,7 +24,7 @@ class StoreController extends BaseController
      */
     public function __construct(Store $store)
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api')->except(['search']);
         $this->store = $store;
     }
 
@@ -166,5 +170,57 @@ class StoreController extends BaseController
         $store->delete();
 
         return $this->sendResponse($store, 'Store has been Deleted');
+    }
+
+    /**
+     * Search store by latitude, longitude
+     * @param Request $request
+     */
+    public function search(Request $request) {
+        $latitude = $request->get('latitude');
+        $longitude = $request->get('longitude');
+
+        $radius = $request->get('radius') ?? 1.0; // in km
+
+        $query = sprintf('SELECT
+            id, name, latitude , longitude ,
+            (
+                6371 * acos(
+                    cos(radians(%f)) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(%f)) +
+                    sin(radians(%f)) * sin(radians(latitude))
+                )
+            ) AS distance
+        FROM
+            stores s
+        HAVING
+            distance < %f
+        ORDER BY
+            distance', $latitude, $longitude, $latitude, $radius);
+
+        $stores = DB::select($query);
+
+        $rs = [];
+        foreach ($stores as $store) {
+            $storeInfo = [
+                'store_id'=> $store->id,
+                'store_name'=> $store->name,
+                'latitude'=> floatval($store->latitude),
+                'longitude'=> floatval($store->longitude),
+                'positions' => [],
+            ];
+            $positions = Position::where('store_id', $store->id)->get();
+            foreach($positions as $pos) {
+                $posArr = $pos->toArray();
+                $bookings = Booking::where('position_id', $pos->id)->get();
+                foreach ($bookings as $b) {
+                        $posArr['bookings'][] = $b->toArray();
+                }
+                $storeInfo['positions'][] = $posArr;
+            }
+            $rs += $storeInfo;
+        }
+
+        return response()->json($rs, 200);
     }
 }
