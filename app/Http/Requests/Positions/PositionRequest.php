@@ -32,9 +32,9 @@ class PositionRequest extends FormRequest
             'image_url' => 'nullable|string',
             'store.id' => 'required|integer',
             'channel' => 'required|string',
-            'buffer_days' => 'required|integer',
+            'buffer_days' => 'required|integer|gt:0',
             'unit' => 'required|string',
-            'price' => 'required|regex:/^\d*(\.\d{2})?$/',
+            'price' => 'required|numeric|gt:0',
         ];
     }
 }
