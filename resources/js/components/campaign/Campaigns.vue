@@ -204,12 +204,12 @@
                                         </div>
                                          <div class="col-md-4">
                                             <label>Discount value: (for eg: 0.2)</label>
-                                            <input v-model="form.discount_value" type="text" class="form-control" @input="computeDiscount">
+                                            <input type="number" min="0" v-model="form.discount_value" class="form-control" @input="computeDiscount">
                                          </div>
 
                                          <div class="col-md-4" v-show="form.discount_type === 'percentage'">
                                             <label>Discount max:</label>
-                                            <input v-model="form.discount_max" type="text" class="form-control" @input="computeDiscount">
+                                            <input type="number" min="0" v-model="form.discount_max" class="form-control" @input="computeDiscount">
                                          </div>
 
                                     </div>
