@@ -52,12 +52,13 @@ class UserController extends BaseController
             'name' => $request['name'],
             'email' => $request['email'],
             'cellphone' => $request['cellphone'],
-            'company' => $request['company']['id'],
-//            'brands' => $request['brands'],
             'status' => $request['status'],
             'password' => Hash::make($request['password']),
             'type' => $request['type'],
         ]);
+
+        $user->company_id = $request['company']['id'];
+        $user->save();
 
         $brandIds = [];
         foreach($request['brands'] as $brand) {
@@ -89,12 +90,18 @@ class UserController extends BaseController
         }
 
         $user->update($request->all());
+        $user->company_id = $request['company']['id'];
+        $user->save();
 
         $brandIds = [];
         foreach($request['brands'] as $brand) {
             array_push($brandIds, $brand['id']);
         }
         $user->brands()->sync($brandIds);
+
+//        dd($request->all());
+//        $user->company()->associate($request->get('company'));
+        $user->update($request->all());
 
 //        $partnerUSerRole = Role::where('name', 'Partner User')->first();
 //        $user->roles()->sync([$partnerUSerRole->id]);

@@ -11,6 +11,10 @@ class Company extends Model
     protected $table = 'company';
 
     public function brands() {
-        return $this->hasMany('App\Models\Brand');
+        return $this->hasMany(Brand::class);
+    }
+
+    public function users() {
+        return $this->hasMany(User::class);
     }
 }
