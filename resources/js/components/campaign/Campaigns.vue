@@ -220,13 +220,13 @@
                                             <label class="form-control">Total discount:</label>
                                         </div>
                                         <div class="col-md-3">
-                                            <input v-model="form.total_discount" class="form-control">
+                                            <input readonly v-model="form.total_discount" class="form-control">
                                         </div>
                                          <div class="col-md-3">
                                             <label class="form-control text-success">Total price:</label>
                                         </div>
                                         <div class="col-md-3">
-                                            <input v-model="form.total_price" class="form-control text-success">
+                                            <input readonly v-model="form.total_price" class="form-control text-success">
                                         </div>
                                     </div>
                                 </div>
