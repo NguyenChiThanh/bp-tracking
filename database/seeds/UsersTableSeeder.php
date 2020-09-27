@@ -18,7 +18,8 @@ class UsersTableSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
 
         DB::table('users')->truncate();
-        DB::table('users')->insert([
+
+        $users = [
             [
                 'name' => 'PMC Admin',
                 'email' => 'pmcadmin@pmc.com',
@@ -42,19 +43,21 @@ class UsersTableSeeder extends Seeder
                 'type' => User::PMC_USER,
                 'status' => User::ACTIVE,
                 'created_at' => \Carbon\Carbon::now()
-            ],
-            [
-                'name' => 'Partner User',
-                'email' => 'partneruser@pmc.com',
+            ]
+        ];
+        for($i=0; $i<20; $i++) {
+            $users[] = [
+                'name' => sprintf('Partner User %d', $i),
+                'email' => sprintf('partneruser_%d@pmc.com', $i),
                 // 'company_id' => $company->id,
                 'password' => bcrypt('A123456!'),
                 'type' => User::PARTNER_USER,
                 'status' => User::ACTIVE,
                 'created_at' => \Carbon\Carbon::now()
-            ],
-        ]);
+            ];
+        }
 
-
+        DB::table('users')->insert($users);
         Schema::enableForeignKeyConstraints();
 
     }

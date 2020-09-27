@@ -43,7 +43,7 @@
                       <td>{{user.name}}</td>
                       <td>{{user.email}}</td>
                       <td>{{user.cellphone}}</td>
-                      <td>{{user.company}}</td>
+                      <td>{{user.company.name}}</td>
 
                       <td>
                           <ul class="list-group-item" v-for="brand in user.brands" :key="brand.name">

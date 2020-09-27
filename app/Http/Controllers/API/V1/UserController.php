@@ -31,7 +31,7 @@ class UserController extends BaseController
             return $this->unauthorizedResponse();
         }
 
-        $users = User::latest()->paginate(10);
+        $users = User::latest()->with(['brands', 'company'])->latest()->paginate(10);
 
         return $this->sendResponse($users, 'Users list');
     }
