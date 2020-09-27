@@ -53,7 +53,7 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                  <pagination :data="channels" @pagination-change-page="getResults"></pagination>
+                  <pagination :data="channels" :limit="2" @pagination-change-page="getResults"></pagination>
               </div>
             </div>
             <!-- /.card -->

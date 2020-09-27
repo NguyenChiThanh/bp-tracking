@@ -4,13 +4,13 @@
         <div class="row">
 
           <div class="col-12">
-        
+
             <div class="card" v-if="$gate.isAdmin()">
               <div class="card-header">
                 <h3 class="card-title">Category List</h3>
 
                 <div class="card-tools">
-                  
+
                   <button type="button" class="btn btn-sm btn-primary" @click="newModal">
                       <i class="fa fa-plus-square"></i>
                       Add New
@@ -48,7 +48,7 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                  <pagination :data="categories" @pagination-change-page="getResults"></pagination>
+                  <pagination :data="categories" :limit="2" @pagination-change-page="getResults"></pagination>
               </div>
             </div>
             <!-- /.card -->
@@ -120,7 +120,7 @@
             getResults(page = 1) {
 
                   this.$Progress.start();
-                  
+
                   axios.get('/api/category?page=' + page).then(({ data }) => (this.categories = data.data));
 
                   this.$Progress.finish();
@@ -162,7 +162,7 @@
                     axios.get("/api/category").then(({ data }) => (this.categories = data.data));
                 }
             },
-            
+
             createCategory(){
 
                 this.form.post('/api/category')

@@ -71,7 +71,8 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            <pagination :data="positions" @pagination-change-page="getResults"></pagination>
+                            <pagination :data="positions" @pagination-change-page="getResults" :limit="2">
+                            </pagination>
                         </div>
                     </div>
                     <!-- /.card -->

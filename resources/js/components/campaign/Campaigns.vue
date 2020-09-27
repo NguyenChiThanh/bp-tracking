@@ -73,7 +73,7 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            <pagination :data="campaigns" @pagination-change-page="getResults"></pagination>
+                            <pagination :data="campaigns" :limit="2" @pagination-change-page="getResults"></pagination>
                         </div>
                     </div>
                     <!-- /.card -->

@@ -67,7 +67,7 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                  <pagination :data="stores" @pagination-change-page="getResults"></pagination>
+                  <pagination :data="stores" :limit="2" @pagination-change-page="getResults"></pagination>
               </div>
             </div>
             <!-- /.card -->

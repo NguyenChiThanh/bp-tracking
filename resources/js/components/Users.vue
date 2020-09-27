@@ -70,7 +70,7 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                  <pagination :data="users" @pagination-change-page="getResults"></pagination>
+                  <pagination :data="users" :limit="2" @pagination-change-page="getResults"></pagination>
               </div>
             </div>
             <!-- /.card -->
