@@ -32,9 +32,14 @@ class CompanyController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function list()
+    public function list(Request $request)
     {
-        $companies = $this->company->with('brands')->latest()->paginate(10);
+        $companies = [];
+        if($request->get('all')) {
+            $companies = $this->company->with('brands')->latest()->get();
+        } else {
+            $companies = $this->company->with('brands')->latest()->paginate(10);
+        }
 
         return $this->sendResponse($companies, 'Company list');
     }

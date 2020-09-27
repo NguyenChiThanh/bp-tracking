@@ -613,8 +613,8 @@
 
             loadCompany() {
                 // if(this.$gate.isAdmin()){
-                axios.get("api/company/list").then((response)=> {
-                    this.company = response.data.data;
+                axios.get("api/company/list?all=true").then((response)=> {
+                    this.company = response.data;
                 });
                 // }
             },

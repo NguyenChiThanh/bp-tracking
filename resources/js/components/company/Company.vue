@@ -184,7 +184,7 @@
 
                 this.$Progress.start();
 
-                axios.get('api/company?page=' + page).then(({data}) => (this.company = data));
+                axios.get('api/company/list?page=' + page).then(({data}) => (this.company = data.data));
 
                 this.$Progress.finish();
             },
