@@ -220,6 +220,7 @@
 
             onCompanyChange(company) {
                 this.brands = {};
+                this.form.brands = [];
                 axios.get("api/brands/list?company_id="+company.id).then((response) => {
                     this.brands = response.data
                 })
@@ -331,7 +332,7 @@
             this.$Progress.start();
             this.loadUsers();
             this.loadCompany();
-            this.loadBrands();
+            // this.loadBrands();
             this.$Progress.finish();
         }
     }
