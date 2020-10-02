@@ -68,7 +68,7 @@ class UserController extends BaseController
             'type' => $request['type'],
         ]);
 
-        $user->company_id = $request['company']['id'];
+        $user['company_id'] = $request['company']['id'];
         $user->save();
 
         $brandIds = [];
@@ -102,7 +102,7 @@ class UserController extends BaseController
         }
 
         $user->update($request->all());
-        $user->company_id = $request['company']['id'];
+        $user['company_id'] = $request['company']['id'];
         $user->save();
 
         $brandIds = [];
