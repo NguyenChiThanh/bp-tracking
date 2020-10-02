@@ -24,11 +24,13 @@
                     <tr>
                       <th>ID</th>
                       <th>Type</th>
-                      <th>Name</th>
+                        <th>Roles</th>
+
+                        <th>Name</th>
                       <th>Email</th>
                       <th>Cell Phone</th>
                       <th>Company</th>
-                      <th>Brand</th>
+                        <th>Brand</th>
                       <th>Status</th>
                       <th>Email Verified?</th>
                       <th>Created</th>
@@ -38,31 +40,37 @@
                   <tbody>
                      <tr v-for="user in users.data" :key="user.id">
 
-                      <td>{{user.id}}</td>
-                      <td>{{user.type}}</td>
-                      <td>{{user.name}}</td>
-                      <td>{{user.email}}</td>
-                      <td>{{user.cellphone}}</td>
-                         <td><span v-if="user.company">{{user.company.name}}</span></td>
-                      <td>
-                          <ul class="list-group-item" v-for="brand in user.brands" :key="brand.name">
-                              <li>{{brand.name}}</li>
-                          </ul>
-                      </td>
-                      <td>{{user.status}}</td>
-                      <td :inner-html.prop="user.email_verified_at | yesno"></td>
-                      <td>{{user.created_at}}</td>
+                          <td>{{user.id}}</td>
+                          <td>{{user.type}}</td>
+                         <td>
+                             <ul class="list-group-item" v-for="role in user.roles" :key="role.name">
+                                 <li>{{role.name}}</li>
+                             </ul>
+                         </td>
+                          <td>{{user.name}}</td>
+                          <td>{{user.email}}</td>
+                          <td>{{user.cellphone}}</td>
+                          <td><span v-if="user.company">{{user.company.name}}</span></td>
+                          <td>
+                              <ul class="list-group-item" v-for="brand in user.brands" :key="brand.name">
+                                  <li>{{brand.name}}</li>
+                              </ul>
+                          </td>
 
-                      <td>
+                          <td>{{user.status}}</td>
+                          <td :inner-html.prop="user.email_verified_at | yesno"></td>
+                          <td>{{user.created_at}}</td>
 
-                        <a href="#" @click="editModal(user)">
-                            <i class="fa fa-edit blue"></i>
-                        </a>
-                        /
-                        <a href="#" @click="deleteUser(user.id)">
-                            <i class="fa fa-trash red"></i>
-                        </a>
-                      </td>
+                          <td>
+
+                            <a href="#" @click="editModal(user)">
+                                <i class="fa fa-edit blue"></i>
+                            </a>
+                            /
+                            <a href="#" @click="deleteUser(user.id)">
+                                <i class="fa fa-trash red"></i>
+                            </a>
+                          </td>
                     </tr>
                   </tbody>
                 </table>
@@ -86,7 +94,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" v-show="!editmode">Create New Partner User</h5>
+                    <h5 class="modal-title" v-show="!editmode">Create New User</h5>
                     <h5 class="modal-title" v-show="editmode">Update Partner User's Info</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -97,6 +105,21 @@
 
                 <form @submit.prevent="editmode ? updateUser() : createUser()">
                     <div class="modal-body">
+                        <div class="form-group">
+                            <label>Type:</label>
+                            <v-select v-model="form.type" label="name"
+                                      :options="userTypes"
+                                      @input="onUserTypeChange"
+                                      :class="{ 'is-invalid': form.errors.has('type')} "></v-select>
+                            <has-error :form="form" field="type"></has-error>
+                        </div>
+                        <div class="form-group">
+                            <label>Roles:</label>
+                            <v-select multiple v-model="form.roles" label="name" :options="roles.data"
+                                      :class="{ 'is-invalid': form.errors.has('roles')} "></v-select>
+                            <has-error :form="form" field="roles"></has-error>
+                        </div>
+
                         <div class="form-group">
                             <label>Name</label>
                             <input v-model="form.name" type="text" name="name"
@@ -123,14 +146,12 @@
                                       :options="company.data"
                                       @input="onCompanyChange"></v-select>
                         </div>
-
                         <div class="form-group">
                             <label>Brands:</label>
                             <v-select multiple v-model="form.brands" label="name" :options="brands.data"
                                       :class="{ 'is-invalid': form.errors.has('brands')} "></v-select>
                             <has-error :form="form" field="brands"></has-error>
                         </div>
-
 
                         <div class="form-group">
                             <label>Password</label>
@@ -182,12 +203,15 @@
             return {
                 editmode: false,
                 users : {},
+                roles: {},
                 company: {},
                 brands: {},
+                userTypes: {},
                 form: new Form({
                     id : '',
                     type : '',
                     name: '',
+                    roles: '',
                     status : '',
                     email: '',
                     cellphone: '',
@@ -200,6 +224,33 @@
             }
         },
         methods: {
+
+            loadUserTypes() {
+                this.userTypes = [];
+                if(this.$gate.isMod()) {
+                    this.userTypes = ['partner_user'];
+                }
+                if(this.$gate.isAdmin()) {
+                    this.userTypes.push('pmc_user');
+                }
+            },
+
+            onUserTypeChange(userType) {
+                this.roles = {};
+                axios.get("api/roles?user_type="+userType).then((response) => {
+                    console.log(response.data);
+                    this.roles = response.data
+                })
+            },
+
+            loadRoles() {
+                if(this.$gate.isAdmin()) {
+                    axios.get("api/roles").then((data) => {
+                        console.log(data.data)
+                        this.roles = data.data;
+                    })
+                }
+            },
 
             loadCompany() {
                 // if(this.$gate.isAdmin()){
@@ -305,7 +356,6 @@
           createUser(){
               console.log(this.form);
               // todo hard code for partner user
-              this.form.type = 'partner_user';
               this.form.post('api/user').then((response)=> {
                   $('#addNew').modal('hide');
 
@@ -333,6 +383,8 @@
             this.loadUsers();
             this.loadCompany();
             // this.loadBrands();
+            this.loadRoles();
+            this.loadUserTypes();
             this.$Progress.finish();
         }
     }

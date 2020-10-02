@@ -31,7 +31,7 @@ class UserController extends BaseController
             return $this->unauthorizedResponse();
         }
 
-        $users = User::latest()->with(['brands', 'company'])->latest()->paginate(10);
+        $users = User::latest()->with(['brands', 'company', 'roles'])->latest()->paginate(10);
 
         return $this->sendResponse($users, 'Users list');
     }
@@ -66,8 +66,9 @@ class UserController extends BaseController
         }
         $user->brands()->attach($brandIds);
 
-        $partnerUSerRole = Role::where('name', 'Partner User')->first();
-        $user->roles()->attach([$partnerUSerRole->id]);
+        $roles = Role::whereIn('id', array_column($request->roles, 'id'))->get(['id']);
+
+        $user->roles()->attach($roles);
 
         return $this->sendResponse($user, 'User Created Successfully');
     }
@@ -99,12 +100,10 @@ class UserController extends BaseController
         }
         $user->brands()->sync($brandIds);
 
-//        dd($request->all());
-//        $user->company()->associate($request->get('company'));
-        $user->update($request->all());
+        $roles = Role::whereIn('id', array_column($request->roles, 'id'))->get(['id']);
+        $user->roles()->sync($roles);
 
-//        $partnerUSerRole = Role::where('name', 'Partner User')->first();
-//        $user->roles()->sync([$partnerUSerRole->id]);
+        $user->update($request->all());
 
         return $this->sendResponse($user, 'User Information has been updated');
     }

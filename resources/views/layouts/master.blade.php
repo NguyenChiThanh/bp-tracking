@@ -59,8 +59,14 @@
               <div class="info">
 
                   {{ Auth::user()->name }}
-                  <span class="d-block text-muted">
-                    {{ Ucfirst(Auth::user()->type) }}
+                  <span class="d-block">
+                    Roles:
+                        @foreach(array_column(Auth::user()->roles->toArray(), 'name') as $roleName)
+                            {{$roleName}},
+                        @endforeach
+                  </span>
+                  <span class="d-block">
+                      User Type: {{ Ucfirst(Auth::user()->type) }}
                   </span>
               </div>
           </div>
