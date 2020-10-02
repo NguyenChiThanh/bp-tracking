@@ -31,7 +31,18 @@ class UserController extends BaseController
             return $this->unauthorizedResponse();
         }
 
-        $users = User::latest()->with(['brands', 'company', 'roles'])->latest()->paginate(10);
+        $users = [];
+
+        if (auth()->user()->isMod()) {
+            $partnerRole = 'Partner User';
+            $users = User::whereHas('roles', function($q) use ($partnerRole) {
+                $q->where('name', $partnerRole);
+            })->latest()->with(['brands', 'company', 'roles'])->latest()->paginate(10);
+        }
+
+        if (auth()->user()->isAdmin()) {
+            $users = User::latest()->with(['brands', 'company', 'roles'])->latest()->paginate(10);
+        }
 
         return $this->sendResponse($users, 'Users list');
     }
