@@ -36,7 +36,7 @@ class RoleUserTableSeeder extends Seeder
             'user_id' => $pmcUserRole->id,
         ]);
 
-        $partnerUser = DB::table('users')->where('name', 'Partner User')->first();
+        $partnerUser = DB::table('users')->where('name', 'like', '%Partner User%')->first();
         $partnerUSerRole = DB::table('roles')->where('name', 'Partner User')->first();
         DB::table('role_user')->insert([
             'role_id' => $partnerUser->id,
