@@ -160,6 +160,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <vue-good-table
+                                                ref="position_table"
                                                 :columns="this.position_table.cols"
                                                 :rows="this.position_table.rows"
                                                 :pagination-options="{
@@ -178,22 +179,33 @@
                                                 allLabel: 'All',
                                                 }"
                                                 :select-options="{
-                                                enabled: true,
-                                                selectionInfoClass: 'custom-class',
-                                                selectionText: 'positions selected',
-                                                clearSelectionText: 'clear',
-                                                selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-                                                disableSelectInfo: true, // disable the select info panel on top
+                                                    disableSelectInfo: true, // disable the select info panel on top
                                                 }"
-                                                @on-selected-rows-change="onPositionSelected"
+                                                >
 
-                                            />
+                                                 <template slot="table-row" slot-scope="props">
+                                                    <span v-if="props.column.field == 'actions'">
+                                                        <button class="btn btn-sm primary" @click.prevent="onAddPositionClick(props.row)"><i class="fa fa-plus-circle"></i> add</button>
+                                                        <button class="btn btn-sm primary" @click.prevent="onRemovePositionClick(props.row)"><i class="fa fa-minus-circle"></i> remove</button>
+                                                    </span>
+                                                    <span v-else>
+                                                      {{props.formattedRow[props.column.field]}}
+                                                    </span>
+                                                 </template>
+                                        </vue-good-table>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="text-alert"><b>Price: {{ form.position_price}}</b> for {{form.position_list.length}} position(s) x {{form.days_diff}} day(s)</label>
+                                        <span class="text-alert"><b>Price: {{ form.position_price}}</b> for {{form.position_list.length}} position(s) x {{form.days_diff}} day(s)</span>
+                                    </div>
+                                    <div class="row">
+                                        <ul class="list-inline">
+                                          <li v-for="pos in form.position_list" :key="pos.id">
+                                            {{ pos.name }}
+                                          </li>
+                                        </ul>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -336,6 +348,10 @@
                             label: 'Buffer days',
                             field: 'buffer_days',
                             type: 'number',
+                        },
+                        {
+                          label: 'Actions',
+                          field: 'actions'
                         },
                     ],
                     rows: [],
@@ -484,16 +500,55 @@
                 });
             },
 
-            onPositionSelected(params) {
-                console.log(params.selectedRows);
+            onRemovePositionClick(row) {
+                let idx = -1
+                for (let i = 0; i < this.form.position_list.length; i++) {
+                    if (this.form.position_list[i].id == row.id) {
+                        idx = i;
+                        break;
+                    }
+                }
+                console.log("idx " + idx);
+                if (idx != -1) {
+                    this.form.position_list.splice(idx, 1);
+                    this.form.position_price -= row.price * this.form.days_diff;
+                    Toast.fire({
+                         heading: 'Information',
+                        icon: "info",
+                        title: row.name + " removed!"
+                    })
+                }
+                console.log(this.form.position_list)
+                this.computeDiscount();
+            },
 
-                this.form.position_price = 0;
-                this.form.position_list = []
-                Object.values(params.selectedRows).forEach((item) => {
-                    console.log(item.price);
-                    this.form.position_list.push({id: item.id, buffer_days: item.buffer_days});
-                    this.form.position_price += item.price * this.form.days_diff;
-                });
+            onAddPositionClick(row) {
+                let idx = -1
+                for (let i = 0; i < this.form.position_list.length; i++) {
+                    if (this.form.position_list[i].id == row.id) {
+                        idx = i;
+                        break;
+                    }
+                }
+                console.log("idx " + idx);
+                if (idx == -1) {
+                    this.form.position_list.push(row);
+                    this.form.position_price += row.price * this.form.days_diff;
+                    Toast.fire({
+                        heading: 'Success',
+                        icon: "success",
+                        title: row.name + " added!"
+                    })
+                } else {
+                    Toast.fire({
+                        heading: 'Error',
+                        icon: "error",
+                        title: row.name + " added already!"
+                    });
+
+                    this.$Progress.fail();
+                }
+                console.log(this.form.position_list)
                 this.computeDiscount();
             },
 
@@ -627,22 +682,6 @@
                 });
                 // }
             },
-
-            loadSelectedPosition() {
-                let pos_ids = Object.values(this.form.position_list).map((pos) => {
-                    return pos.id
-                });
-                axios.get("api/positions/list?position_ids="+pos_ids).then((data)=>{
-                    console.log(data.data)
-                    this.position_table.rows = data.data.data;
-                    this.form.position_list.selectedRows = data.data.data;
-                    Object.values(this.form.position_list.selectedRows).forEach((row) => {
-                        row.vgtSelected = true;
-                    })
-                    // this.$refs['my-table'].selectedRows = data.data.data;
-                });
-            },
-
             editModal(campaign){
                 this.editmode = true;
                 this.form.reset();
@@ -657,10 +696,11 @@
                 this.position_filter.from_ts = campaign.from_ts;
                 this.position_filter.to_ts = campaign.to_ts;
 
-                // todo fill selected position (position list)
-                console.log(campaign.position_list);
-                this.loadSelectedPosition();
-                console.log(this.form);
+                this.position_table.rows = campaign.position_list;
+                this.form.position_list = campaign.position_list;
+                Object.values(this.position_table.rows).forEach((row) => {
+                    row.vgtSelected = true;
+                })
             },
             newModal(){
                 this.editmode = false;

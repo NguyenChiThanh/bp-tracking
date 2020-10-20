@@ -48,7 +48,7 @@ class CampaignController extends BaseController
         $brands = $user->brands()->get();
         $brandIds = [];
 
-        foreach ($brands as  $brand) {
+        foreach ($brands as $brand) {
             array_push($brandIds, $brand->id);
         }
 
@@ -63,11 +63,8 @@ class CampaignController extends BaseController
             $posIdList = json_decode($item->position_list, true);
             $posList = [];
             foreach ($posIdList as $posId) {
-                $postion =  $this->position->find($posId);
-                $posList[] = [
-                    'id' => $postion->id,
-                    'name'=>$postion->name . ', ' . $postion->store->name
-                ];
+                $position =  $this->position->find($posId);
+                array_push($posList, $position);
             }
             $item->position_list = $posList;
             $item->from_ts = date('m/d/Y', $item->from_ts);
