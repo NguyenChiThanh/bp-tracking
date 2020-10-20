@@ -215,8 +215,8 @@
                                             <v-select v-model="form.discount_type" :options="['flat', 'percentage']"></v-select>
                                         </div>
                                          <div class="col-md-4">
-                                            <label>Discount value: (for eg: 0.2)</label>
-                                            <input type="number" min="0" v-model="form.discount_value" class="form-control" @input="computeDiscount">
+                                            <span class="text-sm">Discount value: (for eg: 0.2 for percentage discount type/ 100000 for flat discount type)</span>
+                                            <input type="number" min="0" step="any" v-model="form.discount_value" class="form-control" @input="computeDiscount">
                                          </div>
 
                                          <div class="col-md-4" v-show="form.discount_type === 'percentage'">
