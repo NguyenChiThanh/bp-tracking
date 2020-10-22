@@ -19,60 +19,49 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- /.card-header -->
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Description</th>
-<!--                                    <th>Status</th>-->
-<!--                                    <th>Image</th>-->
-                                    <th>Store Level</th>
-                                    <th>Store Name</th>
-                                    <th>Channel</th>
-                                    <th>Buffer days</th>
-                                    <th>Unit</th>
-                                    <th>Price</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="position in positions.data" :key="position.id">
-
-                                    <td>{{position.id}}</td>
-                                    <td>{{position.name}}</td>
-                                    <td>{{position.description}}</td>
-<!--                                    <td>{{position.status}}</td>-->
-<!--                                    <td><img v-bind:src="position.image_url" class="img-thumbnail img-fluid" width="20%" v-bind:alt="position.name +' image'"></td>-->
-                                    <td>{{position.store.level}}</td>
-                                    <td>
-                                      <a v-bind:href="'stores/'+position.store.id">
-                                        {{ position.store.name }}, {{ position.store.ward }}, {{ position.store.district }}, {{ position.store.province }}
-                                      </a>
-                                    </td>
-                                    <td>{{position.channel}}</td>
-                                    <td>{{position.buffer_days}}</td>
-                                    <td>{{position.unit}}</td>
-                                    <td>{{position.price}}</td>
-                                    <td>
-                                        <a href="#" @click="editModal(position)">
-                                            <i class="fa fa-edit blue"></i>
-                                        </a>
-                                        /
-                                        <a href="#" @click="deletePosition(position.id)">
-                                            <i class="fa fa-trash red"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
-                            <pagination :data="positions" @pagination-change-page="getResults" :limit="2">
-                            </pagination>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <vue-good-table
+                                        ref="position_table"
+                                        :columns="this.position_table.cols"
+                                        :rows="this.position_table.rows"
+                                        :pagination-options="{
+                                            enabled: true,
+                                            mode: 'records',
+                                            perPage: 10,
+                                            position: 'top',
+                                            perPageDropdown: [10, 20, 40, 70, 100],
+                                            dropdownAllowAll: false,
+                                            setCurrentPage: 1,
+                                            nextLabel: 'next',
+                                            prevLabel: 'prev',
+                                            rowsPerPageLabel: 'Positions per page',
+                                            ofLabel: 'of',
+                                            pageLabel: 'page', // for 'pages' mode
+                                            allLabel: 'All',
+                                            }"
+                                        :select-options="{
+                                                disableSelectInfo: true, // disable the select info panel on top
+                                            }"
+                                    >
+                                     <template slot="table-row" slot-scope="props">
+                                            <span v-if="props.column.field == 'actions'">
+                                                <a href="#" @click.prevent="editModal(props.row)">
+                                                <i class="fa fa-edit blue"></i>
+                                                </a>
+                                                /
+                                                <a href="#" @click.prevent="deletePosition(props.row)">
+                                                    <i class="fa fa-trash red"></i>
+                                                </a>
+                                            </span>
+                                            <span v-else>
+                                              {{props.formattedRow[props.column.field]}}
+                                            </span>
+                                     </template>
+                                    </vue-good-table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- /.card -->
@@ -80,7 +69,8 @@
             </div>
 
             <!-- import modal -->
-            <div class="modal fade" id="importPositions" tabindex="-1" role="dialog" aria-labelledby="importPositions" aria-hidden="true">
+            <div class="modal fade" id="importPositions" tabindex="-1" role="dialog" aria-labelledby="importPositions"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -94,7 +84,8 @@
                         </div>
                         <div class="modal-footer">
                             <div class="form-group">
-                                <button type="button" class="btn btn-sm btn-primary" @click="importPositions" id="importPositionsBtn">
+                                <button type="button" class="btn btn-sm btn-primary" @click="importPositions"
+                                        id="importPositionsBtn">
                                     Submit
                                 </button>
                             </div>
@@ -124,63 +115,35 @@
                                     </div>
                                 </div>
                                 <div class="row" v-show="!editmode">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Province/City</label>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Province/City</label>
 
-                                                <v-select v-model="form.province" label="name" :options="provinces.data" @input="onProvinceChange"></v-select>
-
-    <!--                                            <select class="form-control" v-model="form.province"-->
-    <!--                                                    :class="{ 'is-invalid': form.errors.has('province') }">-->
-    <!--                                                <option-->
-    <!--                                                    v-for="(province,index) in provinces.data" :key="index"-->
-    <!--                                                    :value="province.name"-->
-    <!--                                                    :selected="province.name == form.province">{{ province.name }}</option>-->
-    <!--                                            </select>-->
-    <!--                                            <has-error :form="form" field="province"></has-error>-->
-                                            </div>
+                                            <v-select v-model="form.province" label="name" :options="provinces.data"
+                                                      @input="onProvinceChange"></v-select>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>District</label>
-                                                <v-select v-model="form.district" label="name" :options="districts.data" @input="onDistrictChange"></v-select>
-
-                                                <!--                                            <select class="form-control" v-model="form.district"-->
-    <!--                                                    :class="{ 'is-invalid': form.errors.has('district') }">-->
-    <!--                                                <option-->
-    <!--                                                    v-for="(district,index) in districts.data" :key="index"-->
-    <!--                                                    :value="district.name"-->
-    <!--                                                    :selected="district.name == form.district">{{ district.name }}</option>-->
-    <!--                                            </select>-->
-    <!--                                            <has-error :form="form" field="district"></has-error>-->
-                                            </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>District</label>
+                                            <v-select v-model="form.district" label="name" :options="districts.data"
+                                                      @input="onDistrictChange"></v-select>
                                         </div>
-                                        <div class="col-md-4">
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Ward</label>
-                                            <v-select v-model="form.ward" label="name" :options="wards.data" @input="onWardChange"></v-select>
-
-<!--                                            <select class="form-control" v-model="form.ward"-->
-<!--                                                    :class="{ 'is-invalid': form.errors.has('ward') }">-->
-<!--                                                <option-->
-<!--                                                    v-for="(ward,index) in wards.data" :key="index"-->
-<!--                                                    :value="ward.name"-->
-<!--                                                    :selected="ward.name == form.ward">{{ ward.name }}</option>-->
-<!--                                            </select>-->
-<!--                                            <has-error :form="form" field="district"></has-error>-->
+                                            <v-select v-model="form.ward" label="name" :options="wards.data"
+                                                      @input="onWardChange"></v-select>
                                         </div>
                                     </div>
-                                    </div>
+                                </div>
 
                                 <div class="form-group">
                                     <label>Store</label>
 
                                     <v-select v-model="form.store" label="name" :options="stores.data"
-                                            :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
-
-<!--                                    <select v-model="form.store_name" type="text" name="store_name"-->
-<!--                                           class="form-control" :class="{ 'is-invalid': form.errors.has('store_name') }">-->
-<!--                                    </select>-->
+                                              :class="{ 'is-invalid': form.errors.has('store')}"></v-select>
                                     <has-error :form="form" field="store"></has-error>
                                 </div>
 
@@ -189,9 +152,9 @@
                                         <div class="form-group">
                                             <label>Channel</label>
                                             <v-select v-model="form.channel" label="name" :options="channels.data"
-                                              :reduce="channel => channel.name"
-                                              @input="onChannelChange"
-                                                  :class="{ 'is-invalid': form.errors.has('channel')}"></v-select>
+                                                      :reduce="channel => channel.name"
+                                                      @input="onChannelChange"
+                                                      :class="{ 'is-invalid': form.errors.has('channel')}"></v-select>
                                             <has-error :form="form" field="channel"></has-error>
                                         </div>
                                     </div>
@@ -199,7 +162,8 @@
                                         <div class="form-group">
                                             <label>Buffer Days:</label>
                                             <input v-model="form.buffer_days" type="text" name="buffer_days"
-                                                   class="form-control" :class="{ 'is-invalid': form.errors.has('buffer_days')}">
+                                                   class="form-control"
+                                                   :class="{ 'is-invalid': form.errors.has('buffer_days')}">
                                             <has-error :form="form" field="buffer_days"></has-error>
                                         </div>
                                     </div>
@@ -213,14 +177,15 @@
                                 <div class="form-group">
                                     <label>Description:</label>
                                     <input v-model="form.description" type="text" name="description"
-                                           class="form-control" :class="{ 'is-invalid': form.errors.has('description') }">
+                                           class="form-control"
+                                           :class="{ 'is-invalid': form.errors.has('description') }">
                                     <has-error :form="form" field="description"></has-error>
                                 </div>
                                 <div class="form-group">
                                     <label>Unit:</label>
                                     <v-select v-model="form.unit" label="name" :options="units.data"
-                                        :reduce="unit => unit.id"
-                                        :class="{ 'is-invalid': form.errors.has('unit') }"></v-select>
+                                              :reduce="unit => unit.id"
+                                              :class="{ 'is-invalid': form.errors.has('unit') }"></v-select>
                                     <has-error :form="form" field="unit"></has-error>
                                 </div>
                                 <div class="form-group">
@@ -244,306 +209,351 @@
 </template>
 
 <script>
-    // import VueTagsInput from '@johmun/vue-tags-input';
-    import "vue-select/dist/vue-select.css";
-    import FileUpload from 'v-file-upload';
-    import vSelect from "vue-select";
+// import VueTagsInput from '@johmun/vue-tags-input';
+import "vue-select/dist/vue-select.css";
+import FileUpload from 'v-file-upload';
+import vSelect from "vue-select";
 
-    export default {
-        components: {
-            FileUpload,
-            vSelect
-        },
-        data () {
-            return {
-                editmode: false,
-                positions : {},
-                channels: {},
-                provinces: {},
-                districts: {},
-                wards: {},
-                stores: {},
-                // statuses: {
-                //     'AVAILABLE': 'Available',
-                //     'RESERVED': 'Reserved',
-                //     'RUNNING': 'Running',
-                // },
-                units: {
-                    data: [
-                        { id: 'day', name: 'Day'},
-                        // { id: 'week', name: 'Week'},
-                        // { id: 'month', name: 'Month'},
-                    ]
-                },
-                form: new Form({
-                    id : '',
-                    name: '',
-                    description: '',
-                    // status: '',
-                    image_url: '',
-                    store: '',
-                    channel: '',
-                    buffer_days: '',
-                    unit: '',
-                    price: '',
-                }),
+// import the styles
+import 'vue-good-table/dist/vue-good-table.css'
+import {VueGoodTable} from 'vue-good-table';
 
-                // fileUploaded: [],
-                headers: {},
-                positionFileUrl: '',
-                // fileUploadUrl: '/file/upload'
-                // autocompleteItems: [],
-            }
-        },
-        methods: {
-            onProvinceChange(province) {
-                this.districts = {};
-                this.wards = {};
-                axios.get("api/districts/list?province_id="+province.id).then(({ data }) => (this.districts = data.data));
+export default {
+    components: {
+        FileUpload,
+        vSelect,
+        VueGoodTable
+    },
+    data() {
+        return {
+            editmode: false,
+            positions: {},
+            channels: {},
+            provinces: {},
+            districts: {},
+            wards: {},
+            stores: {},
+            // statuses: {
+            //     'AVAILABLE': 'Available',
+            //     'RESERVED': 'Reserved',
+            //     'RUNNING': 'Running',
+            // },
+            units: {
+                data: [
+                    {id: 'day', name: 'Day'},
+                    // { id: 'week', name: 'Week'},
+                    // { id: 'month', name: 'Month'},
+                ]
             },
-            onDistrictChange(district) {
-                this.wards = {};
-                axios.get("api/wards/list?district_id="+district.id).then(({ data }) => (this.wards = data.data));
-            },
-            onWardChange(ward) {
-                this.stores = {};
-                axios.get("api/stores/list?ward_id="+ward.id).then(({ data }) => (this.stores = data.data));
-            },
-            onChannelChange(channel) {
-                this.channels.data.forEach(item => {
-                        if (item['name'] == channel) {
-                            this.form.buffer_days = item['buffer_days'];
-                            return;
+            form: new Form({
+                id: '',
+                name: '',
+                description: '',
+                // status: '',
+                image_url: '',
+                store: '',
+                channel: '',
+                buffer_days: '',
+                unit: '',
+                price: '',
+            }),
+
+            // fileUploaded: [],
+            headers: {},
+            positionFileUrl: '',
+
+            position_table: {
+                cols: [
+                    {
+                        label: 'id',
+                        field: 'id',
+                    },
+                    {
+                        label: 'name',
+                        field: 'name',
+                        filterOptions: {
+                            enabled: true, // enable filter for this column
                         }
+                    },
+                    {
+                        label: 'channel',
+                        field: 'channel',
+                        filterOptions: {
+                            enabled: true, // enable filter for this column
+                        }
+                    },
+                    {
+                        label: 'price',
+                        field: 'price',
+                    },
+                    {
+                        label: 'unit',
+                        field: 'unit',
+                    },
+                    {
+                        label: 'buffer_days',
+                        field: 'buffer_days',
+                    },
+                     {
+                          label: 'Actions',
+                          field: 'actions'
+                        },
+                ],
+                rows: [],
+            }
+        }
+    },
+    methods: {
+        onProvinceChange(province) {
+            this.districts = {};
+            this.wards = {};
+            axios.get("api/districts/list?province_id=" + province.id).then(({data}) => (this.districts = data.data));
+        },
+        onDistrictChange(district) {
+            this.wards = {};
+            axios.get("api/wards/list?district_id=" + district.id).then(({data}) => (this.wards = data.data));
+        },
+        onWardChange(ward) {
+            this.stores = {};
+            axios.get("api/stores/list?ward_id=" + ward.id).then(({data}) => (this.stores = data.data));
+        },
+        onChannelChange(channel) {
+            this.channels.data.forEach(item => {
+                    if (item['name'] == channel) {
+                        this.form.buffer_days = item['buffer_days'];
+                        return;
                     }
-                )
-
-            },
-            onFileChange(e) {
-                const file = e.target.files[0];
-                console.log(file);
-                const formData = new FormData();
-                formData.append('file', file);
-                axios.post('/file/upload?type=positions', formData).then(({data}) => {
-                    console.log(data)
-                    this.positionFileUrl = data.file_path;
-                });
-            },
-
-            getResults(page = 1) {
-
-                this.$Progress.start();
-
-                axios.get('api/positions?page=' + page).then(({ data }) => (this.positions = data.data));
-
-                this.$Progress.finish();
-            },
-            loadPositions(){
-
-                // if(this.$gate.isAdmin()){
-                axios.get("api/positions").then(({ data }) => (this.positions = data.data));
-                // }
-            },
-
-            loadChannels(){
-                // if(this.$gate.isAdmin()){
-                axios.get("api/channels/list").then(({ data }) => {
-                    this.channels = data.data
-                });
-                // }
-            },
-
-            loadProvinces(){
-                // if(this.$gate.isAdmin()){
-                axios.get("api/provinces/list").then(({ data }) => (this.provinces = data.data));
-                // }
-            },
-            loadDistricts(){
-
-                // if(this.$gate.isAdmin()){
-                axios.get("api/districts/list").then(({ data }) => (this.districts = data.data));
-                // }
-            },
-            loadWards(){
-
-                // if(this.$gate.isAdmin()){
-                axios.get("api/wards/list").then(({ data }) => (this.wards = data.data));
-                // }
-            },
-
-            loadStores(){
-
-                // if(this.$gate.isAdmin()){
-                axios.get("api/stores/list").then(({ data }) => (this.stores = data.data));
-                // }
-            },
-
-            editModal(position){
-                this.editmode = true;
-                this.form.reset();
-                $('#addNew').modal('show');
-                this.form.fill(position);
-            },
-            importModal(){
-                $('#importPositions').modal('show');
-            },
-
-            importPositions() {
-                if(this.positionFileUrl) {
-                    var _this = this;
-                    _this.$Progress.start();
-                    $('#importPositionsBtn').prop('disabled', true);
-                    axios.post('api/positions/import', {
-                        filePath: this.positionFileUrl,
-                         })
-                        .then(function (response) {
-                            $('#importPositionsBtn').prop('disabled', false);
-
-                            if(response.status == 200) {
-                                $('#importPositions').modal('hide');
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: response.message
-                                });
-                                _this.$Progress.finish();
-                                _this.loadPositions();
-                            } else {
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: response.message
-                                });
-
-                                _this.$Progress.fail();
-                            }
-                        })
-                        .catch(function (error) {
-                            Toast.fire({
-                                icon: 'error',
-                                title: error
-                            });
-                            $('#importPositionsBtn').prop('disabled', false);
-                            _this.$Progress.fail();
-                        });
                 }
-            },
-            newModal(){
-                this.editmode = false;
-                this.form.reset();
-                $('#addNew').modal('show');
-            },
-            createPosition(){
-                this.$Progress.start();
+            )
 
-                console.log(this.form);
-                this.form.post('api/positions')
-                    .then((data)=>{
-                        console.log(data.data);
-                        if(data.data.success){
-                            $('#addNew').modal('hide');
+        },
+        onFileChange(e) {
+            const file = e.target.files[0];
+            console.log(file);
+            const formData = new FormData();
+            formData.append('file', file);
+            axios.post('/file/upload?type=positions', formData).then(({data}) => {
+                console.log(data)
+                this.positionFileUrl = data.file_path;
+            });
+        },
 
+        getResults(page = 1) {
+
+            this.$Progress.start();
+
+            axios.get('api/positions?page=' + page).then(({data}) => (this.position_table.rows = data.data.data));
+
+            this.$Progress.finish();
+        },
+        loadPositions() {
+            // if(this.$gate.isAdmin()){
+            axios.get("api/positions/list").then(({data}) => {
+                this.position_table.rows = data.data;
+            });
+            // }
+        },
+
+        loadChannels() {
+            // if(this.$gate.isAdmin()){
+            axios.get("api/channels/list").then(({data}) => {
+                this.channels = data.data
+            });
+            // }
+        },
+
+        loadProvinces() {
+            // if(this.$gate.isAdmin()){
+            axios.get("api/provinces/list").then(({data}) => (this.provinces = data.data));
+            // }
+        },
+        loadDistricts() {
+
+            // if(this.$gate.isAdmin()){
+            axios.get("api/districts/list").then(({data}) => (this.districts = data.data));
+            // }
+        },
+        loadWards() {
+
+            // if(this.$gate.isAdmin()){
+            axios.get("api/wards/list").then(({data}) => (this.wards = data.data));
+            // }
+        },
+
+        loadStores() {
+
+            // if(this.$gate.isAdmin()){
+            axios.get("api/stores/list").then(({data}) => (this.stores = data.data));
+            // }
+        },
+
+        editModal(position) {
+            console.log(position);
+            this.editmode = true;
+            this.form.reset();
+            $('#addNew').modal('show');
+            this.form.fill(position);
+        },
+        importModal() {
+            $('#importPositions').modal('show');
+        },
+
+        importPositions() {
+            if (this.positionFileUrl) {
+                var _this = this;
+                _this.$Progress.start();
+                $('#importPositionsBtn').prop('disabled', true);
+                axios.post('api/positions/import', {
+                    filePath: this.positionFileUrl,
+                })
+                    .then(function (response) {
+                        $('#importPositionsBtn').prop('disabled', false);
+
+                        if (response.status == 200) {
+                            $('#importPositions').modal('hide');
                             Toast.fire({
                                 icon: 'success',
-                                title: data.data.message
+                                title: response.message
                             });
-                            this.$Progress.finish();
-                            this.loadPositions();
-
+                            _this.$Progress.finish();
+                            _this.loadPositions();
                         } else {
                             Toast.fire({
                                 icon: 'error',
-                                title: data.data.message
+                                title: response.message
                             });
 
-                            this.$Progress.fail();
+                            _this.$Progress.fail();
                         }
-                    }).catch( error =>{
+                    })
+                    .catch(function (error) {
                         Toast.fire({
                             icon: 'error',
                             title: error
                         });
-                        this.$Progress.fail();
-                    })
-            },
-            updatePosition(){
-                this.$Progress.start();
-                // if (typeof this.form.store === 'object') {
-                //     this.form.store = this.form.store.id;
-                // }
-
-                console.log(this.form.store);
-
-                this.form.put('api/positions/'+this.form.id)
-                    .then((response) => {
-                        // success
-                        $('#addNew').modal('hide');
-                        Toast.fire({
-                            icon: 'success',
-                            title: response.data.message
-                        });
-                        this.$Progress.finish();
-                        //  Fire.$emit('AfterCreate');
-
-                        this.loadPositions();
-                    })
-                    .catch(() => {
-                        this.$Progress.fail();
+                        $('#importPositionsBtn').prop('disabled', false);
+                        _this.$Progress.fail();
                     });
-
-            },
-            deletePosition(id){
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-
-                    // Send request to the server
-                    if (result.value) {
-                        this.form.delete('api/positions/'+id).then(()=>{
-                            Swal.fire(
-                                'Deleted!',
-                                'Your file has been deleted.',
-                                'success'
-                            );
-                            // Fire.$emit('AfterCreate');
-                            this.loadPositions();
-                        }).catch((data)=> {
-                            Swal.fire("Failed!", data.message, "warning");
-                        });
-                    }
-                })
-            },
-
+            }
         },
-        mounted() {
-
+        newModal() {
+            this.editmode = false;
+            this.form.reset();
+            $('#addNew').modal('show');
         },
-        created() {
+        createPosition() {
             this.$Progress.start();
 
-            this.loadPositions();
-            this.loadProvinces();
-            this.loadDistricts();
-            this.loadWards();
-            this.loadStores();
-            this.loadChannels();
+            console.log(this.form);
+            this.form.post('api/positions')
+                .then((data) => {
+                    console.log(data.data);
+                    if (data.data.success) {
+                        $('#addNew').modal('hide');
 
-            this.$Progress.finish();
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.data.message
+                        });
+                        this.$Progress.finish();
+                        this.loadPositions();
+
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.data.message
+                        });
+
+                        this.$Progress.fail();
+                    }
+                }).catch(error => {
+                Toast.fire({
+                    icon: 'error',
+                    title: error
+                });
+                this.$Progress.fail();
+            })
         },
-        filters: {
-            truncate: function (text, length, suffix) {
-                return text.substring(0, length) + suffix;
-            },
+        updatePosition() {
+            this.$Progress.start();
+            // if (typeof this.form.store === 'object') {
+            //     this.form.store = this.form.store.id;
+            // }
+
+            console.log(this.form.store);
+
+            this.form.put('api/positions/' + this.form.id)
+                .then((response) => {
+                    // success
+                    $('#addNew').modal('hide');
+                    Toast.fire({
+                        icon: 'success',
+                        title: response.data.message
+                    });
+                    this.$Progress.finish();
+                    //  Fire.$emit('AfterCreate');
+
+                    this.loadPositions();
+                })
+                .catch(() => {
+                    this.$Progress.fail();
+                });
+
         },
-        // computed: {
-        //   filteredItems() {
-        //     return this.autocompleteItems.filter(i => {
-        //       return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-        //     });
-        //   },
-        // },
-    }
+        deletePosition(position) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+
+                // Send request to the server
+                if (result.value) {
+                    this.form.delete('api/positions/' + position.id).then(() => {
+                        Swal.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        );
+                        // Fire.$emit('AfterCreate');
+                        this.loadPositions();
+                    }).catch((data) => {
+                        Swal.fire("Failed!", data.message, "warning");
+                    });
+                }
+            })
+        },
+
+    },
+    mounted() {
+
+    },
+    created() {
+        this.$Progress.start();
+
+        this.loadPositions();
+        this.loadProvinces();
+        this.loadDistricts();
+        this.loadWards();
+        this.loadStores();
+        this.loadChannels();
+
+        this.$Progress.finish();
+    },
+    filters: {
+        truncate: function (text, length, suffix) {
+            return text.substring(0, length) + suffix;
+        },
+    },
+    // computed: {
+    //   filteredItems() {
+    //     return this.autocompleteItems.filter(i => {
+    //       return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+    //     });
+    //   },
+    // },
+}
 </script>

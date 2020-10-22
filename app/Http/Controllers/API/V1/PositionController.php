@@ -58,8 +58,6 @@ class PositionController extends BaseController
 
         $storeIds = $request->get('store_ids');
         $channels = $request->get('channels');
-        $fromTs = $request->get('from_ts');
-        $toTs = $request->get('to_ts');
         $posIds = $request->get('position_ids');
 
         $condition = true;
