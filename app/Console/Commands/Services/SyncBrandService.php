@@ -52,7 +52,7 @@ class SyncBrandService extends BaseSyncService implements SyncInterface
                 $this->logger->error($exception->getMessage());
                 $this->logger->error(json_encode($brand));
             }
-            $this->logger->info('Synced store ' . json_encode($brand));
+            $this->logger->info('Synced brand ' . json_encode($brand));
         }
     }
 }
