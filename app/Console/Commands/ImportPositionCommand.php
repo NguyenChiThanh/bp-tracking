@@ -86,6 +86,7 @@ class ImportPositionCommand extends Command
                     ]);
                 Log::info("Position " . $position->name . " imported");
             } catch (ModelNotFoundException $e) {
+                Log::error(sprintf("storeCode %s", $storeCode));
                 Log::error($e->getMessage());
             }
         }

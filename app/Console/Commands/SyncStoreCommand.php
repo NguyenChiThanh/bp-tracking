@@ -52,8 +52,7 @@ class SyncStoreCommand extends Command
      */
     public function handle()
     {
-        $syncStoreService = new  SyncStoreService($this->logger, $this->guzzleClient);
+        $syncStoreService = new SyncStoreService($this->logger, $this->guzzleClient);
         $syncStoreService->syncData();
-        return;
     }
 }
