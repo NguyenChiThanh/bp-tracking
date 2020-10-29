@@ -122,7 +122,6 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
                 } catch (Exception $exception) {
                     $this->logger->error($exception->getMessage());
                     $this->logger->error(json_encode($store));
-                    break;
                 }
                 $this->logger->info('Synced store ' . json_encode($store));
             }
@@ -173,6 +172,7 @@ class SyncStoreService extends BaseSyncService implements SyncInterface
 
     private function buildGraphqlQueryWithPagination($limit, $page)
     {
+        $this->logger->info("limit " . $limit . " page " . $page);
         return [
             'query' => '
                 query GetStores($id: Int, $limit: Int, $page: Int, $order_by: StoreOrderByEnum, $order_type: OrderTypeEnum, $latitude: Float, $longitude: Float, $distance: Float, $search: String, $province_id: Int, $district_id: Int, $bought: Boolean, $is_clinic: Boolean)

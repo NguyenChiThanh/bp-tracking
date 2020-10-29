@@ -34,17 +34,15 @@ class SyncBrandService extends BaseSyncService implements SyncInterface
         $totalBrands = $this->getTotalBrands();
 
         $limit = 100;
-        $page = 1;
         // 422 / 210 --> 2 * 210 --> pages:  1,2,3
         $totalPages = ($totalBrands / $limit) + 1;
-
         $options = [
             'headers' => [
                 'content-type' => 'application/json'
             ]
         ];
 
-        while ($page <= $totalPages) {
+        for ($page = 1; $page <= $totalPages; $page++) {
             $options['json'] = $this->buildGraphqlQueryWithPagination($limit, $page);
 
             $response = $this->guzzleClient->post(
@@ -54,6 +52,7 @@ class SyncBrandService extends BaseSyncService implements SyncInterface
             $contents = json_decode($response->getBody()->getContents(), true);
             $brands = $contents['data']['brand'];
             foreach ($brands as $brand) {
+                $this->logger->info("Brand name " . $brand['name']);
                 try {
                     Brand::updateOrCreate(
                         [
@@ -71,7 +70,6 @@ class SyncBrandService extends BaseSyncService implements SyncInterface
                 }
                 $this->logger->info('Synced brand ' . json_encode($brand));
             }
-            $page++;
         }
     }
 
@@ -103,14 +101,20 @@ class SyncBrandService extends BaseSyncService implements SyncInterface
 
     private function buildGraphqlQueryWithPagination($limit, $page)
     {
+        $this->logger->info("limit " . $limit . " page " . $page);
         return [
             'query' => '
-                query GetBrands($id: Int)
-                {
-                    brand(id:$id)
-                    {
-                        id, db_id, name, products{id, db_id, name}
+                query GetBrands($id: Int,  $limit: Int, $page: Int) {
+                  brand(id: $id, limit: $limit, page: $page) {
+                    id
+                    db_id
+                    name
+                    products {
+                      id
+                      db_id
+                      name
                     }
+                  }
                 }',
             'variables' => [
                 'limit' => $limit,
