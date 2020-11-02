@@ -572,7 +572,7 @@
             searchPositions(){
                 this.form.days_diff = this.calculateDaysDiff();
                 this.position_table.rows = [];
-                this.form.position_list = [];
+                // this.form.position_list = [];
 
                 console.log(this.position_filter);
 

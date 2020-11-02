@@ -101,7 +101,9 @@ class PositionController extends BaseController
                 positions.price, positions.buffer_days,
                 stores.name AS store_name
             FROM positions, stores
-            WHERE positions.store_id = stores.id AND 1" . $condition . " ORDER BY id ";
+            WHERE positions.store_id = stores.id AND " . $condition . " ORDER BY id ";
+
+	    Log::info("Query " . $query);
 
         $positions = DB::select($query);
         $data = [];
