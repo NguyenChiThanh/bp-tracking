@@ -18,35 +18,49 @@
                             </div>
                         </div>
                         <!-- /.card-header -->
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="company in company.data" :key="company.id">
-                                    <td>{{company.id}}</td>
-                                    <td>{{company.name}}</td>
-                                    <td>
-                                        <a href="#" @click="editModal(company)">
-                                            <i class="fa fa-edit blue"></i>
-                                        </a>
-                                        /
-                                        <a href="#" @click="deleteCompany(company.id)">
-                                            <i class="fa fa-trash red"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
-                            <pagination :data="company" :limit="2" @pagination-change-page="getResults"></pagination>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <vue-good-table
+                                        ref="company_table"
+                                        :columns="this.company_table.cols"
+                                        :rows="this.company_table.rows"
+                                        :pagination-options="{
+                                            enabled: true,
+                                            mode: 'records',
+                                            perPage: 10,
+                                            position: 'top',
+                                            perPageDropdown: [10, 20, 40, 70, 100],
+                                            dropdownAllowAll: false,
+                                            setCurrentPage: 1,
+                                            nextLabel: 'next',
+                                            prevLabel: 'prev',
+                                            rowsPerPageLabel: 'Positions per page',
+                                            ofLabel: 'of',
+                                            pageLabel: 'page', // for 'pages' mode
+                                            allLabel: 'All',
+                                            }"
+                                        :select-options="{
+                                                disableSelectInfo: true, // disable the select info panel on top
+                                            }"
+                                    >
+                                        <template slot="table-row" slot-scope="props">
+                                            <span v-if="props.column.field == 'actions'">
+                                                <a href="#" @click.prevent="editModal(props.row)">
+                                                <i class="fa fa-edit blue"></i>
+                                                </a>
+                                                /
+                                                <a href="#" @click.prevent="deleteCompany(props.row)">
+                                                    <i class="fa fa-trash red"></i>
+                                                </a>
+                                            </span>
+                                            <span v-else>
+                                              {{props.formattedRow[props.column.field]}}
+                                            </span>
+                                        </template>
+                                    </vue-good-table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- /.card -->
@@ -74,9 +88,9 @@
                                     <has-error :form="form" field="name"></has-error>
                                 </div>
                                 <div class="form-group">
-                                    <div v-show="editmode && form.brands.length > 0">
-                                        <label>Selected brands:</label>
-                                        <ul class="list-group-item" v-for="brand in form.brands" :key="brand.name">
+                                    <div v-show="form.brands.length > 0">
+                                        <label> {{form.brands.length}} Selected brands:</label>
+                                        <ul v-for="brand in form.brands" :key="brand.name">
                                             <li>{{brand.name}}</li>
                                         </ul>
                                     </div>
@@ -99,16 +113,22 @@
                                                     ofLabel: 'of',
                                                     pageLabel: 'page', // for 'pages' mode
                                                     allLabel: 'All',
-                                                  }"
+                                        }"
                                         :select-options="{
-                                                    enabled: true,
-                                                    selectionInfoClass: 'custom-class',
-                                                    selectionText: 'store(s) selected',
-                                                    clearSelectionText: 'clear',
-                                                    selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-                                                  }"
-                                        @on-selected-rows-change="onBrandSelected"
-                                    />
+                                            disableSelectInfo: true, // disable the select info panel on top
+                                        }"
+                                        >
+                                        <template slot="table-row" slot-scope="props">
+                                            <span v-if="props.column.field == 'actions'">
+                                                <button class="btn btn-sm primary" @click.prevent="onAddBrandClick(props.row)"><i class="fa fa-plus-circle"></i> add</button>
+                                                <button class="btn btn-sm primary" @click.prevent="onRemoveBrandClick(props.row)"><i class="fa fa-minus-circle"></i> remove</button>
+                                            </span>
+                                            <span v-else>
+                                              {{props.formattedRow[props.column.field]}}
+                                            </span>
+                                        </template>
+
+                                    </vue-good-table>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -127,7 +147,6 @@
 <script>
     // import VueTagsInput from '@johmun/vue-tags-input';
     import FileUpload from 'v-file-upload';
-    import vSelect from "vue-select";
     import {VueGoodTable} from "vue-good-table";
 
     export default {
@@ -139,6 +158,26 @@
             return {
                 editmode: false,
                 company: {},
+                company_table: {
+                    cols: [
+                        {
+                            label: 'id',
+                            field: 'id',
+                        },
+                        {
+                            label: 'name',
+                            field: 'name',
+                            filterOptions: {
+                                enabled: true, // enable filter for this column
+                            }
+                        },
+                        {
+                            label: 'Actions',
+                            field: 'actions'
+                        },
+                    ],
+                    rows: [],
+                },
                 brand_table: {
                     cols:[
                         {
@@ -152,7 +191,11 @@
                             filterOptions: {
                                 enabled: true, // enable filter for this column
                             }
-                        }
+                        },
+                        {
+                            label: 'Actions',
+                            field: 'actions'
+                        },
                     ],
                     rows: []
                 },
@@ -164,9 +207,52 @@
             }
         },
         methods: {
-            onBrandSelected(params) {
-                // params.selectedRows - all rows that are selected (this page)
-                this.form.brands = params.selectedRows;
+            onRemoveBrandClick(row) {
+                let idx = -1
+                for (let i = 0; i < this.form.brands.length; i++) {
+                    if (this.form.brands[i].id == row.id) {
+                        idx = i;
+                        break;
+                    }
+                }
+                console.log("idx " + idx);
+                if (idx != -1) {
+                    this.form.brands.splice(idx, 1);
+                    Toast.fire({
+                        heading: 'Information',
+                        icon: "info",
+                        title: row.name + " removed!"
+                    })
+                }
+                console.log(this.form.brands)
+            },
+
+            onAddBrandClick(row) {
+                let idx = -1
+                for (let i = 0; i < this.form.brands.length; i++) {
+                    if (this.form.brands[i].id == row.id) {
+                        idx = i;
+                        break;
+                    }
+                }
+                console.log("idx " + idx);
+                if (idx == -1) {
+                    this.form.brands.push(row);
+                    Toast.fire({
+                        heading: 'Success',
+                        icon: "success",
+                        title: row.name + " added!"
+                    })
+                } else {
+                    Toast.fire({
+                        heading: 'Error',
+                        icon: "error",
+                        title: row.name + " added already!"
+                    });
+
+                    this.$Progress.fail();
+                }
+                console.log(this.form.brands)
             },
 
             onFileChange(e) {
@@ -201,7 +287,7 @@
             loadCompany() {
 
                 // if(this.$gate.isAdmin()){
-                axios.get("api/company/list").then(({data}) => (this.company = data.data));
+                axios.get("api/company/list").then(({data}) => (this.company_table.rows = data.data.data));
                 // }
             },
             editModal(company) {
@@ -296,7 +382,7 @@
                     });
 
             },
-            deleteCompany(id) {
+            deleteCompany(company) {
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
@@ -308,7 +394,7 @@
 
                     // Send request to the server
                     if (result.value) {
-                        this.form.delete('api/company/' + id).then(() => {
+                        this.form.delete('api/company/' + company.id).then(() => {
                             Swal.fire(
                                 'Deleted!',
                                 'Your file has been deleted.',
