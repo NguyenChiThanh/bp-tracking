@@ -50,3 +50,13 @@ vendor/bin/phpunit --testsuite Feature
 vendor/bin/phpunit --coverage-html reports/
 ```
 A `reports` directory has been created for code coverage report. Open the dashboard.html.
+
+#### Deployment
+```
+./deploy.sh &
+
+# dont run db migrate on production
+# if we need to change the db structure on prod
+# dump a backup of data of prod
+# get new structure from staging, edit dump file of prod, run mysql import to take the effect on new structure of prod db
+```
