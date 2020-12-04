@@ -59,5 +59,6 @@ Route::apiResources([
     'districts' => 'API\V1\DistrictController',
     'wards' => 'API\V1\WardController',
     'company' => 'API\V1\CompanyController',
+    'brands' => 'API\V1\BrandController',
     'roles' => 'API\V1\RolesController',
 ]);
