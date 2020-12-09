@@ -187,7 +187,7 @@
             loadCompany() {
 
                 // if(this.$gate.isAdmin()){
-                axios.get("api/company/list").then(({data}) => (this.company = data.data));
+                axios.get("api/company/list?all=true").then(({data}) => (this.company = data.data));
                 // }
             },
             editModal(brand) {

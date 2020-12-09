@@ -287,7 +287,7 @@
             loadCompany() {
 
                 // if(this.$gate.isAdmin()){
-                axios.get("api/company/list").then(({data}) => (this.company_table.rows = data.data.data));
+                axios.get("api/company/list?all=true").then(({data}) => (this.company_table.rows = data.data.data));
                 // }
             },
             editModal(company) {
