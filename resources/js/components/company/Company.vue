@@ -157,7 +157,7 @@
         data() {
             return {
                 editmode: false,
-                company: {},
+                company: [],
                 company_table: {
                     cols: [
                         {
@@ -287,7 +287,7 @@
             loadCompany() {
 
                 // if(this.$gate.isAdmin()){
-                axios.get("api/company/list?all=true").then(({data}) => (this.company_table.rows = data.data.data));
+                axios.get("api/company/list?all=true").then(({data}) => (this.company_table.rows = data.data));
                 // }
             },
             editModal(company) {

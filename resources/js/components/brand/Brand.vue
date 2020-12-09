@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Company:</label>
-                                    <v-select v-model="form.company" label="name" :options="company.data">
+                                    <v-select v-model="form.company" label="name" :options="company">
                                     </v-select>
                                 </div>
                             </div>
@@ -121,7 +121,7 @@
         data() {
             return {
                 editmode: false,
-                company: '',
+                company: [],
                 brand_table: {
                     cols:[
                         {
