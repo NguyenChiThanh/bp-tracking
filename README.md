@@ -36,7 +36,11 @@ docker exec -it bptracking_app php artisan serve --host 0.0.0.0
 
 #### Deployment
 ```
-./deploy.sh &
+# stag
+./stag.sh
+
+# prod
+./prod.sh deploy
 
 # dont run db migrate on production
 # if we need to change the db structure on prod
