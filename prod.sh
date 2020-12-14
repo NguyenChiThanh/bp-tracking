@@ -19,13 +19,12 @@ init()
 
 deploy()
 {
-    cp .env.prod .env
-    composer install
+    # cp .env.stag .env
+    git pull pmc master
     composer du
-    php artisan cache:clear
-
-    npm install
     npm run prod
+    php artisan cache:clear
+    php artisan view:clear
 }
 
 ACTION=$1

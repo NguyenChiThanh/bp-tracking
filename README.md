@@ -26,11 +26,12 @@
 
 ## Start local dev
 ```
-sh ./local.sh
-
-npm run watch
-
-php artisan serve --host 0.0.0.0
+# start docker
+docker-compose up -d
+# start FE
+docker exec -it bptracking_app npm run watch
+# start BE
+docker exec -it bptracking_app php artisan serve --host 0.0.0.0
 ```
 
 #### Deployment
