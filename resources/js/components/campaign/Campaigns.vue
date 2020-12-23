@@ -23,7 +23,7 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Contract</th>
-<!--                                    <th>Status</th>-->
+                                    <th>Status</th>
                                     <th>License Code</th>
                                     <th>Brand</th>
                                     <th>Positions</th>
@@ -44,6 +44,7 @@
                                     <td>{{campaign.id}}</td>
                                     <td>{{campaign.name}}</td>
                                     <td>{{campaign.contract_code}}</td>
+                                    <td v-html="campaign.status_html"></td>
                                     <td>{{campaign.license_code}}</td>
                                     <td>{{campaign.brand.name}}</td>
                                     <td>
@@ -141,11 +142,21 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <label>From :</label>
-                                            <date-picker v-model="position_filter.from_ts" :config="datetimepicker.options"></date-picker>
+                                            <date-picker v-model="position_filter.from_ts" :config="datetimepicker.options"
+                                                         :class="{ 'is-invalid': form.errors.has('from_ts')}"></date-picker>
+                                            <has-error :form="form" field="from_ts"></has-error>
                                         </div>
                                         <div class="col-md-4">
                                             <label>To :</label>
-                                            <date-picker v-model="position_filter.to_ts" :config="datetimepicker.options"></date-picker>
+                                            <date-picker v-model="position_filter.to_ts" :config="datetimepicker.options"
+                                                         :class="{ 'is-invalid': form.errors.has('to_ts')}"></date-picker>
+                                            <has-error :form="form" field="to_ts"></has-error>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Status :</label>
+                                            <v-select v-model="form.status" label="text" :options="statuses.data"
+                                                      :class="{ 'is-invalid': form.errors.has('status.value')} "></v-select>
+                                            <has-error :form="form" field="status.value"></has-error>
                                         </div>
                                     </div>
                                 </div>
@@ -269,8 +280,8 @@
                                 <div class="form-group">
                                     <label>Brand:</label>
                                     <v-select v-model="form.brand" label="name" :options="brands.data"
-                                        :class="{ 'is-invalid': form.errors.has('brand_id')} "></v-select>
-                                    <has-error :form="form" field="brand_id"></has-error>
+                                        :class="{ 'is-invalid': form.errors.has('brand.id')} "></v-select>
+                                    <has-error :form="form" field="brand.id"></has-error>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -311,6 +322,7 @@
                 districts: {},
                 company: {},
                 brands: {},
+                statuses: [],
                 position_table: {
                     cols: [
                         {
@@ -682,6 +694,14 @@
                 });
                 // }
             },
+            loadStatuses() {
+                // if(this.$gate.isAdmin()){
+                axios.get("api/v1/statuses/list").then((data)=> {
+                    console.log(data.data);
+                    this.statuses = data.data;
+                });
+                // }
+            },
             editModal(campaign){
                 this.editmode = true;
                 this.form.reset();
@@ -710,7 +730,10 @@
             createCampaign(){
                 this.$Progress.start();
 
+                this.form.from_ts = parseInt(Date.parse(this.position_filter.from_ts)/1000);
+                this.form.to_ts = parseInt(Date.parse(this.position_filter.to_ts)/1000);
                 console.log(this.form);
+
                 this.form.post('api/campaigns')
                     .then((data)=>{
                         console.log(data.data);
@@ -743,14 +766,8 @@
             updateCampaign(){
                 this.$Progress.start();
 
-                if (!Number.isInteger(this.form.from_ts)) {
-                    this.form.from_ts = parseInt(Date.parse(this.form.from_ts)/1000);
-                }
-
-                if (!Number.isInteger(this.form.to_ts)) {
-                    this.form.to_ts = parseInt(Date.parse(this.form.to_ts)/1000);
-                }
-
+                this.form.from_ts = parseInt(Date.parse(this.position_filter.from_ts)/1000);
+                this.form.to_ts = parseInt(Date.parse(this.position_filter.to_ts)/1000);
                 console.log(this.form);
 
                 this.form.put('api/campaigns/'+this.form.id)
@@ -813,6 +830,7 @@
             this.loadChannels();
             this.loadCompany();
             this.loadBrands();
+            this.loadStatuses();
 
             this.$Progress.finish();
         },

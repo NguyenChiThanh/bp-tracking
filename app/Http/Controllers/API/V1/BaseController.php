@@ -13,7 +13,7 @@ class BaseController extends Controller
      * @param $result
      * @param $message
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function sendResponse($result, $message)
     {
