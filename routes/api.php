@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\StatusApiController;
 use Illuminate\Http\Request;
 
 /*
@@ -23,6 +24,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['prefix' => 'v1', 'as' => 'api.', 'middleware' => ['auth:api']], function () {
+    Route::group(['prefix' => 'statuses', 'as' => 'statuses.'], function () {
+        Route::get('/list', [StatusApiController::class, 'list'])->name('list');
+    });
+});
+
 
 Route::get('profile', 'API\V1\ProfileController@profile');
 Route::put('profile', 'API\V1\ProfileController@updateProfile');
@@ -44,7 +51,6 @@ Route::get('districts/list', 'API\V1\DistrictController@list');
 Route::get('wards/list', 'API\V1\WardController@list');
 Route::get('brands/list', 'API\V1\BrandController@list');
 Route::get('company/list', 'API\V1\CompanyController@list');
-
 
 Route::apiResources([
     'user' => 'API\V1\UserController',

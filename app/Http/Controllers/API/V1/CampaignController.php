@@ -112,6 +112,7 @@ class CampaignController extends BaseController
                 'total_discount' => $request->get('total_discount'),
                 'total_price' => $request->get('total_price'),
                 'created_by' => auth()->user()->id,
+                'status' => $request->has('status') ? $request->get('status')['value'] : $this->campaign->getDefaultStatus(),
             ];
             $campaign = $this->campaign->create($campaignArr);
 
@@ -178,6 +179,7 @@ class CampaignController extends BaseController
             'total_discount' => $request->get('total_discount'),
             'total_price' => $request->get('total_price'),
             'created_by' => auth()->user()->id,
+            'status' => $request->has('status') ? $request->get('status')['value'] : $campaign->status,
         ];
 
         $campaign->update($data);
