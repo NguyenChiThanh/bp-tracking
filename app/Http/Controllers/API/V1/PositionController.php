@@ -121,6 +121,13 @@ class PositionController extends BaseController
         return $this->sendResponse($data, 'Position list');
     }
 
+    public function list_v2(Request $request)
+    {
+        $query = Position::with(['bookings.campaign']);
+
+        return $this->sendResponse($query->get(), 'Position list');
+    }
+
     /**
      * Show the form for creating a new resource.
      *
