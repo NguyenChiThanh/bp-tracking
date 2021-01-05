@@ -75,7 +75,7 @@
                                                 </a>
                                             </span>
                                             <span v-else-if="props.column.field === 'date_booking'">
-                                                <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'active').length > 0">Booked</span>
+                                                <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'booked').length > 0">Booked</span>
                                                 <span class="badge badge-success" v-else-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'reserved').length > 0">Reserved</span>
                                                 <span class="badge badge-light" v-else>Available</span>
                                             </span>

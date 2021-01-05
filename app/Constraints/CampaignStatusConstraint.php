@@ -7,7 +7,7 @@ namespace App\Constraints;
 class CampaignStatusConstraint extends BaseConstraint
 {
     const STATUS_RESERVED = 'reserved';
-    const STATUS_ACTIVE = 'active';
+    const STATUS_BOOKED = 'booked';
     const STATUS_CANCELLED = 'cancelled';
 
     public static function getAll($valueOnly = false): array
@@ -18,8 +18,8 @@ class CampaignStatusConstraint extends BaseConstraint
                 'text' => ucfirst(static::STATUS_RESERVED),
             ],
             [
-                'value' => static::STATUS_ACTIVE,
-                'text' => ucfirst(static::STATUS_ACTIVE),
+                'value' => static::STATUS_BOOKED,
+                'text' => ucfirst(static::STATUS_BOOKED),
             ],
             [
                 'value' => static::STATUS_CANCELLED,
