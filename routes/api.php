@@ -42,6 +42,7 @@ Route::get('stores/list', 'API\V1\StoreController@list');
 Route::get('stores/search', 'API\V1\StoreController@search');
 
 Route::get('channels/list', 'API\V1\ChannelController@list');
+Route::get('positions/list/v2', 'API\V1\PositionController@list_v2');
 Route::get('positions/list', 'API\V1\PositionController@list');
 Route::post('positions/import', 'API\V1\PositionController@import');
 

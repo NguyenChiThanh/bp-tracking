@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
+use App\Constraints\CampaignStatusConstraint;
 use Illuminate\Database\Eloquent\Model;
 
 class Campaign extends Model
 {
-    const STATUS_RESERVED = 'reserved';
-    const STATUS_ACTIVE = 'active';
-    const STATUS_CANCELLED = 'cancelled';
-
     protected $fillable = [
         'name',
         'contract_code',
@@ -45,7 +42,7 @@ class Campaign extends Model
 
     public function getDefaultStatus(): string
     {
-        return static::STATUS_RESERVED;
+        return CampaignStatusConstraint::STATUS_RESERVED;
     }
 
     /**
@@ -64,13 +61,13 @@ class Campaign extends Model
         if ($this->status) {
             $sttClassCss = 'default';
             switch ($this->status) {
-                case static::STATUS_CANCELLED:
+                case CampaignStatusConstraint::STATUS_CANCELLED:
                     $sttClassCss = 'danger';
                     break;
-                case static::STATUS_ACTIVE:
+                case CampaignStatusConstraint::STATUS_BOOKED:
                     $sttClassCss = 'success';
                     break;
-                case static::STATUS_RESERVED:
+                case CampaignStatusConstraint::STATUS_RESERVED:
                     $sttClassCss = 'warning';
                     break;
             }

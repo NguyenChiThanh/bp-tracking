@@ -21,6 +21,25 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>From :</label>
+                                            <date-picker v-model="filter_table.from_ts" :config="datetimepicker.options"></date-picker>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>To :</label>
+                                            <date-picker v-model="filter_table.to_ts" :config="datetimepicker.options"></date-picker>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-sm btn-primary" @click="filterDate">Filter</button>
+                            </div>
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <vue-good-table
                                         ref="position_table"
@@ -54,6 +73,11 @@
                                                 <a href="#" @click.prevent="deletePosition(props.row)">
                                                     <i class="fa fa-trash red"></i>
                                                 </a>
+                                            </span>
+                                            <span v-else-if="props.column.field === 'date_booking'">
+                                                <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'booked').length > 0">Booked</span>
+                                                <span class="badge badge-success" v-else-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'reserved').length > 0">Reserved</span>
+                                                <span class="badge badge-light" v-else>Available</span>
                                             </span>
                                             <span v-else>
                                               {{props.formattedRow[props.column.field]}}
@@ -264,6 +288,9 @@ export default {
 
             position_table: {
                 cols: [
+
+                ],
+                fixed_cols: [
                     {
                         label: 'id',
                         field: 'id',
@@ -294,13 +321,30 @@ export default {
                         label: 'buffer_days',
                         field: 'buffer_days',
                     },
-                     {
-                          label: 'Actions',
-                          field: 'actions'
-                        },
+                    {
+                        label: 'Actions',
+                        field: 'actions'
+                    },
+                ],
+                flex_cols: [
+                    {
+                        label: this.getDateString((new Date())),
+                        field: 'date_booking',
+                        date_value: 1608570000,
+                    }
                 ],
                 rows: [],
-            }
+            },
+            filter_table: {
+                from_ts: null,
+                to_ts: null,
+            },
+            datetimepicker:{
+                options: {
+                    format: 'MM/DD/YYYY',
+                    useCurrent: false
+                }
+            },
         }
     },
     methods: {
@@ -347,8 +391,14 @@ export default {
             this.$Progress.finish();
         },
         loadPositions() {
+            // let params =  {
+            //     from_ts: this.filter_table.from_ts ? parseInt(Date.parse(this.filter_table.from_ts)/1000) : null,
+            //     to_ts: this.filter_table.to_ts ? parseInt(Date.parse(this.filter_table.to_ts)/1000) : null,
+            // };
             // if(this.$gate.isAdmin()){
-            axios.get("api/positions/list").then(({data}) => {
+            axios.get("api/positions/list/v2", {
+                // params: params
+            }).then(({data}) => {
                 this.position_table.rows = data.data;
             });
             // }
@@ -526,12 +576,55 @@ export default {
                 }
             })
         },
+        getDateString(date) {
+            return date.toLocaleDateString('en-EN');
+        },
+        filterDate() {
+            let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
+            let to_ts = parseInt(Date.parse(this.filter_table.to_ts)/1000);
 
+            if (from_ts > to_ts) {
+                Toast.fire({
+                    icon: 'warning',
+                    type: 'danger',
+                    title: 'From date cannot be after than To date'
+                });
+                return false;
+            }
+
+            let days = (to_ts - from_ts) / (24 * 60 * 60);
+            if (days > 90) {
+                Toast.fire({
+                    icon: 'warning',
+                    type: 'danger',
+                    title: 'The interval between From and To date should not exceed 90'
+                });
+                return false;
+            }
+
+            let the_date = null, date_value = 0;
+            let flex_cols = [];
+            for (var i = 0; i <= days; i++)
+            {
+                date_value = from_ts + i * 24 * 60 * 60;
+                the_date = new Date(date_value * 1000);
+                flex_cols = flex_cols.concat({
+                    label: this.getDateString(the_date),
+                    field: 'date_booking',
+                    date_value: date_value,
+                })
+            }
+            console.log(flex_cols);
+
+            this.position_table.flex_cols = flex_cols;
+            this.position_table.cols = [].concat(this.position_table.fixed_cols).concat(this.position_table.flex_cols);
+        }
     },
     mounted() {
 
     },
     created() {
+        this.position_table.cols = [].concat(this.position_table.fixed_cols).concat(this.position_table.flex_cols);
         this.$Progress.start();
 
         this.loadPositions();

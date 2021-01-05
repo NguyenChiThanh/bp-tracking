@@ -14,4 +14,9 @@ class Booking extends Model
         'to_ts',
         'buffer_ts'
     ];
+
+    public function campaign()
+    {
+        return $this->belongsTo('App\Models\Campaign', 'campaign_id');
+    }
 }

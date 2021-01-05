@@ -28,4 +28,9 @@ class Position extends Model
     {
         return $this->belongsTo('App\Models\Store');
     }
+
+    public function bookings()
+    {
+        return $this->hasMany('App\Models\Booking');
+    }
 }
