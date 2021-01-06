@@ -330,7 +330,7 @@ export default {
                     {
                         label: this.getDateString((new Date())),
                         field: 'date_booking',
-                        date_value: 1608570000,
+                        date_value: parseInt(Date.now() / 1000),
                     }
                 ],
                 rows: [],
