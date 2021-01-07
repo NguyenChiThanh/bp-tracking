@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Constraints\CampaignStatusConstraint;
 use App\Http\Requests\Positions\PositionRequest;
 use App\Models\Position;
 use Illuminate\Http\Request;
@@ -125,6 +126,31 @@ class PositionController extends BaseController
     {
         $query = Position::with(['bookings.campaign']);
 
+        $from = intval($request->get('from_ts'));
+        $to = intval($request->get('to_ts'));
+        $status = $request->get('status');
+
+        if (!empty($status) || !empty($from) || !empty($to)) {
+            if (!empty($status) && $status == CampaignStatusConstraint::STATUS_AVAILABLE) {
+                $query->whereDoesntHave('bookings');
+            }
+            $query->orWhereHas('bookings', function ($q) use ($status, $from, $to) {
+               $q->whereHas('campaign', function ($campaign_q) use ($status, $from, $to) {
+                   if (!empty($status)) {
+                       $campaign_q->where('status', $status == CampaignStatusConstraint::STATUS_AVAILABLE ? CampaignStatusConstraint::STATUS_CANCELLED : $status);
+                   }
+
+                   if (!empty($from)) {
+                       $campaign_q->where('from_ts', '>=', $from);
+                   }
+
+                   if (!empty($to)) {
+                       $campaign_q->where('to_ts', '<=', $to);
+                   }
+               });
+            });
+        }
+
         return $this->sendResponse($query->get(), 'Position list');
     }
 
@@ -220,5 +246,15 @@ class PositionController extends BaseController
         $position->delete();
 
         return $this->sendResponse($position, 'Position has been Deleted');
+    }
+
+    public function getStatuses()
+    {
+        $statuses = CampaignStatusConstraint::getAll();
+        $statuses[] = [
+            'value' => CampaignStatusConstraint::STATUS_AVAILABLE,
+            'text' => ucfirst(CampaignStatusConstraint::STATUS_AVAILABLE),
+        ];
+        return $this->sendResponse($statuses, 'Positions Statuses List');
     }
 }
