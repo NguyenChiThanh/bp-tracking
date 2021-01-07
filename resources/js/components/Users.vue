@@ -311,6 +311,7 @@
                 this.form.reset();
                 $('#addNew').modal('show');
                 this.form.fill(user);
+                this.onUserTypeChange(user.type);
             },
             newModal(){
                 this.editmode = false;
