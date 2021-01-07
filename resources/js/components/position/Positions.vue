@@ -24,20 +24,30 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>From :</label>
+                                            <label>From:</label>
                                             <date-picker v-model="filter_table.from_ts" :config="datetimepicker.options"></date-picker>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>To :</label>
+                                            <label>To:</label>
                                             <date-picker v-model="filter_table.to_ts" :config="datetimepicker.options"></date-picker>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Status:</label>
+                                            <select v-model="filter_table.status" class="form-control">
+                                                <option value="">Select</option>
+                                                <option v-for="status in statuses" :value="status.value">{{ status.text }}</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <button class="btn btn-sm btn-primary" @click="filterDate">Filter</button>
+                                <button class="btn btn-sm btn-primary" @click="filterDate">Filter by Date</button>
+                                <button class="btn btn-sm btn-primary" @click="filterStatus">Filter by Status</button>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -257,6 +267,7 @@ export default {
             districts: {},
             wards: {},
             stores: {},
+            statuses: null,
             // statuses: {
             //     'AVAILABLE': 'Available',
             //     'RESERVED': 'Reserved',
@@ -338,6 +349,7 @@ export default {
             filter_table: {
                 from_ts: null,
                 to_ts: null,
+                status: null,
             },
             datetimepicker:{
                 options: {
@@ -390,14 +402,22 @@ export default {
 
             this.$Progress.finish();
         },
-        loadPositions() {
+        loadPositionStatuses() {
+            // if(this.$gate.isAdmin()){
+            axios.get("api/positions/statuses").then(({data}) => {
+                this.statuses = data.data;
+            });
+            // }
+        },
+
+        loadPositions(params = {}) {
             // let params =  {
             //     from_ts: this.filter_table.from_ts ? parseInt(Date.parse(this.filter_table.from_ts)/1000) : null,
             //     to_ts: this.filter_table.to_ts ? parseInt(Date.parse(this.filter_table.to_ts)/1000) : null,
             // };
             // if(this.$gate.isAdmin()){
             axios.get("api/positions/list/v2", {
-                // params: params
+                params: params
             }).then(({data}) => {
                 this.position_table.rows = data.data;
             });
@@ -616,6 +636,29 @@ export default {
             }
             console.log(flex_cols);
 
+            this.updatePositionTableCols(flex_cols);
+        },
+        filterStatus() {
+            let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
+            let to_ts = parseInt(Date.parse(this.filter_table.to_ts)/1000);
+
+            if (from_ts > to_ts) {
+                Toast.fire({
+                    icon: 'warning',
+                    type: 'danger',
+                    title: 'From date cannot be after than To date'
+                });
+                return false;
+            }
+
+            this.updatePositionTableCols([]);
+            this.loadPositions({
+                from_ts: from_ts,
+                to_ts: to_ts,
+                status: this.filter_table.status,
+            })
+        },
+        updatePositionTableCols(flex_cols) {
             this.position_table.flex_cols = flex_cols;
             this.position_table.cols = [].concat(this.position_table.fixed_cols).concat(this.position_table.flex_cols);
         }
@@ -627,6 +670,7 @@ export default {
         this.position_table.cols = [].concat(this.position_table.fixed_cols).concat(this.position_table.flex_cols);
         this.$Progress.start();
 
+        this.loadPositionStatuses();
         this.loadPositions();
         this.loadProvinces();
         this.loadDistricts();

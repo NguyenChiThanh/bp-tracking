@@ -9,6 +9,7 @@ class CampaignStatusConstraint extends BaseConstraint
     const STATUS_RESERVED = 'reserved';
     const STATUS_BOOKED = 'booked';
     const STATUS_CANCELLED = 'cancelled';
+    const STATUS_AVAILABLE = 'available'; // Status when positions belongs to no campaign / cancel campaign
 
     public static function getAll($valueOnly = false): array
     {
