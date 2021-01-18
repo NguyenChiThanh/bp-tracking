@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API\V1;
 use App\Constraints\CampaignStatusConstraint;
 use App\Http\Requests\Positions\PositionRequest;
 use App\Models\Position;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PositionController extends BaseController
 {
@@ -17,15 +19,18 @@ class PositionController extends BaseController
      * @var Position
      */
     protected $position = null;
+    protected $fileService = null;
 
     /***
      * PositionController constructor.
      * @param Position $position
+     * @param FileService $fileService
      */
-    public function __construct(Position $position)
+    public function __construct(Position $position, FileService $fileService)
     {
         $this->middleware('auth:api');
         $this->position = $position;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -47,6 +52,135 @@ class PositionController extends BaseController
 
         return response()->json(['message' => 'success'], 200);
 
+    }
+
+    public function export(Request $request)
+    {
+        $query = Position::with(['bookings.campaign']);
+
+        $from = intval($request->get('from_ts'));
+        $to = intval($request->get('to_ts'));
+        $status = $request->get('status');
+
+        if (!empty($status) || !empty($from) || !empty($to)) {
+            if (!empty($status) && $status == CampaignStatusConstraint::STATUS_AVAILABLE) {
+                $query->whereDoesntHave('bookings');
+            }
+            $query->orWhereHas('bookings', function ($q) use ($status, $from, $to) {
+                $q->whereHas('campaign', function ($campaign_q) use ($status, $from, $to) {
+                    if (!empty($status)) {
+                        $campaign_q->where('status', $status == CampaignStatusConstraint::STATUS_AVAILABLE ? CampaignStatusConstraint::STATUS_CANCELLED : $status);
+                    }
+
+                    if (!empty($from)) {
+                        $campaign_q->where('from_ts', '>=', $from);
+                    }
+
+                    if (!empty($to)) {
+                        $campaign_q->where('to_ts', '<=', $to);
+                    }
+                });
+            });
+        }
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $sheet = $spreadsheet->getActiveSheet();
+        $rowNo = 1;
+
+        $headers = $request->get('headers');
+        $sheet->fromArray(array_column($headers, 'label'), null, 'A' . $rowNo++);
+        $sheet->getRowDimension(1)->setRowHeight(40);
+        $highestHeaders = $sheet->getHighestRowAndColumn();
+        $sheet->getStyle('A1:' . $highestHeaders['column'] . $highestHeaders['row'])->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'name' => 'Tahoma',
+                'size' => 12,
+                'color' => ['argb' => 'FFFFFF'],
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => [
+                    'argb' => '993366',
+                ],
+            ],
+        ]);
+
+        for ($i = 'A'; $i <= $highestHeaders['column']; $i++)
+        {
+            $sheet->getColumnDimension($i)->setAutoSize(true);
+        }
+
+        $query->get()
+            ->each(function ($row) use ($headers, &$sheet, &$rowNo) {
+                $data = [];
+                foreach ($headers as $header)
+                {
+                    if ($header['field'] == 'date_booking') {
+                        $bookingsValidInTime = $row->bookings->count() ?
+                            ($row->bookings->filter(function ($item) use ($header) {
+                                return
+                                    $item->from_ts <= $header['date_value'] &&
+                                    $item->to_ts >= $header['date_value'];
+                            })) : null;
+
+                        if ($bookingsValidInTime && $bookingsValidInTime->count()) {
+                            if (
+                                $bookingsValidInTime->filter(function ($item) {
+                                    return $item->campaign->status === CampaignStatusConstraint::STATUS_BOOKED;
+                                })->count()
+                            ) {
+                                $data[] = 'Booked';
+                            } elseif (
+                                $bookingsValidInTime->filter(function ($item) {
+                                    return $item->campaign->status === CampaignStatusConstraint::STATUS_RESERVED;
+                                })->count()
+                            ) {
+                                $data[] = 'Reserved';
+                            } else {
+                                $data[] = 'Available';
+                            }
+                        } else {
+                            $data[] = 'Available';
+                        }
+                    } else {
+                        $data[] = !empty($row->{$header['field']}) ? $row->{$header['field']} : null;
+                    }
+                }
+                $sheet->fromArray($data, null, 'A' . $rowNo++);
+        });
+
+        // Store file
+        $fileName = 'positions-' . time() . '.xlsx';
+        $path = 'positions';
+        if (!file_exists(storage_path('app/public') . DIRECTORY_SEPARATOR . $path)) {
+            mkdir(storage_path('app/public') . DIRECTORY_SEPARATOR . $path);
+        }
+        $writer->save(storage_path('app/public') . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName);
+
+        $newFile = $this->fileService->createFile([
+            'name' => $fileName,
+            'disk_path' => $path,
+            'type' => 'application/excel',
+            'size' => 0,
+            'extension' => 'xlsx',
+            'file' => $fileName,
+        ]);
+
+
+        return $this->sendResponse([
+            'file' => $newFile->id
+        ], 'File');
     }
 
     public function list(Request $request)

@@ -27,6 +27,7 @@ Route::get('home', function () {
 });
 
 Route::post('/file/upload', 'FileController@upload')->name('fileUpload');
+Route::get('/file/download/{id}', 'FileController@download')->name('fileDownload');
 
 
 Route::get('/{vue_capture?}', function () {
