@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class FileController extends Controller
 {
+    protected $fileService;
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(FileService $fileService)
     {
         $this->middleware('auth');
+        $this->fileService = $fileService;
     }
 
 
@@ -38,5 +41,10 @@ class FileController extends Controller
         return [
             'file_path' => 'storage/'.$filePath
         ];
+    }
+
+    public function download($id)
+    {
+        return $this->fileService->download($id);
     }
 }

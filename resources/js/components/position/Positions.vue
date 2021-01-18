@@ -48,6 +48,7 @@
                             <div class="col-md-12">
                                 <button class="btn btn-sm btn-primary" @click="filterDate">Filter by Date</button>
                                 <button class="btn btn-sm btn-primary" @click="filterStatus">Filter by Status</button>
+                                <button class="btn btn-sm btn-primary" @click="exportResult">Export Filter Result</button>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -351,6 +352,7 @@ export default {
                 to_ts: null,
                 status: null,
             },
+            filter_mode: 'filter_by_date',
             datetimepicker:{
                 options: {
                     format: 'MM/DD/YYYY',
@@ -602,6 +604,7 @@ export default {
         filterDate() {
             let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
             let to_ts = parseInt(Date.parse(this.filter_table.to_ts)/1000);
+            this.filter_mode = 'filter_by_date';
 
             if (from_ts > to_ts) {
                 Toast.fire({
@@ -641,6 +644,7 @@ export default {
         filterStatus() {
             let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
             let to_ts = parseInt(Date.parse(this.filter_table.to_ts)/1000);
+            this.filter_mode = 'filter_by_status';
 
             if (from_ts > to_ts) {
                 Toast.fire({
@@ -657,6 +661,29 @@ export default {
                 to_ts: to_ts,
                 status: this.filter_table.status,
             })
+        },
+        exportResult() {
+            let params = {
+                headers: this.position_table.cols,
+            };
+
+            if (this.filter_mode === 'filter_by_status') {
+                let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
+                let to_ts = parseInt(Date.parse(this.filter_table.to_ts)/1000);
+
+                params.from_ts = from_ts;
+                params.to_ts = to_ts;
+                params.status = this.filter_table.status;
+            }
+
+            axios.post("api/positions/export", params).then(({data}) => {
+                let downloadLink = document.createElement("a");
+                downloadLink.href = 'file/download/' + data.data.file;
+                downloadLink.target = '_blank';
+
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            });
         },
         updatePositionTableCols(flex_cols) {
             this.position_table.flex_cols = flex_cols;
