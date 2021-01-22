@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Constraints\CampaignStatusConstraint;
 use App\Http\Requests\Positions\PositionRequest;
 use App\Models\Position;
+use App\Models\Store;
 use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -57,10 +58,14 @@ class PositionController extends BaseController
     public function export(Request $request)
     {
         $query = Position::with(['bookings.campaign']);
+        $positionTable = (new Position())->getTable();
+        $storeTable = (new Store())->getTable();
 
         $from = intval($request->get('from_ts'));
         $to = intval($request->get('to_ts'));
         $status = $request->get('status');
+        $filters = $request->get('filters');
+        $sorts = $request->get('sort');
 
         if (!empty($status) || !empty($from) || !empty($to)) {
             if (!empty($status) && $status == CampaignStatusConstraint::STATUS_AVAILABLE) {
@@ -82,6 +87,36 @@ class PositionController extends BaseController
                 });
             });
         }
+
+        if (!empty($filters)) {
+            if (!empty($filters['name'])) {
+                $query->where("{$positionTable}.name", 'LIKE', "%{$filters['name']}%");
+            }
+            if (!empty($filters['channel'])) {
+                $query->where("{$positionTable}.channel", 'LIKE', "%{$filters['channel']}%");
+            }
+        }
+
+        if (!empty($sorts)) {
+            foreach ($sorts as $sort)
+            {
+                if ($sort['field'] == 'store_level') {
+                    $query->orderBy("{$storeTable}.level", $sort['type']);
+                }
+            }
+        }
+
+        $query->join($storeTable, "{$positionTable}.store_id", '=', "{$storeTable}.id");
+        $query->select([
+            "{$positionTable}.*",
+            DB::raw("{$storeTable}.code as store_code"),
+            DB::raw("{$storeTable}.name as store_name"),
+            DB::raw("{$storeTable}.address as store_address"),
+            DB::raw("{$storeTable}.ward as store_ward"),
+            DB::raw("{$storeTable}.district as store_district"),
+            DB::raw("{$storeTable}.province as store_province"),
+            DB::raw("{$storeTable}.level as store_level"),
+        ]);
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -153,6 +188,13 @@ class PositionController extends BaseController
                         } else {
                             $data[] = 'Available';
                         }
+                    } else if ($header['field'] == 'store_full_address') {
+                        $data[] = implode(', ', [
+                            $row->store_address,
+                            $row->store_ward,
+                            $row->store_district,
+                            $row->store_province,
+                        ]);
                     } else {
                         $data[] = !empty($row->{$header['field']}) ? $row->{$header['field']} : null;
                     }
@@ -258,7 +300,8 @@ class PositionController extends BaseController
 
     public function list_v2(Request $request)
     {
-        $query = Position::with(['bookings.campaign']);
+        $query = Position::with(['bookings.campaign', 'store:id,code']);
+        $positionTable = (new Position())->getTable();
 
         $from = intval($request->get('from_ts'));
         $to = intval($request->get('to_ts'));
@@ -284,6 +327,19 @@ class PositionController extends BaseController
                });
             });
         }
+
+        $storeTable = (new Store())->getTable();
+        $query->join($storeTable, "{$positionTable}.store_id", '=', "{$storeTable}.id");
+        $query->select([
+            "{$positionTable}.*",
+            DB::raw("{$storeTable}.code as store_code"),
+            DB::raw("{$storeTable}.name as store_name"),
+            DB::raw("{$storeTable}.address as store_address"),
+            DB::raw("{$storeTable}.ward as store_ward"),
+            DB::raw("{$storeTable}.district as store_district"),
+            DB::raw("{$storeTable}.province as store_province"),
+            DB::raw("{$storeTable}.level as store_level"),
+        ]);
 
         return $this->sendResponse($query->get(), 'Position list');
     }

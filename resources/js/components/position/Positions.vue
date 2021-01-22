@@ -76,7 +76,7 @@
                                             }"
                                     >
                                      <template slot="table-row" slot-scope="props">
-                                            <span v-if="props.column.field == 'actions'">
+                                            <span v-if="props.column.field === 'actions'">
                                                 <a href="#" @click.prevent="editModal(props.row)">
                                                 <i class="fa fa-edit blue"></i>
                                                 </a>
@@ -84,6 +84,9 @@
                                                 <a href="#" @click.prevent="deletePosition(props.row)">
                                                     <i class="fa fa-trash red"></i>
                                                 </a>
+                                            </span>
+                                            <span v-else-if="props.column.field === 'store_full_address'"
+                                                  v-html="props.row.store_address + ', ' + props.row.store_ward + ', ' + props.row.store_district + ', ' + props.row.store_province">
                                             </span>
                                             <span v-else-if="props.column.field === 'date_booking'">
                                                 <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'booked').length > 0">Booked</span>
@@ -304,34 +307,49 @@ export default {
                 ],
                 fixed_cols: [
                     {
-                        label: 'id',
+                        label: 'ID',
                         field: 'id',
+                        type: 'number',
                     },
                     {
-                        label: 'name',
+                        label: 'Name',
                         field: 'name',
                         filterOptions: {
                             enabled: true, // enable filter for this column
                         }
                     },
                     {
-                        label: 'channel',
+                        label: 'Channel',
                         field: 'channel',
                         filterOptions: {
                             enabled: true, // enable filter for this column
                         }
                     },
                     {
-                        label: 'price',
-                        field: 'price',
+                        label: 'Store Code',
+                        field: 'store_code',
                     },
                     {
-                        label: 'unit',
+                        label: 'Store Address',
+                        field: 'store_full_address',
+                    },
+                    {
+                        label: 'Store Level',
+                        field: 'store_level',
+                    },
+                    {
+                        label: 'Price',
+                        field: 'price',
+                        type: 'decimal',
+                    },
+                    {
+                        label: 'Unit',
                         field: 'unit',
                     },
                     {
-                        label: 'buffer_days',
+                        label: 'Buffer Days',
                         field: 'buffer_days',
+                        type: 'number',
                     },
                     {
                         label: 'Actions',
@@ -396,6 +414,9 @@ export default {
             });
         },
 
+        getTable() {
+            return this.$refs['position_table'];
+        },
         getResults(page = 1) {
 
             this.$Progress.start();
@@ -665,6 +686,8 @@ export default {
         exportResult() {
             let params = {
                 headers: this.position_table.cols,
+                filters: this.getTable().columnFilters,
+                sort: this.getTable().sorts,
             };
 
             if (this.filter_mode === 'filter_by_status') {
