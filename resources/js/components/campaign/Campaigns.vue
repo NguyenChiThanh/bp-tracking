@@ -306,6 +306,7 @@
     // import the styles
     import 'vue-good-table/dist/vue-good-table.css'
     import { VueGoodTable } from 'vue-good-table';
+    import moment from "moment";
 
     export default {
         components: {
@@ -766,8 +767,8 @@
             updateCampaign(){
                 this.$Progress.start();
 
-                this.form.from_ts = parseInt(Date.parse(this.position_filter.from_ts)/1000);
-                this.form.to_ts = parseInt(Date.parse(this.position_filter.to_ts)/1000);
+                this.form.from_ts = moment(this.position_filter.from_ts).startOf('date').unix();
+                this.form.to_ts = moment(this.position_filter.to_ts).endOf('date').unix();
                 console.log(this.form);
 
                 this.form.put('api/campaigns/'+this.form.id)
