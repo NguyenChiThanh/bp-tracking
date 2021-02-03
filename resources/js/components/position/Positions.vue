@@ -47,6 +47,7 @@
                             </div>
                             <div class="col-md-12">
                                 <button class="btn btn-sm btn-primary" @click="filterDate">Filter by Date</button>
+                                <button class="btn btn-sm btn-primary" @click="filterWeek">Filter by Week</button>
                                 <button class="btn btn-sm btn-primary" @click="filterStatus">Filter by Status</button>
                                 <button class="btn btn-sm btn-primary" @click="exportResult">Export Filter Result</button>
                             </div>
@@ -89,9 +90,26 @@
                                                   v-html="props.row.store_address + ', ' + props.row.store_ward + ', ' + props.row.store_district + ', ' + props.row.store_province">
                                             </span>
                                             <span v-else-if="props.column.field === 'date_booking'">
-                                                <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'booked').length > 0">Booked</span>
-                                                <span class="badge badge-success" v-else-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'reserved').length > 0">Reserved</span>
-                                                <span class="badge badge-light" v-else>Available</span>
+                                                <span v-if="props.column.from_date_value">
+                                                    <span class="badge badge-danger" v-if="props.row.bookings.filter(item =>
+                                                        (item.from_ts <= props.column.from_date_value && item.to_ts >= props.column.to_date_value
+                                                        || item.from_ts >= props.column.from_date_value && item.from_ts <= props.column.to_date_value && item.to_ts >= props.column.to_date_value
+                                                        || item.from_ts <= props.column.from_date_value && item.to_ts <= props.column.to_date_value && item.to_ts >= props.column.from_date_value
+                                                        || item.from_ts >= props.column.from_date_value && item.to_ts <= props.column.to_date_value
+                                                        ) && item.campaign.status === 'booked').length > 0">Booked</span>
+                                                    <span class="badge badge-success" v-else-if="props.row.bookings.filter(item =>
+                                                    (item.from_ts <= props.column.from_date_value && item.to_ts >= props.column.to_date_value
+                                                        || item.from_ts >= props.column.from_date_value && item.from_ts <= props.column.to_date_value && item.to_ts >= props.column.to_date_value
+                                                        || item.from_ts <= props.column.from_date_value && item.to_ts <= props.column.to_date_value && item.to_ts >= props.column.from_date_value
+                                                        || item.from_ts >= props.column.from_date_value && item.to_ts <= props.column.to_date_value
+                                                        ) && item.campaign.status === 'reserved').length > 0">Reserved</span>
+                                                    <span class="badge badge-light" v-else>Available</span>
+                                                </span>
+                                                <span v-else-if="props.column.date_value">
+                                                    <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'booked').length > 0">Booked</span>
+                                                    <span class="badge badge-success" v-else-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'reserved').length > 0">Reserved</span>
+                                                    <span class="badge badge-light" v-else>Available</span>
+                                                </span>
                                             </span>
                                             <span v-else>
                                               {{props.formattedRow[props.column.field]}}
@@ -251,6 +269,7 @@
 import "vue-select/dist/vue-select.css";
 import FileUpload from 'v-file-upload';
 import vSelect from "vue-select";
+import moment from "moment";
 
 // import the styles
 import 'vue-good-table/dist/vue-good-table.css'
@@ -360,7 +379,7 @@ export default {
                     {
                         label: this.getDateString((new Date())),
                         field: 'date_booking',
-                        date_value: parseInt(Date.now() / 1000),
+                        date_value: moment().unix(),
                     }
                 ],
                 rows: [],
@@ -623,8 +642,8 @@ export default {
             return date.toLocaleDateString('en-EN');
         },
         filterDate() {
-            let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
-            let to_ts = parseInt(Date.parse(this.filter_table.to_ts)/1000);
+            let from_ts = moment(this.filter_table.from_ts).startOf('date').unix();
+            let to_ts = moment(this.filter_table.to_ts).startOf('date').unix();
             this.filter_mode = 'filter_by_date';
 
             if (from_ts > to_ts) {
@@ -661,6 +680,52 @@ export default {
             console.log(flex_cols);
 
             this.updatePositionTableCols(flex_cols);
+            this.loadPositions();
+        },
+        filterWeek() {
+            let from_ts = moment(this.filter_table.from_ts).startOf('date').unix();
+            let to_ts = moment(this.filter_table.to_ts).endOf('date').unix();
+            let endWeek = moment(this.filter_table.to_ts).endOf('isoWeeks').unix();
+
+            this.filter_mode = 'filter_by_week';
+
+            if (from_ts > to_ts) {
+                Toast.fire({
+                    icon: 'warning',
+                    type: 'danger',
+                    title: 'From date cannot be after than To date'
+                });
+                return false;
+            }
+
+            /**
+             * TODO:
+             * @type {null}
+             */
+            let
+                startDayOfWeek = moment(from_ts * 1000).startOf('isoWeek'),
+                endDayOfWeek = moment(from_ts * 1000).endOf('isoWeek');
+            let flex_cols = [];
+
+            do {
+                flex_cols = flex_cols.concat({
+                    label: 'Week ' + startDayOfWeek.format('w'),
+                    field: 'date_booking',
+                    from_date_value: (from_ts >= startDayOfWeek.unix()) ? from_ts : startDayOfWeek.unix(),
+                    from_date_label: (from_ts >= startDayOfWeek.unix()) ? from_ts : startDayOfWeek.toString(),
+                    to_date_value: (to_ts <= endDayOfWeek.unix()) ? to_ts : endDayOfWeek.unix(),
+                    to_date_label: (to_ts <= endDayOfWeek.unix()) ? to_ts : endDayOfWeek.toString(),
+                })
+
+                startDayOfWeek = startDayOfWeek.add(1, 'weeks');
+                endDayOfWeek = endDayOfWeek.add(1, 'weeks');
+
+            } while (endDayOfWeek.unix() <= endWeek);
+
+            console.log(flex_cols);
+
+            this.updatePositionTableCols(flex_cols);
+            this.loadPositions();
         },
         filterStatus() {
             let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
