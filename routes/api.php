@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\StatusApiController;
+use App\Http\Controllers\API\V1\UtilityController;
 use Illuminate\Http\Request;
 
 /*
@@ -28,6 +29,11 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'middleware' => ['auth:api']], f
     Route::group(['prefix' => 'statuses', 'as' => 'statuses.'], function () {
         Route::get('/list', [StatusApiController::class, 'list'])->name('list');
     });
+
+    Route::group(['prefix' => 'utilities', 'as' => 'utilities.'], function () {
+        Route::post('/import', [UtilityController::class, 'import'])->name('import');
+        Route::get('/', [UtilityController::class, 'index'])->name('index');
+    });
 });
 
 
@@ -47,7 +53,6 @@ Route::get('positions/list', 'API\V1\PositionController@list');
 Route::get('positions/statuses', 'API\V1\PositionController@getStatuses');
 Route::post('positions/import', 'API\V1\PositionController@import');
 Route::post('positions/export', 'API\V1\PositionController@export');
-
 
 Route::get('provinces/list', 'API\V1\ProvinceController@list');
 Route::get('districts/list', 'API\V1\DistrictController@list');

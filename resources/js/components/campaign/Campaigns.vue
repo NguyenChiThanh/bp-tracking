@@ -9,6 +9,10 @@
                         <div class="card-header">
                             <h3 class="card-title">Campaign List</h3>
                             <div class="card-tools">
+                                <button type="button" class="btn btn-sm btn-dark" data-toggle="modal" data-target="#importCampaignModal">
+                                    <i class="fa fa-file-import"></i>
+                                    Import
+                                </button>
                                 <button type="button" class="btn btn-sm btn-primary" @click="newModal" v-if="$gate.isMod()">
                                     <i class="fa fa-plus-square"></i>
                                     Add New
@@ -293,6 +297,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- import modal -->
+            <div class="modal fade" id="importCampaignModal" tabindex="-1" role="dialog" aria-labelledby="importCampaignModal"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Select a file to import positions</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Import Campaign</label>
+                                <input type="file" name="file" @change="onFileChange" class="form-control">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-sm btn-primary" @click="importCampaign"
+                                        id="importCampaignBtn">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </template>
@@ -476,6 +506,7 @@
                 headers: {},
                 // fileUploadUrl: '/file/upload'
                 // autocompleteItems: [],
+                importCampaignFile: null,
             }
         },
         methods: {
@@ -815,7 +846,50 @@
                     }
                 })
             },
+            onFileChange(e) {
+                const file = e.target.files[0];
+                console.log(file);
+                this.importCampaignFile = file;
+            },
+            importCampaign() {
+                var _this = this;
+                _this.$Progress.start();
 
+                const formData = new FormData();
+                formData.append('file', this.importCampaignFile);
+                formData.append('type', 'import_campaign');
+
+                $('#importCampaignBtn').prop('disabled', true);
+                axios.post('api/v1/utilities/import', formData)
+                    .then(function (response) {
+                        $('#importCampaignBtn').prop('disabled', false);
+
+                        if (response.status === 200) {
+                            $('#importCampaignModal').modal('hide');
+                            Toast.fire({
+                                icon: 'success',
+                                title: response.message
+                            });
+                            _this.$Progress.finish();
+                            _this.loadCampaigns();
+                        } else {
+                            Toast.fire({
+                                icon: 'error',
+                                title: response.message
+                            });
+
+                            _this.$Progress.fail();
+                        }
+                    })
+                    .catch(function (error) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: error
+                        });
+                        $('#importCampaignBtn').prop('disabled', false);
+                        _this.$Progress.fail();
+                    });
+            }
         },
         mounted() {
 
