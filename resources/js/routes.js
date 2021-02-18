@@ -10,6 +10,7 @@ export default [
     { path: '/campaigns', component: require('./components/campaign/Campaigns.vue').default },
     { path: '/company', component: require('./components/company/Company.vue').default },
     { path: '/brand', component: require('./components/brand/Brand.vue').default },
+    { path: '/utility', component: require('./components/utility/Utilities.vue').default },
 
 
     { path: '*', component: require('./components/NotFound.vue').default }
