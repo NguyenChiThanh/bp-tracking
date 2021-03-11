@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Constraints\CampaignStatusConstraint;
+use App\Constraints\CommonConstraint;
 use App\Http\Requests\Positions\PositionRequest;
 use App\Models\Position;
 use App\Models\Store;
@@ -100,8 +101,16 @@ class PositionController extends BaseController
         if (!empty($sorts)) {
             foreach ($sorts as $sort)
             {
-                if ($sort['field'] == 'store_level') {
-                    $query->orderBy("{$storeTable}.level", $sort['type']);
+                if (is_string($sort)) {
+                    $sort = json_decode($sort, true);
+                }
+
+                if (array_key_exists('field', $sort) && array_key_exists('type', $sort)) {
+                    if ($sort['field'] == 'store_level') {
+                        $query->orderBy("{$storeTable}.level", $sort['type']);
+                    } else {
+                        $query->orderBy("{$positionTable}." . $sort['field'], $sort['type']);
+                    }
                 }
             }
         }
@@ -341,7 +350,18 @@ class PositionController extends BaseController
             DB::raw("{$storeTable}.level as store_level"),
         ]);
 
-        return $this->sendResponse($query->get(), 'Position list');
+        if (!empty($request->get('sort'))) {
+            foreach ($request->get('sort') as $sort) {
+                $sort = json_decode($sort, true);
+                if (array_key_exists('field', $sort) && array_key_exists('type', $sort)) {
+                    $query->orderBy($positionTable.".".$sort['field'], $sort['type']);
+                }
+            }
+        }
+
+        $perPage = $request->get('perPage', CommonConstraint::PER_PAGE);
+
+        return $this->sendResponse($query->paginate($perPage), 'Position list');
     }
 
     /**

@@ -55,6 +55,9 @@
                                 <div class="form-group">
                                     <vue-good-table
                                         ref="position_table"
+                                        mode="remote"
+                                        :totalRows="totalRecords"
+                                        :isLoading.sync="isLoading"
                                         :columns="this.position_table.cols"
                                         :rows="this.position_table.rows"
                                         :pagination-options="{
@@ -75,8 +78,12 @@
                                         :select-options="{
                                                 disableSelectInfo: true, // disable the select info panel on top
                                             }"
+                                        @on-page-change="onPageChange"
+                                        @on-sort-change="onSortChange"
+                                        @on-column-filter="onColumnFilter"
+                                        @on-per-page-change="onPerPageChange"
                                     >
-                                     <template slot="table-row" slot-scope="props">
+                                        <template slot="table-row" slot-scope="props">
                                             <span v-if="props.column.field === 'actions'">
                                                 <a href="#" @click.prevent="editModal(props.row)">
                                                 <i class="fa fa-edit blue"></i>
@@ -114,7 +121,7 @@
                                             <span v-else>
                                               {{props.formattedRow[props.column.field]}}
                                             </span>
-                                     </template>
+                                        </template>
                                     </vue-good-table>
                                 </div>
                             </div>
@@ -342,19 +349,29 @@ export default {
                         field: 'channel',
                         filterOptions: {
                             enabled: true, // enable filter for this column
-                        }
+                        },
+                        sortable: false,
                     },
                     {
                         label: 'Store Code',
                         field: 'store_code',
+                        filterOptions: {
+                            enabled: true, // enable filter for this column
+                        },
+                        sortable: false,
                     },
                     {
                         label: 'Store Address',
                         field: 'store_full_address',
+                        sortable: false,
                     },
                     {
                         label: 'Store Level',
                         field: 'store_level',
+                        sortable: false,
+                        filterOptions: {
+                            enabled: true, // enable filter for this column
+                        }
                     },
                     {
                         label: 'Price',
@@ -364,15 +381,18 @@ export default {
                     {
                         label: 'Unit',
                         field: 'unit',
+                        sortable: false,
                     },
                     {
                         label: 'Buffer Days',
                         field: 'buffer_days',
                         type: 'number',
+                        sortable: false,
                     },
                     {
                         label: 'Actions',
-                        field: 'actions'
+                        field: 'actions',
+                        sortable: false,
                     },
                 ],
                 flex_cols: [
@@ -380,6 +400,7 @@ export default {
                         label: this.getDateString((new Date())),
                         field: 'date_booking',
                         date_value: moment().unix(),
+                        sortable: false,
                     }
                 ],
                 rows: [],
@@ -396,6 +417,15 @@ export default {
                     useCurrent: false
                 }
             },
+            isLoading: false,
+            totalRecords: 0,
+            serverParams: {
+                columnFilters: {
+                },
+                sort: [],
+                page: 1,
+                perPage: 10
+            }
         }
     },
     methods: {
@@ -458,10 +488,13 @@ export default {
             //     to_ts: this.filter_table.to_ts ? parseInt(Date.parse(this.filter_table.to_ts)/1000) : null,
             // };
             // if(this.$gate.isAdmin()){
+            this.isLoading = true;
             axios.get("api/positions/list/v2", {
                 params: params
             }).then(({data}) => {
-                this.position_table.rows = data.data;
+                this.position_table.rows = data.data.data;
+                this.totalRecords = data.data.total;
+                this.isLoading = false;
             });
             // }
         },
@@ -473,7 +506,6 @@ export default {
             });
             // }
         },
-
         loadProvinces() {
             // if(this.$gate.isAdmin()){
             axios.get("api/provinces/list").then(({data}) => (this.provinces = data.data));
@@ -675,6 +707,7 @@ export default {
                     label: this.getDateString(the_date),
                     field: 'date_booking',
                     date_value: date_value,
+                    sortable: false,
                 })
             }
             console.log(flex_cols);
@@ -715,6 +748,7 @@ export default {
                     from_date_label: (from_ts >= startDayOfWeek.unix()) ? from_ts : startDayOfWeek.toString(),
                     to_date_value: (to_ts <= endDayOfWeek.unix()) ? to_ts : endDayOfWeek.unix(),
                     to_date_label: (to_ts <= endDayOfWeek.unix()) ? to_ts : endDayOfWeek.toString(),
+                    sortable: false,
                 })
 
                 startDayOfWeek = startDayOfWeek.add(1, 'weeks');
@@ -776,6 +810,34 @@ export default {
         updatePositionTableCols(flex_cols) {
             this.position_table.flex_cols = flex_cols;
             this.position_table.cols = [].concat(this.position_table.fixed_cols).concat(this.position_table.flex_cols);
+        },
+        updateParams(newProps) {
+            this.serverParams = Object.assign({}, this.serverParams, newProps);
+        },
+        onPageChange(params) {
+            this.updateParams({page: params.currentPage});
+            this.loadItems();
+        },
+        onPerPageChange(params) {
+            this.updateParams({perPage: params.currentPerPage});
+            this.loadItems();
+        },
+        onSortChange(params) {
+            this.updateParams({
+                sort: params,
+            });
+            this.loadItems();
+        },
+        onColumnFilter(params) {
+            this.updateParams(params);
+            this.loadItems();
+        },
+        loadItems() {
+            this.loadPositions(this.serverParams);
+            // getFromServer(this.serverParams).then(response => {
+            //     this.totalRecords = response.totalRecords;
+            //     this.rows = response.rows;
+            // });
         }
     },
     mounted() {
