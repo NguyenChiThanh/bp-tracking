@@ -19,110 +19,114 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>From:</label>
-                                            <date-picker v-model="filter_table.from_ts" :config="datetimepicker.options"></date-picker>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>From:</label>
+                                                <date-picker v-model="filter_table.from_ts" :config="datetimepicker.options"></date-picker>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>To:</label>
-                                            <date-picker v-model="filter_table.to_ts" :config="datetimepicker.options"></date-picker>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>To:</label>
+                                                <date-picker v-model="filter_table.to_ts" :config="datetimepicker.options"></date-picker>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>Status:</label>
-                                            <select v-model="filter_table.status" class="form-control">
-                                                <option value="">Select</option>
-                                                <option v-for="status in statuses" :value="status.value">{{ status.text }}</option>
-                                            </select>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Status:</label>
+                                                <select v-model="filter_table.status" class="form-control">
+                                                    <option value="">Select</option>
+                                                    <option v-for="status in statuses" :value="status.value">{{ status.text }}</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-12">
-                                <button class="btn btn-sm btn-primary" @click="filterDate">Filter by Date</button>
-                                <button class="btn btn-sm btn-primary" @click="filterWeek">Filter by Week</button>
-                                <button class="btn btn-sm btn-primary" @click="filterStatus">Filter by Status</button>
-                                <button class="btn btn-sm btn-primary" @click="exportResult">Export Filter Result</button>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <vue-good-table
-                                        ref="position_table"
-                                        mode="remote"
-                                        :totalRows="totalRecords"
-                                        :isLoading.sync="isLoading"
-                                        :columns="this.position_table.cols"
-                                        :rows="this.position_table.rows"
-                                        :pagination-options="{
-                                            enabled: true,
-                                            mode: 'records',
-                                            perPage: 10,
-                                            position: 'top',
-                                            perPageDropdown: [10, 20, 40, 70, 100],
-                                            dropdownAllowAll: false,
-                                            setCurrentPage: 1,
-                                            nextLabel: 'next',
-                                            prevLabel: 'prev',
-                                            rowsPerPageLabel: 'Positions per page',
-                                            ofLabel: 'of',
-                                            pageLabel: 'page', // for 'pages' mode
-                                            allLabel: 'All',
-                                            }"
-                                        :select-options="{
-                                                disableSelectInfo: true, // disable the select info panel on top
-                                            }"
-                                        @on-page-change="onPageChange"
-                                        @on-sort-change="onSortChange"
-                                        @on-column-filter="onColumnFilter"
-                                        @on-per-page-change="onPerPageChange"
-                                    >
-                                        <template slot="table-row" slot-scope="props">
-                                            <span v-if="props.column.field === 'actions'">
-                                                <a href="#" @click.prevent="editModal(props.row)">
-                                                <i class="fa fa-edit blue"></i>
-                                                </a>
-                                                /
-                                                <a href="#" @click.prevent="deletePosition(props.row)">
-                                                    <i class="fa fa-trash red"></i>
-                                                </a>
-                                            </span>
-                                            <span v-else-if="props.column.field === 'store_full_address'"
-                                                  v-html="props.row.store_address + ', ' + props.row.store_ward + ', ' + props.row.store_district + ', ' + props.row.store_province">
-                                            </span>
-                                            <span v-else-if="props.column.field === 'date_booking'">
-                                                <span v-if="props.column.from_date_value">
-                                                    <span class="badge badge-danger" v-if="props.row.bookings.filter(item =>
+                                <div class="col-md-12">
+                                    <div class="pb-3">
+                                        <button class="btn btn-primary" @click="filterDate">Filter by Date</button>
+                                        <button class="btn btn-primary" @click="filterWeek">Filter by Week</button>
+                                        <button class="btn btn-primary" @click="filterStatus">Filter by Status</button>
+                                        <button class="btn btn-primary" @click="exportResult">Export Filter Result</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <vue-good-table
+                                            ref="position_table"
+                                            mode="remote"
+                                            :totalRows="totalRecords"
+                                            :isLoading.sync="isLoading"
+                                            :columns="this.position_table.cols"
+                                            :rows="this.position_table.rows"
+                                            :pagination-options="{
+                                                enabled: true,
+                                                mode: 'records',
+                                                perPage: 10,
+                                                position: 'top',
+                                                perPageDropdown: [10, 20, 40, 70, 100],
+                                                dropdownAllowAll: false,
+                                                setCurrentPage: 1,
+                                                nextLabel: 'next',
+                                                prevLabel: 'prev',
+                                                rowsPerPageLabel: 'Positions per page',
+                                                ofLabel: 'of',
+                                                pageLabel: 'page', // for 'pages' mode
+                                                allLabel: 'All',
+                                                }"
+                                            :select-options="{
+                                                    disableSelectInfo: true, // disable the select info panel on top
+                                                }"
+                                            @on-page-change="onPageChange"
+                                            @on-sort-change="onSortChange"
+                                            @on-column-filter="onColumnFilter"
+                                            @on-per-page-change="onPerPageChange"
+                                        >
+                                            <template slot="table-row" slot-scope="props">
+                                                <span v-if="props.column.field === 'actions'">
+                                                    <a href="#" @click.prevent="editModal(props.row)">
+                                                    <i class="fa fa-edit blue"></i>
+                                                    </a>
+                                                    /
+                                                    <a href="#" @click.prevent="deletePosition(props.row)">
+                                                        <i class="fa fa-trash red"></i>
+                                                    </a>
+                                                </span>
+                                                <span v-else-if="props.column.field === 'store_full_address'"
+                                                      v-html="props.row.store_address + ', ' + props.row.store_ward + ', ' + props.row.store_district + ', ' + props.row.store_province">
+                                                </span>
+                                                <span v-else-if="props.column.field === 'date_booking'">
+                                                    <span v-if="props.column.from_date_value">
+                                                        <span class="badge badge-danger" v-if="props.row.bookings.filter(item =>
+                                                            (item.from_ts <= props.column.from_date_value && item.to_ts >= props.column.to_date_value
+                                                            || item.from_ts >= props.column.from_date_value && item.from_ts <= props.column.to_date_value && item.to_ts >= props.column.to_date_value
+                                                            || item.from_ts <= props.column.from_date_value && item.to_ts <= props.column.to_date_value && item.to_ts >= props.column.from_date_value
+                                                            || item.from_ts >= props.column.from_date_value && item.to_ts <= props.column.to_date_value
+                                                            ) && item.campaign.status === 'booked').length > 0">Booked</span>
+                                                        <span class="badge badge-success" v-else-if="props.row.bookings.filter(item =>
                                                         (item.from_ts <= props.column.from_date_value && item.to_ts >= props.column.to_date_value
-                                                        || item.from_ts >= props.column.from_date_value && item.from_ts <= props.column.to_date_value && item.to_ts >= props.column.to_date_value
-                                                        || item.from_ts <= props.column.from_date_value && item.to_ts <= props.column.to_date_value && item.to_ts >= props.column.from_date_value
-                                                        || item.from_ts >= props.column.from_date_value && item.to_ts <= props.column.to_date_value
-                                                        ) && item.campaign.status === 'booked').length > 0">Booked</span>
-                                                    <span class="badge badge-success" v-else-if="props.row.bookings.filter(item =>
-                                                    (item.from_ts <= props.column.from_date_value && item.to_ts >= props.column.to_date_value
-                                                        || item.from_ts >= props.column.from_date_value && item.from_ts <= props.column.to_date_value && item.to_ts >= props.column.to_date_value
-                                                        || item.from_ts <= props.column.from_date_value && item.to_ts <= props.column.to_date_value && item.to_ts >= props.column.from_date_value
-                                                        || item.from_ts >= props.column.from_date_value && item.to_ts <= props.column.to_date_value
-                                                        ) && item.campaign.status === 'reserved').length > 0">Reserved</span>
-                                                    <span class="badge badge-light" v-else>Available</span>
+                                                            || item.from_ts >= props.column.from_date_value && item.from_ts <= props.column.to_date_value && item.to_ts >= props.column.to_date_value
+                                                            || item.from_ts <= props.column.from_date_value && item.to_ts <= props.column.to_date_value && item.to_ts >= props.column.from_date_value
+                                                            || item.from_ts >= props.column.from_date_value && item.to_ts <= props.column.to_date_value
+                                                            ) && item.campaign.status === 'reserved').length > 0">Reserved</span>
+                                                        <span class="badge badge-light" v-else>Available</span>
+                                                    </span>
+                                                    <span v-else-if="props.column.date_value">
+                                                        <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'booked').length > 0">Booked</span>
+                                                        <span class="badge badge-success" v-else-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'reserved').length > 0">Reserved</span>
+                                                        <span class="badge badge-light" v-else>Available</span>
+                                                    </span>
                                                 </span>
-                                                <span v-else-if="props.column.date_value">
-                                                    <span class="badge badge-danger" v-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'booked').length > 0">Booked</span>
-                                                    <span class="badge badge-success" v-else-if="props.row.bookings.filter(item => item.from_ts <= props.column.date_value && item.to_ts >= props.column.date_value && item.campaign.status === 'reserved').length > 0">Reserved</span>
-                                                    <span class="badge badge-light" v-else>Available</span>
+                                                <span v-else>
+                                                  {{props.formattedRow[props.column.field]}}
                                                 </span>
-                                            </span>
-                                            <span v-else>
-                                              {{props.formattedRow[props.column.field]}}
-                                            </span>
-                                        </template>
-                                    </vue-good-table>
+                                            </template>
+                                        </vue-good-table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -560,7 +564,7 @@ export default {
                                 title: response.message
                             });
                             _this.$Progress.finish();
-                            _this.loadPositions();
+                            _this.loadItems();
                         } else {
                             Toast.fire({
                                 icon: 'error',
@@ -600,7 +604,7 @@ export default {
                             title: data.data.message
                         });
                         this.$Progress.finish();
-                        this.loadPositions();
+                        this.loadItems();
 
                     } else {
                         Toast.fire({
@@ -637,7 +641,7 @@ export default {
                     this.$Progress.finish();
                     //  Fire.$emit('AfterCreate');
 
-                    this.loadPositions();
+                    this.loadItems();
                 })
                 .catch(() => {
                     this.$Progress.fail();
@@ -663,7 +667,7 @@ export default {
                             'success'
                         );
                         // Fire.$emit('AfterCreate');
-                        this.loadPositions();
+                        this.loadItems();
                     }).catch((data) => {
                         Swal.fire("Failed!", data.message, "warning");
                     });
@@ -713,7 +717,12 @@ export default {
             console.log(flex_cols);
 
             this.updatePositionTableCols(flex_cols);
-            this.loadPositions();
+            this.updateParams({
+                from_ts: null,
+                to_ts: null,
+                status: null,
+            });
+            this.loadItems();
         },
         filterWeek() {
             let from_ts = moment(this.filter_table.from_ts).startOf('date').unix();
@@ -759,7 +768,12 @@ export default {
             console.log(flex_cols);
 
             this.updatePositionTableCols(flex_cols);
-            this.loadPositions();
+            this.updateParams({
+                from_ts: null,
+                to_ts: null,
+                status: null,
+            });
+            this.loadItems();
         },
         filterStatus() {
             let from_ts = parseInt(Date.parse(this.filter_table.from_ts)/1000);
@@ -776,11 +790,12 @@ export default {
             }
 
             this.updatePositionTableCols([]);
-            this.loadPositions({
+            this.updateParams({
                 from_ts: from_ts,
                 to_ts: to_ts,
                 status: this.filter_table.status,
-            })
+            });
+            this.loadItems();
         },
         exportResult() {
             let params = {

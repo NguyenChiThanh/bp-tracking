@@ -96,6 +96,12 @@ class PositionController extends BaseController
             if (!empty($filters['channel'])) {
                 $query->where("{$positionTable}.channel", 'LIKE', "%{$filters['channel']}%");
             }
+            if (!empty($filters['store_code'])) {
+                $query->where("{$storeTable}.code", 'LIKE', "%{$filters['store_code']}%");
+            }
+            if (!empty($filters['store_level'])) {
+                $query->where("{$storeTable}.level", "{$filters['store_level']}");
+            }
         }
 
         if (!empty($sorts)) {
@@ -355,6 +361,17 @@ class PositionController extends BaseController
                 $sort = json_decode($sort, true);
                 if (array_key_exists('field', $sort) && array_key_exists('type', $sort)) {
                     $query->orderBy($positionTable.".".$sort['field'], $sort['type']);
+                }
+            }
+        }
+
+        if (!empty($request->get('columnFilters'))) {
+            $columnFilters = json_decode($request->get('columnFilters'), true);
+            foreach ($columnFilters as $field => $value) {
+                if (in_array($field, ['store_code', 'store_level'])) {
+                    $query->where($storeTable.".".str_replace('store_', '', $field), 'LIKE', '%'.$value.'%');
+                } else {
+                    $query->where($positionTable.".".$field, 'LIKE', '%'.$value.'%');
                 }
             }
         }
